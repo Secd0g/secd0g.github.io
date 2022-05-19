@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MetInfo5.3.19安装过程过滤不严导致Getshell(每日一洞) - F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="F0rmat" />
+  <meta name="description" content="前言 前几天在先知看到的漏洞，就很想写个分析过程了的，因为比赛培训和在审计一个CMS拖到了今天。 环境 Web： phpstudy System： Windows 7 X64 Browse" />
+
+  <meta name="keywords" content="渗透测试, 网络安全, F0rmat" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.91.2" />
+
+
+<link rel="canonical" href="https://xxe.icu/post/metinfo5.3.19-installation-process-is-not-strict-lead-to-getshell/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.5227954e5327390ee2be2e9ddae8b96f1ada64bdf87e87b56b029198ec14dcde.css" integrity="sha256-UieVTlMnOQ7ivi6d2ui5bxraZL34foe1awKRmOwU3N4=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="MetInfo5.3.19安装过程过滤不严导致Getshell(每日一洞)" />
+<meta property="og:description" content="前言 前几天在先知看到的漏洞，就很想写个分析过程了的，因为比赛培训和在审计一个CMS拖到了今天。 环境 Web： phpstudy System： Windows 7 X64 Browse" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xxe.icu/post/metinfo5.3.19-installation-process-is-not-strict-lead-to-getshell/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2018-03-06T22:41:35+00:00" />
+<meta property="article:modified_time" content="2018-03-06T22:41:35+00:00" />
+
+<meta itemprop="name" content="MetInfo5.3.19安装过程过滤不严导致Getshell(每日一洞)">
+<meta itemprop="description" content="前言 前几天在先知看到的漏洞，就很想写个分析过程了的，因为比赛培训和在审计一个CMS拖到了今天。 环境 Web： phpstudy System： Windows 7 X64 Browse"><meta itemprop="datePublished" content="2018-03-06T22:41:35+00:00" />
+<meta itemprop="dateModified" content="2018-03-06T22:41:35+00:00" />
+<meta itemprop="wordCount" content="1371">
+<meta itemprop="keywords" content="漏洞,代码审计,php,MetInfo,getshell," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MetInfo5.3.19安装过程过滤不严导致Getshell(每日一洞)"/>
+<meta name="twitter:description" content="前言 前几天在先知看到的漏洞，就很想写个分析过程了的，因为比赛培训和在审计一个CMS拖到了今天。 环境 Web： phpstudy System： Windows 7 X64 Browse"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">F0rmat's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      F0rmat's Blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">MetInfo5.3.19安装过程过滤不严导致Getshell(每日一洞)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2018-03-06" class="post-time">
+          2018-03-06
+        </time>
+        <div class="post-category">
+            <a href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"> 代码审计 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1371 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#环境">环境</a></li>
+    <li><a href="#任意文件删除漏洞">任意文件删除漏洞</a>
+      <ul>
+        <li><a href="#复现">复现</a>
+          <ul>
+            <li><a href="#poc">POC</a></li>
+            <li><a href="#执行结果">执行结果</a></li>
+          </ul>
+        </li>
+        <li><a href="#代码位置和漏洞代码">代码位置和漏洞代码</a>
+          <ul>
+            <li><a href="#代码位置">代码位置</a></li>
+            <li><a href="#漏洞代码">漏洞代码</a></li>
+          </ul>
+        </li>
+        <li><a href="#分析过程">分析过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#重装时数据库配置文件过滤不当">重装时数据库配置文件过滤不当</a>
+      <ul>
+        <li><a href="#复现-1">复现</a></li>
+        <li><a href="#代码位置和漏洞代码-1">代码位置和漏洞代码</a>
+          <ul>
+            <li><a href="#代码位置-1">代码位置</a></li>
+            <li><a href="#漏洞代码-1">漏洞代码</a></li>
+          </ul>
+        </li>
+        <li><a href="#分析过程-1">分析过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#结束">结束</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="前言">前言</h1>
+<p>前几天在先知看到的漏洞，就很想写个分析过程了的，因为比赛培训和在审计一个CMS拖到了今天。</p>
+<h1 id="环境">环境</h1>
+<p><strong>Web：</strong> phpstudy
+<strong>System：</strong> Windows 7 X64
+<strong>Browser：</strong> Firefox Quantum
+<strong>Python version ：</strong> 2.7
+<strong>Tools：</strong> PhpStorm 2017.3.3、Seay源代码审计系统</p>
+<h1 id="任意文件删除漏洞">任意文件删除漏洞</h1>
+<h2 id="复现">复现</h2>
+<h3 id="poc">POC</h3>
+<p>前提：需要由对应的删除权限
+<code>flienamecsv</code>代表要删除的文件</p>
+<!-- more -->
+<p><code>http://xxx.com/admin/app/batch/csvup.php?fileField=1&amp;flienamecsv=../../../config/install.lock</code></p>
+<h3 id="执行结果">执行结果</h3>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo.gif" alt=""></p>
+<h2 id="代码位置和漏洞代码">代码位置和漏洞代码</h2>
+<h3 id="代码位置">代码位置</h3>
+<p><code>\admin\app\batch\csvup.php</code></p>
+<h3 id="漏洞代码">漏洞代码</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="nv">$depth</span><span class="o">=</span><span class="s1">&#39;../&#39;</span><span class="p">;</span>
+<span class="k">require_once</span> <span class="nv">$depth</span><span class="o">.</span><span class="s1">&#39;../login/login_check.php&#39;</span><span class="p">;</span>
+<span class="nx">setlocale</span><span class="p">(</span><span class="nx">LC_ALL</span><span class="p">,</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;zh_CN.gbk&#39;</span><span class="p">,</span><span class="s1">&#39;zh_CN.gb2312&#39;</span><span class="p">,</span><span class="s1">&#39;zh_CN.gb18030&#39;</span><span class="p">));</span>
+<span class="nv">$codeold</span><span class="o">=</span><span class="s1">&#39;gbk&#39;</span><span class="p">;</span>
+<span class="nv">$codenew</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">;</span>
+<span class="nv">$classflie</span><span class="o">=</span><span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="nv">$fileField</span><span class="p">);</span>
+<span class="nv">$classflie</span><span class="o">=</span><span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="nv">$classflie</span><span class="p">[</span><span class="nx">count</span><span class="p">(</span><span class="nv">$classflie</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]);</span>
+<span class="nv">$class1</span><span class="o">=</span><span class="nv">$classflie</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="nv">$class2</span><span class="o">=</span><span class="nv">$classflie</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="nv">$class3</span><span class="o">=</span><span class="nv">$classflie</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="nv">$class</span><span class="o">=</span><span class="nv">$class3</span><span class="o">?</span><span class="nv">$class3</span><span class="o">:</span><span class="p">(</span><span class="nv">$class2</span><span class="o">?</span><span class="nv">$class2</span><span class="o">:</span><span class="nv">$class1</span><span class="p">);</span> 
+<span class="nv">$classcsv</span><span class="o">=</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">get_one</span><span class="p">(</span><span class="s2">&#34;select * from </span><span class="si">$met_column</span><span class="s2"> where id=</span><span class="si">$class</span><span class="s2">&#34;</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$classcsv</span><span class="p">){</span>
+<span class="nx">metsave</span><span class="p">(</span><span class="s2">&#34;../app/batch/contentup.php?anyid=</span><span class="si">$anyid</span><span class="s2">&amp;lang=</span><span class="si">$lang</span><span class="s2">&#34;</span><span class="p">,</span><span class="nv">$lang_csvnocolumn</span><span class="p">,</span><span class="nv">$depth</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nv">$table</span><span class="o">=</span><span class="nx">moduledb</span><span class="p">(</span><span class="nv">$classcsv</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]);</span>
+<span class="nv">$file</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="nv">$flienamecsv</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">);</span>
+<span class="nv">$fdata</span><span class="o">=</span><span class="nx">fgetcsv</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span>
+<span class="k">foreach</span><span class="p">(</span><span class="nv">$fdata</span> <span class="k">as</span> <span class="nv">$key</span><span class="o">=&gt;</span><span class="nv">$val</span><span class="p">){</span>
+	<span class="k">if</span><span class="p">(</span><span class="nx">iconv</span><span class="p">(</span><span class="nv">$codeold</span><span class="p">,</span><span class="nv">$codenew</span><span class="p">,</span><span class="nv">$val</span><span class="p">)</span><span class="o">==</span><span class="nv">$lang_columnhtmlname</span><span class="p">){</span><span class="nv">$staticnum</span><span class="o">=</span><span class="nv">$key</span><span class="p">;}</span>
+<span class="p">}</span>
+<span class="nv">$numcsv</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="nv">$data</span> <span class="o">=</span> <span class="nx">fgetcsv</span><span class="p">(</span><span class="nv">$file</span><span class="p">)){</span>
+	<span class="nv">$staticone</span><span class="o">=</span><span class="nx">iconv</span><span class="p">(</span><span class="nv">$codeold</span><span class="p">,</span><span class="nv">$codenew</span><span class="p">,</span><span class="nv">$data</span><span class="p">[</span><span class="nv">$staticnum</span><span class="p">]);</span>
+	<span class="k">if</span><span class="p">(</span><span class="nv">$staticone</span><span class="o">!=</span><span class="k">NULL</span><span class="p">){</span>
+		<span class="nv">$static</span><span class="p">[</span><span class="nv">$numcsv</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="nv">$staticone</span><span class="p">;</span>
+		<span class="nv">$static_copy</span><span class="p">[]</span><span class="o">=</span><span class="nv">$staticone</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nv">$dataqrray</span><span class="p">[]</span><span class="o">=</span><span class="nv">$data</span><span class="p">;</span>
+	<span class="nv">$numcsv</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>  
+<span class="nx">fclose</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span> 
+<span class="o">@</span><span class="nx">file_unlink</span><span class="p">(</span><span class="nv">$flienamecsv</span><span class="p">);</span> 
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="分析过程">分析过程</h2>
+<ul>
+<li>开始的时候我就在找<code>$fileField</code>和<code>$flienamecsv</code>这两个变量是怎么get过来的，分析了包含<code>include/common.inc.php</code>里面的，有点类似前天写的seacms里面的写法,但是又不是从这里get过来的。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo1.png" alt="">
+我又继续找，找到了<code>\admin\templates\met\app\batch\contentup.html</code>文件里面的一个js函数
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo2.png" alt="">
+再继续跟进这个函数，跳到了一个表单文件<code>\admin\templates\met\images\js\iframes.js</code>,在这里找到关于<code>csvup.php</code>文件里面的<code>get</code>那里的两个参数
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo3.png" alt=""></li>
+<li>分析完传参的过程，我们继续分析删除文件的过程。我们直接看<code>$class=$class3?$class3:($class2?$class2:$class1); </code>这一句就行了，我们传一个数字<code>2</code>进去，判断，如果没有<code>$class3</code>就要<code>$class2</code>没<code>$class2</code>就<code>$class1</code>。这里为什么可以随便填数字，我们再跟进一下下面这个判断，如果SQL执行后<code>$classcsv</code>这个为假的话就不能执行下面的删除文件命令了。我们可以用seay的审计里面的mysql监控工具来观察下：
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo4.png" alt=""></li>
+<li><code>$file = fopen($flienamecsv,'r');</code>读取我们传入的文件</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="nv">$classflie</span><span class="o">=</span><span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="nv">$fileField</span><span class="p">);</span>
+<span class="nv">$classflie</span><span class="o">=</span><span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="nv">$classflie</span><span class="p">[</span><span class="nx">count</span><span class="p">(</span><span class="nv">$classflie</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]);</span>
+<span class="nv">$class1</span><span class="o">=</span><span class="nv">$classflie</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="nv">$class2</span><span class="o">=</span><span class="nv">$classflie</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="nv">$class3</span><span class="o">=</span><span class="nv">$classflie</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="nv">$class</span><span class="o">=</span><span class="nv">$class3</span><span class="o">?</span><span class="nv">$class3</span><span class="o">:</span><span class="p">(</span><span class="nv">$class2</span><span class="o">?</span><span class="nv">$class2</span><span class="o">:</span><span class="nv">$class1</span><span class="p">);</span> 
+<span class="nv">$classcsv</span><span class="o">=</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">get_one</span><span class="p">(</span><span class="s2">&#34;select * from </span><span class="si">$met_column</span><span class="s2"> where id=</span><span class="si">$class</span><span class="s2">&#34;</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$classcsv</span><span class="p">){</span>
+<span class="nx">metsave</span><span class="p">(</span><span class="s2">&#34;../app/batch/contentup.php?anyid=</span><span class="si">$anyid</span><span class="s2">&amp;lang=</span><span class="si">$lang</span><span class="s2">&#34;</span><span class="p">,</span><span class="nv">$lang_csvnocolumn</span><span class="p">,</span><span class="nv">$depth</span><span class="p">);</span>
+<span class="nv">$table</span><span class="o">=</span><span class="nx">moduledb</span><span class="p">(</span><span class="nv">$classcsv</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]);</span>
+<span class="nv">$file</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="nv">$flienamecsv</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>中间的没什么影响，我们就直接跳到文件删除这里,我们跟进一下这个函数。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="o">@</span><span class="nx">file_unlink</span><span class="p">(</span><span class="nv">$flienamecsv</span><span class="p">);</span> 
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>传入文件名之后判断是否为windows系统，然后判读是否存在，最后执行删除函数<code>unlink</code>
+<code>\admin\include\global.func.php</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">function</span> <span class="nf">file_unlink</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="nx">stristr</span><span class="p">(</span><span class="k">PHP_OS</span><span class="p">,</span><span class="s2">&#34;WIN&#34;</span><span class="p">)){</span>
+		<span class="nv">$file_name</span><span class="o">=@</span><span class="nx">iconv</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">,</span><span class="s2">&#34;gbk&#34;</span><span class="p">,</span><span class="nv">$file_name</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">if</span><span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">))</span> <span class="p">{</span>
+		<span class="c1">//@chmod($file_name,0777);
+</span><span class="c1"></span>		<span class="nv">$area_lord</span> <span class="o">=</span> <span class="o">@</span><span class="nx">unlink</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nv">$area_lord</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="重装时数据库配置文件过滤不当">重装时数据库配置文件过滤不当</h1>
+<h2 id="复现-1">复现</h2>
+<p>利用上面的删除漏洞之后再重新安装，然后在填写数据库的步骤的时候写入内容。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo5.png" alt=""></p>
+<p>shell地址:<code>http://metinfo.test/config/config_db.php</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo6.png" alt=""></p>
+<h2 id="代码位置和漏洞代码-1">代码位置和漏洞代码</h2>
+<h3 id="代码位置-1">代码位置</h3>
+<p><code>install\index.php</code></p>
+<h3 id="漏洞代码-1">漏洞代码</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">case</span> <span class="s1">&#39;db_setup&#39;</span><span class="o">:</span>
+	<span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="nv">$setup</span><span class="o">==</span><span class="mi">1</span><span class="p">){</span>
+			<span class="nv">$db_prefix</span>      <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$db_prefix</span><span class="p">);</span>
+			<span class="nv">$db_host</span>        <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$db_host</span><span class="p">);</span>
+			<span class="nv">$db_username</span>    <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$db_username</span><span class="p">);</span>
+			<span class="nv">$db_pass</span>        <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$db_pass</span><span class="p">);</span>
+			<span class="nv">$db_name</span>        <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$db_name</span><span class="p">);</span>
+			<span class="nv">$config</span><span class="o">=</span><span class="s2">&#34;&lt;?php
+</span><span class="s2">                   /*
+</span><span class="s2">                   con_db_host = </span><span class="se">\&#34;</span><span class="si">$db_host\</span><span class="s2">&#34;</span>
+                   <span class="nx">con_db_id</span>   <span class="o">=</span> <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_username\</span><span class="s2">&#34;</span>
+                   <span class="nx">con_db_pass</span>	<span class="o">=</span> <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_pass\</span><span class="s2">&#34;</span>
+                   <span class="nx">con_db_name</span> <span class="o">=</span> <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_name\</span><span class="s2">&#34;</span>
+                   <span class="nx">tablepre</span>    <span class="o">=</span>  <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_prefix\</span><span class="s2">&#34;</span>
+                   <span class="nx">db_charset</span>  <span class="o">=</span>  <span class="nx">\</span><span class="s2">&#34;utf8</span><span class="se">\&#34;</span><span class="s2">;
+</span><span class="s2">                  */
+</span><span class="s2">                  ?&gt;&#34;</span><span class="p">;</span>
+
+			<span class="nv">$fp</span><span class="o">=</span><span class="nx">fopen</span><span class="p">(</span><span class="s2">&#34;../config/config_db.php&#34;</span><span class="p">,</span><span class="s1">&#39;w+&#39;</span><span class="p">);</span>
+			<span class="nx">fputs</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span><span class="nv">$config</span><span class="p">);</span>
+			<span class="nx">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
+			<span class="nv">$db</span> <span class="o">=</span> <span class="nx">mysql_connect</span><span class="p">(</span><span class="nv">$db_host</span><span class="p">,</span><span class="nv">$db_username</span><span class="p">,</span><span class="nv">$db_pass</span><span class="p">)</span> <span class="k">or</span> <span class="k">die</span><span class="p">(</span><span class="s1">&#39;连接数据库失败: &#39;</span> <span class="o">.</span> <span class="nx">mysql_error</span><span class="p">());</span>
+			<span class="k">if</span><span class="p">(</span><span class="o">!@</span><span class="nx">mysql_select_db</span><span class="p">(</span><span class="nv">$db_name</span><span class="p">)){</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="分析过程-1">分析过程</h2>
+<ul>
+<li><code>fopen</code>打开文件，讲<code>$congfig</code>的内容写进配置文件。这个有就点逻辑不对了，应该输入数据库信息判断下对错再进行写文件才安全。</li>
+<li>为什么要<code>*/phpinfo()/*</code>这样写？因为用<code>*/</code>是为了闭合上面的注释。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php">	<span class="nv">$config</span><span class="o">=</span><span class="s2">&#34;&lt;?php
+</span><span class="s2">                   /*
+</span><span class="s2">                   con_db_host = </span><span class="se">\&#34;</span><span class="si">$db_host\</span><span class="s2">&#34;</span>
+                   <span class="nx">con_db_id</span>   <span class="o">=</span> <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_username\</span><span class="s2">&#34;</span>
+                   <span class="nx">con_db_pass</span>	<span class="o">=</span> <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_pass\</span><span class="s2">&#34;</span>
+                   <span class="nx">con_db_name</span> <span class="o">=</span> <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_name\</span><span class="s2">&#34;</span>
+                   <span class="nx">tablepre</span>    <span class="o">=</span>  <span class="nx">\</span><span class="s2">&#34;</span><span class="si">$db_prefix\</span><span class="s2">&#34;</span>
+                   <span class="nx">db_charset</span>  <span class="o">=</span>  <span class="nx">\</span><span class="s2">&#34;utf8</span><span class="se">\&#34;</span><span class="s2">;
+</span><span class="s2">                  */
+</span><span class="s2">                  ?&gt;&#34;</span><span class="p">;</span>
+
+			<span class="nv">$fp</span><span class="o">=</span><span class="nx">fopen</span><span class="p">(</span><span class="s2">&#34;../config/config_db.php&#34;</span><span class="p">,</span><span class="s1">&#39;w+&#39;</span><span class="p">);</span>
+			<span class="nx">fputs</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span><span class="nv">$config</span><span class="p">);</span>
+			<span class="nx">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
+			<span class="nv">$db</span> <span class="o">=</span> <span class="nx">mysql_connect</span><span class="p">(</span><span class="nv">$db_host</span><span class="p">,</span><span class="nv">$db_username</span><span class="p">,</span><span class="nv">$db_pass</span><span class="p">)</span> <span class="k">or</span> <span class="k">die</span><span class="p">(</span><span class="s1">&#39;连接数据库失败: &#39;</span> <span class="o">.</span> <span class="nx">mysql_error</span><span class="p">());</span>
+			<span class="k">if</span><span class="p">(</span><span class="o">!@</span><span class="nx">mysql_select_db</span><span class="p">(</span><span class="nv">$db_name</span><span class="p">)){</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="结束">结束</h1>
+<p>其实说来这个洞有点鸡肋了，因为安装过后程序都会修改程序，没有写的权限。不过学习整个过程还是不错的收获。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/metinfo7.png" alt=""></p>
+<h1 id="参考">参考</h1>
+<p><a href="http://www.metinfo.cn/upload/file/MetInfo5.3.zip">http://www.metinfo.cn/upload/file/MetInfo5.3.zip</a> 程序下载</p>
+<p><a href="https://xianzhi.aliyun.com/forum/topic/2096">https://xianzhi.aliyun.com/forum/topic/2096</a></p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">F0rmat</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2018-03-06
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://xxe.icu/tags/%E6%BC%8F%E6%B4%9E/">漏洞</a>
+          <a href="https://xxe.icu/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+          <a href="https://xxe.icu/tags/php/">php</a>
+          <a href="https://xxe.icu/tags/metinfo/">MetInfo</a>
+          <a href="https://xxe.icu/tags/getshell/">getshell</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">DedeCMS V5.7 SP2后台Getshell 代码执行漏洞(每日一洞)</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/zzcms8.2-any-file-deleted-to-getshell/">
+            <span class="next-text nav-default">ZZCMS8.2任意文件删除至getshell(每日一洞)</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/Secd0g/" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/F0rmat" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://xxe.icu/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2017 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        F0rmat
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

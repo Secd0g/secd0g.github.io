@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>域渗透 on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+    <link>https://xxe.icu/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/</link>
+    <description>Recent content in 域渗透 on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>F0rmat</copyright>
+    <lastBuildDate>Wed, 16 Dec 2020 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Windows认证与域渗透</title>
+      <link>https://xxe.icu/post/domain-security/</link>
+      <pubDate>Wed, 16 Dec 2020 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/post/domain-security/</guid>
+      <description>0x00 Windows系统中的工作组、域、域控、活动目录 1、工作组 工作组是局域网中的一个概念，由许多在同一物理地点，而且被相同的局域网连接起来的用</description>
+    </item>
+    
+  </channel>
+</rss>

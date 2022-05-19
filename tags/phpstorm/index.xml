@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>phpstorm on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+    <link>https://xxe.icu/tags/phpstorm/</link>
+    <description>Recent content in phpstorm on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>F0rmat</copyright>
+    <lastBuildDate>Tue, 10 Apr 2018 10:17:16 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/phpstorm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用phpstorm&#43;xdebug进行断点调试</title>
+      <link>https://xxe.icu/post/breakpoint-debugging-with-phpstorm&#43;xdebug/</link>
+      <pubDate>Tue, 10 Apr 2018 10:17:16 +0000</pubDate>
+      
+      <guid>https://xxe.icu/post/breakpoint-debugging-with-phpstorm&#43;xdebug/</guid>
+      <description>0x01 前言 在代码审计中，有些程序用到框架之类的要想去分析一个一个看和输出调试比较麻烦，如今有了xdebug神器，就比较方便了。 0x02 配置过程 php的</description>
+    </item>
+    
+  </channel>
+</rss>

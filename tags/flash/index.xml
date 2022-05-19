@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Flash on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+    <link>https://xxe.icu/tags/flash/</link>
+    <description>Recent content in Flash on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>F0rmat</copyright>
+    <lastBuildDate>Tue, 13 Mar 2018 10:16:27 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/flash/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Flash 0day漏洞(CVE-2018-4878)复现(每日一洞)</title>
+      <link>https://xxe.icu/post/recurrence-of-flash-0day-vulnerability-cve-2018-4878/</link>
+      <pubDate>Tue, 13 Mar 2018 10:16:27 +0000</pubDate>
+      
+      <guid>https://xxe.icu/post/recurrence-of-flash-0day-vulnerability-cve-2018-4878/</guid>
+      <description>前言 这几天很忙，已经有两天没有更新文章了，最近CVE-2018-4878挺火的，还有群里的人也问这个怎么复现。今天就献丑复现一下，大表哥别喷</description>
+    </item>
+    
+  </channel>
+</rss>

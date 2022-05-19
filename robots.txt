@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://xxe.icu/sitemap.xml

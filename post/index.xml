@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+    <link>https://xxe.icu/post/</link>
+    <description>Recent content in Posts on F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>F0rmat</copyright>
+    <lastBuildDate>Fri, 01 Apr 2022 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>免杀技术- Python分离免杀</title>
+      <link>https://xxe.icu/post/python_separation_to_antivirus/</link>
+      <pubDate>Fri, 01 Apr 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/python_separation_to_antivirus/</guid>
+      <description>0x00 前言 最新复习了一下鱼叉攻击的内容，发现在制作木马这一块过不去了，各种被查杀，于是又重新复习了一下免杀这块的内容。 网上也有很多教程文章，还是</description>
+    </item>
+    
+    <item>
+      <title>域渗透-MacOS下的BloodHound攻击</title>
+      <link>https://xxe.icu/post/using_bloodhound_under_macos/</link>
+      <pubDate>Thu, 17 Mar 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/using_bloodhound_under_macos/</guid>
+      <description>前言 BloodHound以用图与线的形式，将域内用户、计算机、组、Sessions、ACLs以及域内所有相关用户、组、计算机、登陆信息、访问</description>
+    </item>
+    
+    <item>
+      <title>域渗透-委派攻击原理与实战</title>
+      <link>https://xxe.icu/post/ad_delegation/</link>
+      <pubDate>Thu, 03 Mar 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/ad_delegation/</guid>
+      <description>0x00 前言 在Windows 2000 Server首次发布Active Directory时，Microsoft必须提供一种简单的机制来支持用户通过Kerb</description>
+    </item>
+    
+    <item>
+      <title>域渗透-票据传递攻击（Pass the Ticket）</title>
+      <link>https://xxe.icu/post/ad_ptt/</link>
+      <pubDate>Mon, 28 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/ad_ptt/</guid>
+      <description>0x00 前言 票据传递（Pass the Ticket，PTT），使用 Kerberos票据进行内网横向，不需要管理员权限。比如之前一篇文章： 域渗透-哈希传递</description>
+    </item>
+    
+    <item>
+      <title>域渗透-SPN</title>
+      <link>https://xxe.icu/post/ad_spn/</link>
+      <pubDate>Sun, 27 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/ad_spn/</guid>
+      <description>0x00 前言 SPN是服务器上所运行服务的唯一标示，每个使用Kerberos的服务都需要一个SPN，这样客户端才可以辨认这个服务。 在之前写的一篇关于</description>
+    </item>
+    
+    <item>
+      <title>域渗透-Kerberoasting</title>
+      <link>https://xxe.icu/post/ad_kerberoasting/</link>
+      <pubDate>Sat, 26 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/ad_kerberoasting/</guid>
+      <description>0x00 前言 Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后</description>
+    </item>
+    
+    <item>
+      <title>域渗透-AS_REPRoasting</title>
+      <link>https://xxe.icu/post/ad_as_reproasting/</link>
+      <pubDate>Tue, 22 Feb 2022 00:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/ad_as_reproasting/</guid>
+      <description>0x00 前言 这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第</description>
+    </item>
+    
+    <item>
+      <title>域渗透-哈希传递攻击(Pass The Hash/Key)</title>
+      <link>https://xxe.icu/post/ad_pass_key/</link>
+      <pubDate>Tue, 22 Feb 2022 00:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/ad_pass_key/</guid>
+      <description>0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的</description>
+    </item>
+    
+    <item>
+      <title>域渗透-用户名枚举</title>
+      <link>https://xxe.icu/post/kerberos_user_enumerate/</link>
+      <pubDate>Mon, 21 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/kerberos_user_enumerate/</guid>
+      <description>0x00 简介 在之前的一编域渗透-Kerberos认证文章中已经写过kerberos的认证过程，这次写的是如何去枚举域中的用户名，得到用户名后我们才</description>
+    </item>
+    
+    <item>
+      <title>域渗透-Kerberos认证</title>
+      <link>https://xxe.icu/post/kerberos_authentication/</link>
+      <pubDate>Sun, 20 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/kerberos_authentication/</guid>
+      <description>0x00 简介 Kerberos是一种计算机网络授权协议,由MIT(麻省理工学院)开放的一套计算机软件。软件设计上采用客户端/服务器结构，并且能够进行</description>
+    </item>
+    
+    <item>
+      <title>使用Responder进行NTLM重放攻击</title>
+      <link>https://xxe.icu/post/responder_ntlmv2/</link>
+      <pubDate>Mon, 14 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/responder_ntlmv2/</guid>
+      <description>0x00 简介 在之前有写过关于LLMNR/NBT-NS欺骗攻击的文章，本文再从中做一个扩展延伸，里面用到的技术叫做NTLM重放攻击。当然，这种攻击利</description>
+    </item>
+    
+    <item>
+      <title>LLMNR/NBT-NS欺骗攻击</title>
+      <link>https://xxe.icu/post/llmnr_nbt-ns/</link>
+      <pubDate>Sat, 12 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/llmnr_nbt-ns/</guid>
+      <description>0x00 基本概念 LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻</description>
+    </item>
+    
+    <item>
+      <title>SSH隧道技术研究和实战</title>
+      <link>https://xxe.icu/post/ssh_tunnel/</link>
+      <pubDate>Thu, 10 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/ssh_tunnel/</guid>
+      <description>0x00 简介 在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH</description>
+    </item>
+    
+    <item>
+      <title>Windows设置指定IP远程访问3389</title>
+      <link>https://xxe.icu/post/windows_set_ip_access/</link>
+      <pubDate>Wed, 09 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/windows_set_ip_access/</guid>
+      <description>0x00 简介 因为要做协议隧道的测试，所以限制一下本地环境的访问权限，去网上一搜都是千遍一律的文章，全是旧系统的各种转载，所以写此一文记录，本文是在</description>
+    </item>
+    
+    <item>
+      <title>Powershell在渗透测试中的利用</title>
+      <link>https://xxe.icu/post/powershell-attack/</link>
+      <pubDate>Sun, 16 Jan 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/powershell-attack/</guid>
+      <description>简介 在渗透测试过程中，Powershell越来越成为必不可少的利用工具。 Windows的渗透过程中，以前我们在2003的服务器中渗透都是用v</description>
+    </item>
+    
+    <item>
+      <title>Apparmor的绕过</title>
+      <link>https://xxe.icu/post/apparmor_bypass/</link>
+      <pubDate>Fri, 14 Jan 2022 11:35:33 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/apparmor_bypass/</guid>
+      <description>0x00 简介 什么是AppArmor？AppArmor是一项安全功能，可以在许多Linux发行版中找到。SLES（SUSE Linux Enterprise Server），ope</description>
+    </item>
+    
+    <item>
+      <title>Linux Capabilities 入门教程：进阶实战篇</title>
+      <link>https://xxe.icu/post/linux_capabilities_2/</link>
+      <pubDate>Thu, 13 Jan 2022 15:35:33 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/linux_capabilities_2/</guid>
+      <description>原文链接：Linux Capabilities In Practice Linux capabilities 非常晦涩难懂，为此我专门写了两篇文章来解释其基本原理和设置方法。 本文将会继续研究 Linux capabilities 更高级的应用案例，并结合 Docker</description>
+    </item>
+    
+    <item>
+      <title>Linux Capabilities 入门教程：基础实战篇</title>
+      <link>https://xxe.icu/post/linux_capabilities_1/</link>
+      <pubDate>Thu, 13 Jan 2022 14:35:33 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/linux_capabilities_1/</guid>
+      <description>管理文件的 capabilities 上篇文章介绍了 Linux capabilities 的诞生背景和基本原理，本文将会通过具体的示例来展示如何查看和设置文件的 capabilities。 Linux 系统中主要提</description>
+    </item>
+    
+    <item>
+      <title>Linux Capabilities 入门教程：概念篇</title>
+      <link>https://xxe.icu/post/linux_capabilities_0/</link>
+      <pubDate>Wed, 12 Jan 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/linux_capabilities_0/</guid>
+      <description>深入理解 Linux Capabilities 的原理 Linux 是一种安全的操作系统，它把所有的系统权限都赋予了一个单一的 root 用户，只给普通用户保留有限的权限。root 用户拥有超级管理员</description>
+    </item>
+    
+    <item>
+      <title>Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)</title>
+      <link>https://xxe.icu/post/hugo_theme_record/</link>
+      <pubDate>Fri, 07 Jan 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/post/hugo_theme_record/</guid>
+      <description>0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo.</description>
+    </item>
+    
+  </channel>
+</rss>
