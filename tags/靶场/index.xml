@@ -10,28 +10,28 @@
     <lastBuildDate>Thu, 03 May 2018 17:04:29 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E9%9D%B6%E5%9C%BA/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>用Vulnhub来练习漏洞靶场(爸爸再也不用担心我没有靶场练习了)</title>
-      <link>https://xxe.icu/post/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range/</link>
+      <link>https://xxe.icu/posts/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range/</link>
       <pubDate>Thu, 03 May 2018 17:04:29 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range/</guid>
+      <guid>https://xxe.icu/posts/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range/</guid>
       <description>0x01 前言 Vulnhub它是一个提供各种漏洞环境的平台，里面大部分的环境是要用VMware或者VirtualBox打开运行的。 如果只是练习一些常</description>
     </item>
     
     <item>
       <title>用Docker来搭建各种漏洞靶场(妈妈再也不用担心我没有靶场练习了)</title>
-      <link>https://xxe.icu/post/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range/</link>
+      <link>https://xxe.icu/posts/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range/</link>
       <pubDate>Wed, 14 Mar 2018 16:49:17 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range/</guid>
+      <guid>https://xxe.icu/posts/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range/</guid>
       <description>1. 前言 最近练习也在搭建这个漏洞环境，但是很费时间，然后就想到用Docker搭建比较快，又方便。不多废话，直接开始吧！ 2. 下载Docker 我本次</description>
     </item>
     
     <item>
       <title>DVWA之Brute Force更新</title>
-      <link>https://xxe.icu/post/dvwa-brute-force-update-/</link>
+      <link>https://xxe.icu/posts/dvwa-brute-force-update-/</link>
       <pubDate>Wed, 28 Feb 2018 00:18:00 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/dvwa-brute-force-update-/</guid>
+      <guid>https://xxe.icu/posts/dvwa-brute-force-update-/</guid>
       <description>前言 今天又练习了一遍DVWA，发现了一些小问题。 问题一 在原文http://www.freebuf.com/articles/web/1164</description>
     </item>
     

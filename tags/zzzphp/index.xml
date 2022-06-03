@@ -10,10 +10,10 @@
     <lastBuildDate>Sun, 10 Mar 2019 17:56:36 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/zzzphp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>zzzphp1.61 代码审计-从SQL注入到Getshell</title>
-      <link>https://xxe.icu/post/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell/</link>
+      <link>https://xxe.icu/posts/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell/</link>
       <pubDate>Sun, 10 Mar 2019 17:56:36 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell/</guid>
+      <guid>https://xxe.icu/posts/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell/</guid>
       <description>0x01 前言 前天看到zzzphp这一个cms，看着有点像zzzcms，去看了也是zzzcms开发的一套程序，于是就去审计一下，这zzzcms我之前</description>
     </item>
     

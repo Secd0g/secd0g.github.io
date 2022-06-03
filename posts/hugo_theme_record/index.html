@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Hyde-Hugo主题修改记录(搜索、分页、TOC、归档) - F0rmat的博客-专注于网络安全、信息安全、内网渗透、红队攻防</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="F0rmat" />
+  <meta name="description" content="0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo." />
+
+  <meta name="keywords" content="渗透测试, 网络安全, F0rmat" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.91.2" />
+
+
+<link rel="canonical" href="https://xxe.icu/posts/hugo_theme_record/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.5227954e5327390ee2be2e9ddae8b96f1ada64bdf87e87b56b029198ec14dcde.css" integrity="sha256-UieVTlMnOQ7ivi6d2ui5bxraZL34foe1awKRmOwU3N4=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)" />
+<meta property="og:description" content="0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xxe.icu/posts/hugo_theme_record/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-01-07T11:04:34+08:00" />
+<meta property="article:modified_time" content="2022-01-07T11:04:34+08:00" />
+
+<meta itemprop="name" content="Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)">
+<meta itemprop="description" content="0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo."><meta itemprop="datePublished" content="2022-01-07T11:04:34+08:00" />
+<meta itemprop="dateModified" content="2022-01-07T11:04:34+08:00" />
+<meta itemprop="wordCount" content="2254">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)"/>
+<meta name="twitter:description" content="0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">F0rmat's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/posts/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      F0rmat's Blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/posts/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://xxe.icu/categories/">目录</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-01-07" class="post-time">
+          2022-01-07
+        </time>
+        
+        <span class="more-meta"> 约 2254 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-基础知识">0x00 基础知识</a>
+      <ul>
+        <li><a href="#文件结构">文件结构：</a></li>
+        <li><a href="#文件分析">文件分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-添加搜索页面">0x01 添加搜索页面</a></li>
+    <li><a href="#0x02-添加分页页面">0x02 添加分页页面</a></li>
+    <li><a href="#0x03-添加目录toc">0x03 添加目录(TOC)</a></li>
+    <li><a href="#0x04-添加归档功能archives">0x04 添加归档功能(Archives)</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="0x00-基础知识">0x00 基础知识</h1>
+<p>弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo.io/functions/</p>
+<h2 id="文件结构">文件结构：</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">├── 404.html
+├── _default
+│   ├── archives.html
+│   ├── baseof.html #这个就是Hugo定义的mian文件
+│   ├── index.json
+│   ├── list.html
+│   ├── search.html
+│   └── single.html
+├── index.html
+└── partials
+    ├── head.html
+    ├── head_fonts.html
+    ├── hook_head_end.html
+    ├── pagination.html
+    └── sidebar.html
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="文件分析">文件分析</h2>
+<p>这个mian就是<code>baseof.html</code>,里面包含了<code>head.html</code>和 <code>sidebar.html</code>两个文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ partial &#34;head.html&#34; . }}
+  <span class="p">&lt;</span><span class="nt">body</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;{{ .Site.Params.themeColor }} {{if .Site.Params.layoutReverse}}layout-reverse{{end}}&#34;</span><span class="p">&gt;</span>
+  {{ partial &#34;sidebar.html&#34; . }}
+    <span class="p">&lt;</span><span class="nt">main</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;content container&#34;</span><span class="p">&gt;</span>
+    {{ block &#34;main&#34; . -}}{{- end }}
+    <span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+
+    {{ if not .Site.IsServer }}
+      {{ template &#34;_internal/google_analytics.html&#34; . }}
+    {{ end }}
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p><code>head.html</code>文件里面一般是加入各种基础的css文件和js文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">xmlns</span><span class="o">=</span><span class="s">&#34;http://www.w3.org/1999/xhtml&#34;</span><span class="err">{{</span><span class="na">with</span> <span class="err">.</span><span class="na">Site</span><span class="err">.</span><span class="na">LanguageCode</span><span class="err">}}</span> <span class="na">xml:lang</span><span class="o">=</span><span class="s">&#34;{{.}}&#34;</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;{{.}}&#34;</span><span class="err">{{</span><span class="na">end</span><span class="err">}}</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;https://gmpg.org/xfn/11&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;profile&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">&#34;content-type&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;text/html; charset=utf-8&#34;</span><span class="p">&gt;</span>
+  {{ hugo.Generator }}
+
+  <span class="c">&lt;!-- Enable responsiveness on mobile devices--&gt;</span>
+  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span><span class="p">&gt;</span>
+
+  {{ if .IsHome -}}
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>{{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  {{- else -}}
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>{{ .Title }} <span class="ni">&amp;middot;</span> {{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  {{- end }}
+  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;description&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;{{if .IsHome}}{{ $.Site.Params.description }}{{else}}{{.Description}}{{end}}&#34;</span> <span class="p">/&gt;</span>
+
+  <span class="c">&lt;!-- CSS --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/print.css&#34;</span> <span class="na">media</span><span class="o">=</span><span class="s">&#34;print&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/poole.css&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/syntax.css&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/hyde.css&#34;</span><span class="p">&gt;</span>
+  {{ partial &#34;head_fonts.html&#34; . }}
+
+  <span class="c">&lt;!-- Icons --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;apple-touch-icon-precomposed&#34;</span> <span class="na">sizes</span><span class="o">=</span><span class="s">&#34;144x144&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/apple-touch-icon-144-precomposed.png&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;shortcut icon&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/favicon.png&#34;</span><span class="p">&gt;</span>
+
+  <span class="c">&lt;!-- RSS etc --&gt;</span>
+  {{ range .AlternativeOutputFormats -}}
+    {{ printf `<span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="na">title</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="p">/&gt;</span>` .Permalink .Rel .MediaType.Type $.Site.Title | safeHTML }}
+  {{ end -}}
+
+  {{ partial &#34;hook_head_end.html&#34; . }}
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>主要文件的渲染是在<code>index.html</code>开始，开头的时候包含了<code>main</code>，也就是包含了<code>baseof.html</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ define &#34;main&#34; -}}
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;posts&#34;</span><span class="p">&gt;</span>
+  {{ $paginator := .Paginate (where .Site.RegularPages &#34;Type&#34; .Site.Params.PostDir) }}
+  {{ range $paginator.Pages }}
+  <span class="p">&lt;</span><span class="nt">article</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-title&#34;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .Permalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">time</span> <span class="na">datetime</span><span class="o">=</span><span class="s">&#34;{{ .Date.Format &#34;</span><span class="na">2006-01-02T15:04:05Z0700</span><span class="err">&#34;</span> <span class="err">}}&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-date&#34;</span><span class="p">&gt;</span>{{ .Date.Format &#34;Mon, Jan 2, 2006&#34; }}<span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;/</span><span class="nt">article</span><span class="p">&gt;</span>
+  {{ end }}
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{{- partial &#34;pagination.html&#34; . -}}
+
+{{- end }}
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="0x01-添加搜索页面">0x01 添加搜索页面</h1>
+<p>首先这个主题是没有搜索功能的，为了平时搜索文章的时候方便，就添加了一个搜索的功能，</p>
+<p>在<code>_default</code>目录下添加<code>search.html</code> 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://code.jquery.com/jquery-3.3.1.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;/js/search.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+{{ partial &#34;head.html&#34; . }}
+<span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+    <span class="nt">input</span>
+    <span class="p">{</span>
+
+        <span class="kp">-webkit-</span><span class="k">appearance</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span>
+        <span class="k">display</span><span class="p">:</span> <span class="kc">block</span><span class="p">;</span>
+        <span class="k">width</span><span class="p">:</span> <span class="mi">80</span><span class="kt">%</span><span class="p">;</span>
+        <span class="k">padding</span><span class="p">:</span> <span class="mi">8</span><span class="kt">px</span><span class="p">;</span>
+        <span class="k">margin-bottom</span><span class="p">:</span> <span class="mi">10</span><span class="kt">px</span><span class="p">;</span>
+        <span class="k">font-size</span><span class="p">:</span> <span class="mi">1</span><span class="kt">rem</span><span class="p">;</span>
+        <span class="k">line-height</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">;</span>
+        <span class="k">border</span><span class="p">:</span> <span class="mi">1</span><span class="kt">px</span> <span class="kc">solid</span> <span class="mh">#ced4da</span><span class="p">;</span>
+        <span class="k">border-radius</span><span class="p">:</span> <span class="mf">.25</span><span class="kt">rem</span><span class="p">;</span>
+
+
+
+    <span class="p">}</span>
+
+<span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;{{ .Site.Params.themeColor }} {{if .Site.Params.layoutReverse}}layout-reverse{{end}}&#34;</span><span class="p">&gt;</span>
+{{ partial &#34;sidebar.html&#34; . }}
+<span class="p">&lt;</span><span class="nt">main</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;content container&#34;</span><span class="p">&gt;</span>
+    {{ block &#34;main&#34; . -}}
+    <span class="p">&lt;</span><span class="nt">section</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;resume-section p-3 p-lg-5 d-flex flex-column&#34;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;my-auto&#34;</span> <span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;{{ &#34;</span><span class="na">search</span><span class="err">&#34;</span> <span class="err">|</span> <span class="na">absURL</span> <span class="err">}}&#34;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;search-query&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;s&#34;</span> <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;输入关键词...&#34;</span><span class="p">/&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;search-results&#34;</span><span class="p">&gt;</span>
+
+
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+    <span class="c">&lt;!-- this template is sucked in by search.js and appended to the search-results div above. So editing here will adjust style --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;search-result-template&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/x-js-template&#34;</span><span class="p">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;summary-${key}&#34;</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;${link}&#34;</span><span class="o">&gt;</span><span class="nx">$</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/h2&gt;</span>
+
+
+        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    {{- end }}
+<span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+
+{{ if not .Site.IsServer }}
+{{ template &#34;_internal/google_analytics.html&#34; . }}
+{{ end }}
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>_default</code>目录下添加<code>index.json</code> 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="err">{-</span> <span class="err">$.Scratch.Add</span> <span class="nt">&#34;index&#34;</span> <span class="err">slice</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+<span class="p">{</span><span class="err">{-</span> <span class="err">range</span> <span class="err">.Site.RegularPages</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+<span class="p">{</span><span class="err">{-</span> <span class="err">$.Scratch.Add</span> <span class="nt">&#34;index&#34;</span> <span class="err">(dict</span> <span class="s2">&#34;title&#34;</span> <span class="err">.Title</span> <span class="s2">&#34;tags&#34;</span> <span class="err">.Params.tags</span> <span class="s2">&#34;categories&#34;</span> <span class="err">.Params.categories</span> <span class="s2">&#34;contents&#34;</span> <span class="err">.Plain</span> <span class="s2">&#34;permalink&#34;</span> <span class="err">.Permalink)</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+<span class="p">{</span><span class="err">{-</span> <span class="err">end</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+<span class="p">{</span><span class="err">{-</span> <span class="err">$.Scratch.Get</span> <span class="nt">&#34;index&#34;</span> <span class="err">|</span> <span class="err">jsonify</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>config.toml</code>文件下添加以下内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="p">[</span><span class="nx">outputs</span><span class="p">]</span>
+  <span class="nx">home</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;HTML&#34;</span><span class="p">,</span> <span class="s2">&#34;RSS&#34;</span><span class="p">,</span> <span class="s2">&#34;JSON&#34;</span><span class="p">]</span>
+<span class="p">[</span><span class="nx">outputFormats</span><span class="p">]</span>
+<span class="p">[</span><span class="nx">outputFormats</span><span class="p">.</span><span class="nx">HTML</span><span class="p">]</span>
+<span class="nx">mediaType</span> <span class="p">=</span> <span class="s2">&#34;text/html&#34;</span>
+<span class="p">[</span><span class="nx">Menus</span><span class="p">]</span>
+  <span class="nx">main</span> <span class="p">=</span> <span class="p">[</span>
+      <span class="p">{</span><span class="nx">Name</span> <span class="p">=</span> <span class="s2">&#34;Search&#34;</span><span class="p">,</span><span class="nx">weight</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">URL</span> <span class="p">=</span> <span class="s2">&#34;search&#34;</span><span class="p">},</span>
+<span class="p">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在博客主目录的<code>content</code>目录下新建文件<code>search.md</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown">---
+title: &#34;Search Result&#34;
+date: 2019-05-28
+layout: &#34;search&#34;
+---
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="0x02-添加分页页面">0x02 添加分页页面</h1>
+<p>太多文章了，需要一个分页功能会比较方便。添加以下代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="p">{{</span> <span class="err">$</span><span class="nx">paginator</span> <span class="o">:=</span> <span class="p">.</span><span class="nf">Paginate</span> <span class="p">(</span><span class="nx">where</span> <span class="p">.</span><span class="nx">Site</span><span class="p">.</span><span class="nx">RegularPages</span> <span class="s">&#34;Type&#34;</span> <span class="p">.</span><span class="nx">Site</span><span class="p">.</span><span class="nx">Params</span><span class="p">.</span><span class="nx">PostDir</span><span class="p">)</span> <span class="p">}}</span>
+  <span class="p">{{</span> <span class="k">range</span> <span class="err">$</span><span class="nx">paginator</span><span class="p">.</span><span class="nx">Pages</span> <span class="p">}}</span>
+  <span class="o">......</span>
+<span class="p">{{</span> <span class="nx">end</span> <span class="p">}}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>index.html</code>做修改,在后面包含<code>pagination.html</code>文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="p">{{</span><span class="o">-</span> <span class="nx">partial</span> <span class="s">&#34;pagination.html&#34;</span> <span class="p">.</span> <span class="o">-</span><span class="p">}}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>修改完后的<code>index.html</code>文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ define &#34;main&#34; -}}
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;posts&#34;</span><span class="p">&gt;</span>
+  {{ $paginator := .Paginate (where .Site.RegularPages &#34;Type&#34; .Site.Params.PostDir) }}
+  {{ range $paginator.Pages }}
+  <span class="p">&lt;</span><span class="nt">article</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-title&#34;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .Permalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">time</span> <span class="na">datetime</span><span class="o">=</span><span class="s">&#34;{{ .Date.Format &#34;</span><span class="na">2006-01-02T15:04:05Z0700</span><span class="err">&#34;</span> <span class="err">}}&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-date&#34;</span><span class="p">&gt;</span>{{ .Date.Format &#34;Mon, Jan 2, 2006&#34; }}<span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;/</span><span class="nt">article</span><span class="p">&gt;</span>
+  {{ end }}
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{{- partial &#34;pagination.html&#34; . -}}
+
+{{- end }}
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>partials</code>目录下添加<code>pagination.html</code>文件，内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ if gt .Paginator.TotalPages 1 }}
+<span class="p">&lt;</span><span class="nt">nav</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination&#39;</span><span class="p">&gt;</span>
+  {{ $.Scratch.Set &#34;hasPrevDots&#34; false }}
+  {{ $.Scratch.Set &#34;hasNextDots&#34; false }}
+
+  {{ range .Paginator.Pagers }}
+  {{ if eq . $.Paginator }}
+  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item current&#39;</span><span class="p">&gt;</span>
+                    {{- .PageNumber -}}
+                <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+  {{ else if or (or (eq . $.Paginator.First) (eq . $.Paginator.Prev)) (or  (eq . $.Paginator.Next) (eq . $.Paginator.Last )) }}
+  <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item&#39;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#39;{{ .URL }}&#39;</span><span class="p">&gt;</span>
+    {{- .PageNumber -}}
+  <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+  {{ else }}
+  {{ if and (not ($.Scratch.Get &#34;hasPrevDots&#34;)) (lt .PageNumber $.Paginator.PageNumber)  }}
+  {{ $.Scratch.Set &#34;hasPrevDots&#34; true }}
+  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item dots&#39;</span><span class="p">&gt;</span><span class="ni">&amp;hellip;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+  {{ else if and (not ($.Scratch.Get &#34;hasNextDots&#34;)) (gt .PageNumber $.Paginator.PageNumber) }}
+  {{ $.Scratch.Set &#34;hasNextDots&#34; true }}
+  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item dots&#39;</span><span class="p">&gt;</span><span class="ni">&amp;hellip;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+  {{ end }}
+  {{ end }}
+  {{ end }}
+<span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+{{ end }}
+
+</code></pre></td></tr></table>
+</div>
+</div><p>分页的数量可以在<code>congfig.tml</code>文件上添加参数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">Paginate = 4  #4代表每页4篇文章
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="0x03-添加目录toc">0x03 添加目录(TOC)</h1>
+<p>这个功能我是在大佬博客https://ichochy.com/上面看到不错的滑动效果，然后借鉴进行修改：</p>
+<p>在js目录下添加<code>toc.js</code>文件，加入以下内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="c1">//文档加载后执行 fn
+</span><span class="c1"></span><span class="kd">function</span> <span class="nx">ready</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">//注销时间，避免重复触发
+</span><span class="c1"></span>            <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+            <span class="nx">fn</span><span class="p">();</span> <span class="c1">//运行函数
+</span><span class="c1"></span>        <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//IE浏览器
+</span><span class="c1"></span>        <span class="nb">document</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="s1">&#39;onreadystatechange&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="s1">&#39;complete&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nb">document</span><span class="p">.</span><span class="nx">detachEvent</span><span class="p">(</span><span class="s1">&#39;onreadystatechange&#39;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">);</span>
+                <span class="nx">fn</span><span class="p">();</span> <span class="c1">//函数运行
+</span><span class="c1"></span>            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="kd">let</span> <span class="nx">toc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;toc&#34;</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">title</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;title&#34;</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">style</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">getComputedStyle</span><span class="p">(</span><span class="nx">toc</span><span class="p">)[</span><span class="s2">&#34;display&#34;</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">toc</span> <span class="o">||</span> <span class="nx">style</span> <span class="o">==</span> <span class="s2">&#34;none&#34;</span><span class="p">){</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;scroll&#39;</span><span class="p">,</span>
+        <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">scroll_height</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">scrollY</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">scroll_height</span> <span class="o">&gt;</span> <span class="mi">200</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nb">window</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+                <span class="nx">title</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">bottom</span> <span class="o">=</span> <span class="s1">&#39;100%&#39;</span><span class="p">;</span>
+                <span class="nx">toc</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="s2">&#34;1rem&#34;</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">scroll_height</span> <span class="o">&lt;=</span> <span class="mi">200</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">window</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nb">window</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+                <span class="nx">title</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s2">&#34;style&#34;</span><span class="p">);</span>
+                <span class="nx">toc</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s2">&#34;style&#34;</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+<span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>中间遇到<code>absURL</code>这个函数，功能作用如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">{{ &#34;mystyle.css&#34; | absURL }} → &#34;https://example.com/hugo/mystyle.css&#34;
+{{ &#34;mystyle.css&#34; | relURL }} → &#34;/hugo/mystyle.css&#34;
+{{ &#34;http://gohugo.io/&#34; | relURL }} →  &#34;http://gohugo.io/&#34;
+{{ &#34;http://gohugo.io/&#34; | absURL }} →  &#34;http://gohugo.io/&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>sidebar.html</code>文件做修改，<code>TableOfContents</code>就是toc的内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">aside</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;sidebar&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id </span><span class="o">=</span> <span class="s">&#34;title&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;container sidebar-sticky&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;sidebar-about&#34;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/&#34;</span><span class="p">&gt;</span>
+        {{if not .IsPage}}
+        <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;title&#34;</span><span class="p">&gt;</span>{{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        {{else}}
+        <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;title&#34;</span><span class="p">&gt;</span>{{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        {{end}}
+      <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;lead&#34;</span><span class="p">&gt;</span>
+        {{ with .Site.Params.description }}
+        {{.}}
+        {{end}}
+      <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">nav</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;sidebar-nav&#34;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/&#34;</span><span class="p">&gt;</span>Home<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        {{ range .Site.Menus.main -}}
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{.URL | absURL }}&#34;</span><span class="p">&gt;</span> {{ .Name }} <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        {{- end }}
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ni">&amp;copy;</span> 2017 - {{ now.Format &#34;2006&#34;}} {{.Site.Params.copyright}}. <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  {{if eq .Section .Site.Params.PostDir}}
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer </span><span class="o">=</span> <span class="s">&#34;defer&#34;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;/js/toc.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id </span><span class="o">=</span> <span class="s">&#34;toc&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;container sidebar-toc&#34;</span><span class="p">&gt;</span>
+    {{ .TableOfContents }}
+  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  {{end}}
+<span class="p">&lt;/</span><span class="nt">aside</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>改变标题级数可以在<code>congfig.tml</code>文件上做修改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="p">[</span><span class="nx">markup</span><span class="p">]</span>
+  <span class="p">[</span><span class="nx">markup</span><span class="p">.</span><span class="nx">tableOfContents</span><span class="p">]</span>
+    <span class="nx">endLevel</span> <span class="p">=</span> <span class="mi">3</span>
+    <span class="nx">startLevel</span> <span class="p">=</span> <span class="mi">1</span> <span class="c">#表示从一级目录开始</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="0x04-添加归档功能archives">0x04 添加归档功能(Archives)</h1>
+<p>在<code>_default</code>目录下添加<code>archives.html</code> 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ define &#34;main&#34; -}}
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  {{ range (.Site.RegularPages.GroupByDate &#34;2006&#34;) }}
+  <span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;</span>{{ .Key }}<span class="p">&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;archive-list&#34;</span><span class="p">&gt;</span>
+    {{ range (where .Pages &#34;Type&#34; &#34;posts&#34;) }}
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>
+      {{ .PublishDate.Format &#34;2006-01-02&#34; }}
+      -&gt;
+      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .RelPermalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    {{ end }}
+  <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+  {{ end }}
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+{{ end }}
+
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>config.toml</code>文件下添加以下内容,<code>weight</code>代表权重，越小越靠前：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="p">[</span><span class="nx">Menus</span><span class="p">]</span>
+  <span class="nx">main</span> <span class="p">=</span> <span class="p">[</span>
+      <span class="p">{</span><span class="nx">Name</span> <span class="p">=</span> <span class="s2">&#34;Archives&#34;</span><span class="p">,</span><span class="nx">weight</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">URL</span> <span class="p">=</span> <span class="s2">&#34;archives&#34;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在博客主目录的<code>content</code>目录下新建文件``archives.md`:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown">---
+title: &#34;Archives&#34;
+date: 2019-05-28
+layout: &#34;archives&#34;
+---
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">F0rmat</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2022-01-07
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/posts/linux_capabilities_0/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Linux Capabilities 入门教程：概念篇</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/posts/hugo_github/">
+            <span class="next-text nav-default">如何使用Hugo&#43;Github搭建一个博客</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/Secd0g/" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://www.zhihu.com/people/F0rmat" rel="me noopener" class="iconfont"
+      title="zhihu"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M351.791182 562.469462l192.945407 0c0-45.367257-21.3871-71.939449-21.3871-71.939449L355.897709 490.530013c3.977591-82.182744 7.541767-187.659007 8.816806-226.835262l159.282726 0c0 0-0.86367-67.402109-18.578124-67.402109s-279.979646 0-279.979646 0 16.850783-88.141456 39.318494-127.053698c0 0-83.60514-4.510734-112.121614 106.962104S81.344656 355.077018 76.80834 367.390461c-4.536316 12.313443 24.62791 5.832845 36.941354 0 12.313443-5.832845 68.050885-25.924439 84.252893-103.69571l86.570681 0c1.165546 49.28652 4.596691 200.335724 3.515057 226.835262L109.86113 490.530013c-25.275663 18.147312-33.701566 71.939449-33.701566 71.939449L279.868105 562.469462c-8.497535 56.255235-23.417339 128.763642-44.275389 167.210279-33.05279 60.921511-50.55235 116.65793-169.802314 212.576513 0 0-19.442818 14.257725 40.829917 9.073656 60.273758-5.185093 117.305683-20.739347 156.840094-99.807147 20.553105-41.107233 41.805128-93.250824 58.386782-146.138358l-0.055259 0.185218 167.855986 193.263655c0 0 22.035876-51.847855 5.832845-108.880803L371.045711 650.610918l-42.1244 31.157627-0.045025 0.151449c11.69946-41.020252 20.11206-81.5749 22.726607-116.858498C351.665315 564.212152 351.72876 563.345412 351.791182 562.469462z"></path>
+  <path d="M584.918753 182.033893l0 668.840094 70.318532 0 28.807093 80.512708 121.875768-80.512708 153.600307 0L959.520453 182.033893 584.918753 182.033893zM887.150192 778.934538l-79.837326 0-99.578949 65.782216-23.537066-65.782216-24.855084 0L659.341766 256.673847l227.807403 0L887.149169 778.934538z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://xxe.icu/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2017 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        F0rmat
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

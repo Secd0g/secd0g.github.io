@@ -10,19 +10,19 @@
     <lastBuildDate>Fri, 27 Jul 2018 14:14:56 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/dedecms/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>DedeCMS V5.7后台过滤不当导致Getshell(每周一洞)</title>
-      <link>https://xxe.icu/post/dedecms-v5.7-background-filtering-improperly-leads-to-getshell/</link>
+      <link>https://xxe.icu/posts/dedecms-v5.7-background-filtering-improperly-leads-to-getshell/</link>
       <pubDate>Fri, 27 Jul 2018 14:14:56 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/dedecms-v5.7-background-filtering-improperly-leads-to-getshell/</guid>
+      <guid>https://xxe.icu/posts/dedecms-v5.7-background-filtering-improperly-leads-to-getshell/</guid>
       <description>0x01 前言 前两天看到七月火表哥再先知发的一篇审计文章，感觉不错，是dedecms的getshell。就分析了一下，顺便写一篇文章学习。 0x02 环境 环境</description>
     </item>
     
     <item>
       <title>DedeCMS V5.7 SP2后台Getshell 代码执行漏洞(每日一洞)</title>
-      <link>https://xxe.icu/post/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability/</link>
+      <link>https://xxe.icu/posts/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability/</link>
       <pubDate>Sat, 10 Mar 2018 00:11:57 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability/</guid>
+      <guid>https://xxe.icu/posts/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability/</guid>
       <description>前言 这两天费劲脑力去撩小姐姐，感觉好难啊，还不如审计代码。 环境 Web： phpstudy System： Windows 10 X64 Browser： Firefox Quantum Python version ： 2.7 Tools： PhpStorm 2017.1.1 复现</description>
     </item>
     

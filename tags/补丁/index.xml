@@ -10,10 +10,10 @@
     <lastBuildDate>Thu, 29 Mar 2018 10:16:39 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E8%A1%A5%E4%B8%81/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>漏洞预警|Windows 7 Meltdown 补丁发现漏洞，允许任意进程读写内核</title>
-      <link>https://xxe.icu/post/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels/</link>
+      <link>https://xxe.icu/posts/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels/</link>
       <pubDate>Thu, 29 Mar 2018 10:16:39 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels/</guid>
+      <guid>https://xxe.icu/posts/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels/</guid>
       <description>前言 今晚本来想养生睡个早觉的，睡前浏览了下twitter，看到大佬的高危漏洞，看着有点好笑，微软拿起自己的石头砸自己的脚操作哈哈，这个洞在2</description>
     </item>
     

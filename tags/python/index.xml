@@ -10,19 +10,19 @@
     <lastBuildDate>Mon, 01 Oct 2018 08:49:25 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Python Web学习方法</title>
-      <link>https://xxe.icu/post/python-web-guide/</link>
+      <link>https://xxe.icu/posts/python-web-guide/</link>
       <pubDate>Mon, 01 Oct 2018 08:49:25 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/python-web-guide/</guid>
+      <guid>https://xxe.icu/posts/python-web-guide/</guid>
       <description>0x01 前言 学习Python Web的时候找到的一篇挺好的文章，里面写的也很实在，所有分享出来。 0x02 学习路线 看了这么多是不是还有点懵，笔者当时自学的时</description>
     </item>
     
     <item>
       <title>osCommerce 2.3.4.1 - 远程代码执行漏洞（每日一洞）</title>
-      <link>https://xxe.icu/post/oscommerce-2.3.4.1-remote-code-execution-vulnerability/</link>
+      <link>https://xxe.icu/posts/oscommerce-2.3.4.1-remote-code-execution-vulnerability/</link>
       <pubDate>Mon, 02 Apr 2018 11:18:58 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/oscommerce-2.3.4.1-remote-code-execution-vulnerability/</guid>
+      <guid>https://xxe.icu/posts/oscommerce-2.3.4.1-remote-code-execution-vulnerability/</guid>
       <description>0x01 前言 好几天没有写了，前两天又去Boom了，差点没缓过来。今天在exploit-db逛看到一个洞，也是install的地方，想去利用上次那个</description>
     </item>
     

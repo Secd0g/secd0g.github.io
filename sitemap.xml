@@ -3,21 +3,35 @@
   
   <url>
     <loc>https://xxe.icu/categories/</loc>
-    <lastmod>2022-04-01T11:04:34+08:00</lastmod>
+    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://xxe.icu/</loc>
-    <lastmod>2022-04-01T11:04:34+08:00</lastmod>
+    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/</loc>
-    <lastmod>2022-04-01T11:04:34+08:00</lastmod>
+    <loc>https://xxe.icu/posts/urldns_chain_analysis/</loc>
+    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xxe.icu/posts/</loc>
+    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/</loc>
+    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -30,7 +44,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/python_separation_to_antivirus/</loc>
+    <loc>https://xxe.icu/posts/python_separation_to_antivirus/</loc>
     <lastmod>2022-04-01T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -44,140 +58,140 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/using_bloodhound_under_macos/</loc>
+    <loc>https://xxe.icu/posts/using_bloodhound_under_macos/</loc>
     <lastmod>2022-03-17T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/ad_delegation/</loc>
+    <loc>https://xxe.icu/posts/ad_delegation/</loc>
     <lastmod>2022-03-03T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/ad_ptt/</loc>
+    <loc>https://xxe.icu/posts/ad_ptt/</loc>
     <lastmod>2022-02-28T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/ad_spn/</loc>
+    <loc>https://xxe.icu/posts/ad_spn/</loc>
     <lastmod>2022-02-27T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/ad_kerberoasting/</loc>
+    <loc>https://xxe.icu/posts/ad_kerberoasting/</loc>
     <lastmod>2022-02-26T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/ad_as_reproasting/</loc>
+    <loc>https://xxe.icu/posts/ad_as_reproasting/</loc>
     <lastmod>2022-02-22T00:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/ad_pass_key/</loc>
+    <loc>https://xxe.icu/posts/ad_pass_key/</loc>
     <lastmod>2022-02-22T00:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/kerberos_user_enumerate/</loc>
+    <loc>https://xxe.icu/posts/kerberos_user_enumerate/</loc>
     <lastmod>2022-02-21T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/kerberos_authentication/</loc>
+    <loc>https://xxe.icu/posts/kerberos_authentication/</loc>
     <lastmod>2022-02-20T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/responder_ntlmv2/</loc>
+    <loc>https://xxe.icu/posts/responder_ntlmv2/</loc>
     <lastmod>2022-02-14T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/llmnr_nbt-ns/</loc>
+    <loc>https://xxe.icu/posts/llmnr_nbt-ns/</loc>
     <lastmod>2022-02-12T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/ssh_tunnel/</loc>
+    <loc>https://xxe.icu/posts/ssh_tunnel/</loc>
     <lastmod>2022-02-10T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/windows_set_ip_access/</loc>
+    <loc>https://xxe.icu/posts/windows_set_ip_access/</loc>
     <lastmod>2022-02-09T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/powershell-attack/</loc>
+    <loc>https://xxe.icu/posts/powershell-attack/</loc>
     <lastmod>2022-01-16T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/apparmor_bypass/</loc>
+    <loc>https://xxe.icu/posts/apparmor_bypass/</loc>
     <lastmod>2022-01-14T11:35:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/linux_capabilities_2/</loc>
+    <loc>https://xxe.icu/posts/linux_capabilities_2/</loc>
     <lastmod>2022-01-13T15:35:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/linux_capabilities_1/</loc>
+    <loc>https://xxe.icu/posts/linux_capabilities_1/</loc>
     <lastmod>2022-01-13T14:35:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/linux_capabilities_0/</loc>
+    <loc>https://xxe.icu/posts/linux_capabilities_0/</loc>
     <lastmod>2022-01-12T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/hugo_theme_record/</loc>
+    <loc>https://xxe.icu/posts/hugo_theme_record/</loc>
     <lastmod>2022-01-07T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/hugo_github/</loc>
+    <loc>https://xxe.icu/posts/hugo_github/</loc>
     <lastmod>2022-01-06T04:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -191,7 +205,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/install-parallels-tools-on-kali-linux-2020.4/</loc>
+    <loc>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2020.4/</loc>
     <lastmod>2020-12-30T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -205,7 +219,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/pd-chrome-3d/</loc>
+    <loc>https://xxe.icu/posts/pd-chrome-3d/</loc>
     <lastmod>2020-12-30T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -226,7 +240,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/pathfinder/</loc>
+    <loc>https://xxe.icu/posts/pathfinder/</loc>
     <lastmod>2020-12-19T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -240,7 +254,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/domain-security/</loc>
+    <loc>https://xxe.icu/posts/domain-security/</loc>
     <lastmod>2020-12-16T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -254,28 +268,28 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/shield/</loc>
+    <loc>https://xxe.icu/posts/shield/</loc>
     <lastmod>2020-12-07T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/archetype/</loc>
+    <loc>https://xxe.icu/posts/archetype/</loc>
     <lastmod>2020-12-06T15:30:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/oopsie/</loc>
+    <loc>https://xxe.icu/posts/oopsie/</loc>
     <lastmod>2020-12-06T12:53:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/vaccine/</loc>
+    <loc>https://xxe.icu/posts/vaccine/</loc>
     <lastmod>2020-12-05T00:44:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -289,7 +303,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/bc-penetration-diary/</loc>
+    <loc>https://xxe.icu/posts/bc-penetration-diary/</loc>
     <lastmod>2020-06-13T00:24:46+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -310,7 +324,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/maccms8-latest-command-execution-vulnerability/</loc>
+    <loc>https://xxe.icu/posts/maccms8-latest-command-execution-vulnerability/</loc>
     <lastmod>2019-12-22T11:17:18+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -324,13 +338,6 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/</loc>
-    <lastmod>2019-12-22T11:17:18+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://xxe.icu/tags/seacms/</loc>
     <lastmod>2019-10-22T11:17:18+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -338,7 +345,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/seacms9.92-from-variable-override-to-getshell/</loc>
+    <loc>https://xxe.icu/posts/seacms9.92-from-variable-override-to-getshell/</loc>
     <lastmod>2019-10-22T11:17:18+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -359,7 +366,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/seacms-front-desk-getshell/</loc>
+    <loc>https://xxe.icu/posts/seacms-front-desk-getshell/</loc>
     <lastmod>2019-09-27T01:01:30+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -373,7 +380,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/a-difficult-penetration-process/</loc>
+    <loc>https://xxe.icu/posts/a-difficult-penetration-process/</loc>
     <lastmod>2019-09-09T02:11:19+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -401,7 +408,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/an-app-distribution-system-upload-vulnerability/</loc>
+    <loc>https://xxe.icu/posts/an-app-distribution-system-upload-vulnerability/</loc>
     <lastmod>2019-09-06T10:47:03+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -415,7 +422,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/analysis-of-php-deserialization-vulnerabilities/</loc>
+    <loc>https://xxe.icu/posts/analysis-of-php-deserialization-vulnerabilities/</loc>
     <lastmod>2019-06-05T17:00:57+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -429,21 +436,21 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell/</loc>
+    <loc>https://xxe.icu/posts/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell/</loc>
     <lastmod>2019-03-10T17:56:36+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/seacms8.7-sql-injection-analysis/</loc>
+    <loc>https://xxe.icu/posts/seacms8.7-sql-injection-analysis/</loc>
     <lastmod>2019-03-04T15:49:11+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/2019/</loc>
+    <loc>https://xxe.icu/posts/2019/</loc>
     <lastmod>2019-01-27T00:24:46+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -471,7 +478,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/thinkphp5-remote-code-execution-vulnerability-dynamic-analysis/</loc>
+    <loc>https://xxe.icu/posts/thinkphp5-remote-code-execution-vulnerability-dynamic-analysis/</loc>
     <lastmod>2018-12-22T11:17:18+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -485,7 +492,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/upload-labs/</loc>
+    <loc>https://xxe.icu/posts/upload-labs/</loc>
     <lastmod>2018-11-24T15:41:37+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -499,7 +506,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/finecms-5.0.10-multiple-vulnerabilities/</loc>
+    <loc>https://xxe.icu/posts/finecms-5.0.10-multiple-vulnerabilities/</loc>
     <lastmod>2018-11-07T14:30:25+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -513,7 +520,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/python-web-guide/</loc>
+    <loc>https://xxe.icu/posts/python-web-guide/</loc>
     <lastmod>2018-10-01T08:49:25+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -527,7 +534,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/yxcms-1.4.7-latest-version-of-vulnerability-analysis/</loc>
+    <loc>https://xxe.icu/posts/yxcms-1.4.7-latest-version-of-vulnerability-analysis/</loc>
     <lastmod>2018-09-17T13:16:06+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -555,14 +562,14 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/maccms-sql-injection-analysis/</loc>
+    <loc>https://xxe.icu/posts/maccms-sql-injection-analysis/</loc>
     <lastmod>2018-08-26T15:49:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis/</loc>
+    <loc>https://xxe.icu/posts/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis/</loc>
     <lastmod>2018-08-19T10:00:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -576,7 +583,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability/</loc>
+    <loc>https://xxe.icu/posts/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability/</loc>
     <lastmod>2018-08-11T09:31:30+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -590,14 +597,14 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/phpok4.9-background-getshell/</loc>
+    <loc>https://xxe.icu/posts/phpok4.9-background-getshell/</loc>
     <lastmod>2018-08-06T08:19:40+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/phpok-4.9-code-audit/</loc>
+    <loc>https://xxe.icu/posts/phpok-4.9-code-audit/</loc>
     <lastmod>2018-08-05T14:54:07+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -611,7 +618,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/dedecms-v5.7-background-filtering-improperly-leads-to-getshell/</loc>
+    <loc>https://xxe.icu/posts/dedecms-v5.7-background-filtering-improperly-leads-to-getshell/</loc>
     <lastmod>2018-07-27T14:14:56+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -625,7 +632,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability/</loc>
+    <loc>https://xxe.icu/posts/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability/</loc>
     <lastmod>2018-07-22T17:13:30+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -639,21 +646,21 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/wordpress-4.9.6-arbitrary-file-removal-vulnerability/</loc>
+    <loc>https://xxe.icu/posts/wordpress-4.9.6-arbitrary-file-removal-vulnerability/</loc>
     <lastmod>2018-07-01T10:07:19+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/analysis-of-wordpress4.6-command-execution-vulnerability/</loc>
+    <loc>https://xxe.icu/posts/analysis-of-wordpress4.6-command-execution-vulnerability/</loc>
     <lastmod>2018-06-18T12:47:35+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/h5-beast-game-penetration-journey/</loc>
+    <loc>https://xxe.icu/posts/h5-beast-game-penetration-journey/</loc>
     <lastmod>2018-05-11T22:14:47+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -667,7 +674,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/centos-5.x-yum-source-configuration/</loc>
+    <loc>https://xxe.icu/posts/centos-5.x-yum-source-configuration/</loc>
     <lastmod>2018-05-07T16:15:13+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -702,7 +709,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range/</loc>
+    <loc>https://xxe.icu/posts/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range/</loc>
     <lastmod>2018-05-03T17:04:29+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -723,21 +730,21 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/thinkphp-framework-3.2.x-sql-injection-vulnerability-analysis/</loc>
+    <loc>https://xxe.icu/posts/thinkphp-framework-3.2.x-sql-injection-vulnerability-analysis/</loc>
     <lastmod>2018-04-18T15:20:50+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/hello-world/</loc>
+    <loc>https://xxe.icu/posts/hello-world/</loc>
     <lastmod>2018-04-13T09:29:23+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/thinkphp-framework-_-5.0.16-sql-injection-vulnerability-analysis/</loc>
+    <loc>https://xxe.icu/posts/thinkphp-framework-_-5.0.16-sql-injection-vulnerability-analysis/</loc>
     <lastmod>2018-04-11T09:34:29+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -765,7 +772,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/breakpoint-debugging-with-phpstorm&#43;xdebug/</loc>
+    <loc>https://xxe.icu/posts/breakpoint-debugging-with-phpstorm&#43;xdebug/</loc>
     <lastmod>2018-04-10T10:17:16+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -786,7 +793,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/kali-implementation-of-update-source-error-gpg-error-caused-deep-understanding-of-digital-signature/</loc>
+    <loc>https://xxe.icu/posts/kali-implementation-of-update-source-error-gpg-error-caused-deep-understanding-of-digital-signature/</loc>
     <lastmod>2018-04-09T21:00:52+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -807,7 +814,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/install-docker-from-centos-to-build-loopholes-to-joomla-3.4.5-replay-of-deserialization-loopholes/</loc>
+    <loc>https://xxe.icu/posts/install-docker-from-centos-to-build-loopholes-to-joomla-3.4.5-replay-of-deserialization-loopholes/</loc>
     <lastmod>2018-04-07T09:02:12+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -821,7 +828,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/oscommerce-2.3.4.1-remote-code-execution-vulnerability/</loc>
+    <loc>https://xxe.icu/posts/oscommerce-2.3.4.1-remote-code-execution-vulnerability/</loc>
     <lastmod>2018-04-02T11:18:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -849,7 +856,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels/</loc>
+    <loc>https://xxe.icu/posts/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels/</loc>
     <lastmod>2018-03-29T10:16:39+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -870,7 +877,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/mipcms-v3.1.0-remotely-writing-the-configuration-file-getshell/</loc>
+    <loc>https://xxe.icu/posts/mipcms-v3.1.0-remotely-writing-the-configuration-file-getshell/</loc>
     <lastmod>2018-03-26T01:09:26+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -884,7 +891,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/wordpress-plugin-site-editor-1.1.1-local-file-inclusion-analysis/</loc>
+    <loc>https://xxe.icu/posts/wordpress-plugin-site-editor-1.1.1-local-file-inclusion-analysis/</loc>
     <lastmod>2018-03-25T13:45:14+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -905,7 +912,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/deepin-linux-install-metasploit/</loc>
+    <loc>https://xxe.icu/posts/deepin-linux-install-metasploit/</loc>
     <lastmod>2018-03-24T12:46:22+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -926,7 +933,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range/</loc>
+    <loc>https://xxe.icu/posts/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range/</loc>
     <lastmod>2018-03-14T16:49:17+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -940,14 +947,14 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/recurrence-of-flash-0day-vulnerability-cve-2018-4878/</loc>
+    <loc>https://xxe.icu/posts/recurrence-of-flash-0day-vulnerability-cve-2018-4878/</loc>
     <lastmod>2018-03-13T10:16:27+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability/</loc>
+    <loc>https://xxe.icu/posts/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability/</loc>
     <lastmod>2018-03-10T00:11:57+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -961,7 +968,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/metinfo5.3.19-installation-process-is-not-strict-lead-to-getshell/</loc>
+    <loc>https://xxe.icu/posts/metinfo5.3.19-installation-process-is-not-strict-lead-to-getshell/</loc>
     <lastmod>2018-03-06T22:41:35+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -975,49 +982,49 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/zzcms8.2-any-file-deleted-to-getshell/</loc>
+    <loc>https://xxe.icu/posts/zzcms8.2-any-file-deleted-to-getshell/</loc>
     <lastmod>2018-03-06T22:41:35+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/zzcms-any-user-password-changes-loopholes-code-points/</loc>
+    <loc>https://xxe.icu/posts/zzcms-any-user-password-changes-loopholes-code-points/</loc>
     <lastmod>2018-03-06T00:03:07+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/seacms-v6.54-and-v6.55-front-desk-getshell-code-execution-vulnerability-one-hole-a-day/</loc>
+    <loc>https://xxe.icu/posts/seacms-v6.54-and-v6.55-front-desk-getshell-code-execution-vulnerability-one-hole-a-day/</loc>
     <lastmod>2018-03-03T23:32:41+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/seacms-v6.45-front-desk-getshell-code-execution-vulnerability-one-hole-a-day/</loc>
+    <loc>https://xxe.icu/posts/seacms-v6.45-front-desk-getshell-code-execution-vulnerability-one-hole-a-day/</loc>
     <lastmod>2018-03-02T19:28:36+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/kill-the-vulnerabilities-of-getshell-v.-finecms-5.0.8-and-below-1-hole-per-day/</loc>
+    <loc>https://xxe.icu/posts/kill-the-vulnerabilities-of-getshell-v.-finecms-5.0.8-and-below-1-hole-per-day/</loc>
     <lastmod>2018-02-28T22:23:23+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/dvwa-brute-force-update-/</loc>
+    <loc>https://xxe.icu/posts/dvwa-brute-force-update-/</loc>
     <lastmod>2018-02-28T00:18:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/the-latest-version-of-finecms-5.0.8-getshell-daily-two-holes/</loc>
+    <loc>https://xxe.icu/posts/the-latest-version-of-finecms-5.0.8-getshell-daily-two-holes/</loc>
     <lastmod>2018-01-30T00:06:41+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -1031,7 +1038,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/iis6.0-remote-command-execution-vulnerability-cve-2017-7269/</loc>
+    <loc>https://xxe.icu/posts/iis6.0-remote-command-execution-vulnerability-cve-2017-7269/</loc>
     <lastmod>2018-01-16T19:10:45+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -1052,14 +1059,14 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/struts2-vulnerability-poc-summary/</loc>
+    <loc>https://xxe.icu/posts/struts2-vulnerability-poc-summary/</loc>
     <lastmod>2017-08-30T07:12:56+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/post/struts2-s2-045-jakarta-plug-in-remote-code-execution-vulnerability-exploitation-and-repair/</loc>
+    <loc>https://xxe.icu/posts/struts2-s2-045-jakarta-plug-in-remote-code-execution-vulnerability-exploitation-and-repair/</loc>
     <lastmod>2017-08-29T22:53:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

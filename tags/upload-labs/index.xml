@@ -10,10 +10,10 @@
     <lastBuildDate>Sat, 24 Nov 2018 15:41:37 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/upload-labs/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>upload-labs 通关笔记</title>
-      <link>https://xxe.icu/post/upload-labs/</link>
+      <link>https://xxe.icu/posts/upload-labs/</link>
       <pubDate>Sat, 24 Nov 2018 15:41:37 +0000</pubDate>
       
-      <guid>https://xxe.icu/post/upload-labs/</guid>
+      <guid>https://xxe.icu/posts/upload-labs/</guid>
       <description>upload-labs 通关笔记 前言 把上传的所有类型的漏洞都过一遍，然后做一个笔记，方便以后查看，在此也很感谢c0ny1大佬的平台。 运行环境 1 2 3 php版本：推荐</description>
     </item>
     
