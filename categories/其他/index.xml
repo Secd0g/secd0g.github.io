@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>F0rmat</copyright>
-    <lastBuildDate>Wed, 30 Dec 2020 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/categories/%E5%85%B6%E4%BB%96/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Jul 2022 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/categories/%E5%85%B6%E4%BB%96/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kali Linux 2022.2安装Parallels Tools</title>
+      <link>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2022.2/</link>
+      <pubDate>Mon, 25 Jul 2022 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2022.2/</guid>
+      <description>0x00 前言 这个问题还是弄到了凌晨三点，最可恶的是还弄不好。。 早上起了个大早继续弄，在逛pd的论坛发现里面说了pd现在还不支持最新的5.18内核，</description>
+    </item>
+    
     <item>
       <title>Kali Linux 2020.4安装Parallels Tools</title>
       <link>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2020.4/</link>

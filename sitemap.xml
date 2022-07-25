@@ -3,27 +3,55 @@
   
   <url>
     <loc>https://xxe.icu/categories/</loc>
-    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
+    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://xxe.icu/</loc>
-    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
+    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xxe.icu/posts/urldns_chain_analysis/</loc>
-    <lastmod>2022-06-01T11:04:34+08:00</lastmod>
+    <loc>https://xxe.icu/tags/kali-linux/</loc>
+    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2022.2/</loc>
+    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://xxe.icu/posts/</loc>
+    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xxe.icu/tags/</loc>
+    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xxe.icu/categories/%E5%85%B6%E4%BB%96/</loc>
+    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xxe.icu/posts/urldns_chain_analysis/</loc>
     <lastmod>2022-06-01T11:04:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -198,13 +226,6 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/tags/kali-linux/</loc>
-    <lastmod>2020-12-30T01:00:00+02:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2020.4/</loc>
     <lastmod>2020-12-30T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -212,21 +233,7 @@
   </url>
   
   <url>
-    <loc>https://xxe.icu/tags/</loc>
-    <lastmod>2020-12-30T01:00:00+02:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://xxe.icu/posts/pd-chrome-3d/</loc>
-    <lastmod>2020-12-30T01:00:00+02:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://xxe.icu/categories/%E5%85%B6%E4%BB%96/</loc>
     <lastmod>2020-12-30T01:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

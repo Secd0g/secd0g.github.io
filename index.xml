@@ -7,10 +7,225 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>F0rmat</copyright>
-    <lastBuildDate>Wed, 01 Jun 2022 11:04:34 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 25 Jul 2022 01:00:00 +0200</lastBuildDate>
     
         <atom:link href="https://xxe.icu/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kali Linux 2022.2安装Parallels Tools</title>
+      <link>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2022.2/</link>
+      <pubDate>Mon, 25 Jul 2022 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/posts/install-parallels-tools-on-kali-linux-2022.2/</guid>
+      
+        <description>&lt;h1 id=&#34;0x00-前言&#34;&gt;0x00 前言&lt;/h1&gt;
+&lt;p&gt;这个问题还是弄到了凌晨三点，最可恶的是还弄不好。。&lt;/p&gt;
+&lt;p&gt;早上起了个大早继续弄，在逛pd的论坛发现里面说了pd现在还不支持最新的5.18内核，所以还是建议安装5.16和5.17，5.17我还找不到，所以就用5.16成功安装了。&lt;/p&gt;
+&lt;p&gt;有兴趣的同学可以去尝试安装&lt;a href=&#34;https://forum.parallels.com/members/galaxymaster.6698753/&#34;&gt;GalaxyMaster)&lt;/a&gt;的补丁包，我是没能成功：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://forum.parallels.com/threads/patch-support-for-kernel-5-18-parallel-tools-17-1-4-51567.357611/&#34;&gt;https://forum.parallels.com/threads/patch-support-for-kernel-5-18-parallel-tools-17-1-4-51567.357611/&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;0x01-解决问题&#34;&gt;0x01 解决问题&lt;/h1&gt;
+&lt;h2 id=&#34;1环境&#34;&gt;1、环境&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;macOS Monterey 12.3&lt;/li&gt;
+&lt;li&gt;Parallels Desktop 17.1.2&lt;/li&gt;
+&lt;li&gt;Kali Linux 2022.2 (linux-headers-5.16-kali5)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2解决过程&#34;&gt;2、解决过程&lt;/h2&gt;
+&lt;p&gt;更新源：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;apt-get update
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;挂载parallels tools并移动到桌面：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;cp -R /media/cdrom0/ ~/Desktop/pdtools/
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./install
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个时候就开始出错了，因为之前报错的log:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;In file included from /usr/src/linux-headers-5.16.0-kali7-common/include/linux/io.h:13,
+                 from /usr/src/linux-headers-5.16.0-kali7-common/include/linux/pci.h:39,
+                 from /usr/lib/parallels-tools/kmods/prl_tg/Toolgate/Guest/Linux/prl_tg/prltg_call.c:7:
+/usr/src/linux-headers-5.16.0-kali7-common/arch/x86/include/asm/io.h:281:41: note: expected &amp;#39;int&amp;#39; but argument is of type &amp;#39;void *&amp;#39;
+  281 | static inline unsigned type in##bwl(int port)                           \
+      |                                     ~~~~^~~~
+/usr/src/linux-headers-5.16.0-kali7-common/arch/x86/include/asm/io.h:336:1: note: in expansion of macro &amp;#39;BUILDIO&amp;#39;
+  336 | BUILDIO(l, , int)
+      | ^~~~~~~
+In file included from /usr/lib/parallels-tools/kmods/prl_tg/Toolgate/Guest/Linux/prl_tg/prltg_call.c:11:
+...
+...
+/bin/sh: 1: /usr/src/linux-headers-5.16.0-kali7-common/scripts/pahole-flags.sh: not found
+  CC [M]  /usr/lib/parallels-tools/kmods/prl_eth/pvmnet/pvmnet.o
+  LD [M]  /usr/lib/parallels-tools/kmods/prl_eth/pvmnet/prl_eth.o
+/bin/sh: 1: /usr/src/linux-headers-5.16.0-kali7-common/scripts/pahole-flags.sh: not found
+/bin/sh: 1: /usr/src/linux-headers-5.16.0-kali7-common/scripts/pahole-flags.sh: not found
+  MODPOST /usr/lib/parallels-tools/kmods/prl_eth/pvmnet/Module.symvers
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这里不展示安装补丁的过程了，因为没成功，但是有一个点可以提醒一下，关于执行补丁命令论坛里面说的命令是：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;patch -p1 file.patch
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-p1 是表示忽略第一层目录&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但是执行会停留在那里不动，可以使用以下的命令进行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;patch -p1 &amp;lt; file.patch
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;下面是5.16内核的安装方法&lt;/p&gt;
+&lt;p&gt;我们直接执行&lt;code&gt;./install&lt;/code&gt; 一般会出现系统缺少了&lt;code&gt;dkms&lt;/code&gt;和&lt;code&gt;linux-header&lt;/code&gt;，可以使用下面的命令进行安装：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;apt install dkms
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;但安装头文件的时候就出问题了，我们可以直接去找软件包进行安装：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://old.kali.org/kali/pool/main/l/linux/&#34;&gt;http://old.kali.org/kali/pool/main/l/linux/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;下载以下的文件&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://old.kali.org/kali/pool/main/l/linux/linux-headers-5.16.0-kali7-amd64_5.16.18-1kali1_amd64.deb&#34;&gt;linux-headers-5.16.0-kali7-amd64_5.16.18-1kali1_amd64.deb&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://old.kali.org/kali/pool/main/l/linux/linux-headers-5.16.0-kali7-common_5.16.18-1kali1_all.deb&#34;&gt;linux-headers-5.16.0-kali7-common_5.16.18-1kali1_all.deb&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果提示缺少kbuild可以下载：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://old.kali.org/kali/pool/main/l/linux/linux-kbuild-5.16_5.16.18-1kali1_amd64.deb&#34;&gt;linux-kbuild-5.16_5.16.18-1kali1_amd64.deb&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://old.kali.org/kali/pool/main/l/linux/linux-kbuild-5.16-dbgsym_5.16.18-1kali1_amd64.deb&#34;&gt;linux-kbuild-5.16-dbgsym_5.16.18-1kali1_amd64.deb&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;使用dpkg -i安装就完事了：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;dpkg -i linux-kbuild-5.16_5.16.18-1kali1_amd64.deb
+dpkg -i linux-kbuild-5.16-dbgsym_5.16.18-1kali1_amd64.deb
+dpkg -i linux-headers-5.16.0-kali7-common_5.16.18-1kali1_all.deb
+dpkg -i linux-headers-5.16.0-kali7-amd64_5.16.18-1kali1_amd64.deb
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;最后重新执行以安装文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;./install
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;重启就可以正常使用了～&lt;/p&gt;
+&lt;h1 id=&#34;0x02-总结&#34;&gt;0x02 总结&lt;/h1&gt;
+&lt;p&gt;可以参考一下pd论坛，上面很多大神可以解决问题：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://forum.parallels.com/forums/linux-guest-os-discussion.61/&#34;&gt;https://forum.parallels.com/forums/linux-guest-os-discussion.61/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;附上论坛里面的一个解决方案：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;Got it working with these steps.
+sudo apt-get update
+sudo apt-get install dkms
+sudo apt-get install libelf-dev
+
+Downloaded the 3 file from https://http.kali.org/kali/pool/main/l/linux/
+linux-headers-5.16.0-kali7-arm64_5.16.18-1kali1_arm64.deb
+linux-kbuild-5.16_5.16.18-1kali1_arm64.deb
+linux-headers-5.16.0-kali7-common_5.16.18-1kali1_all.deb
+
+sudo dpkg -i linux-headers-5.16.0-kali7-common_5.16.18-1kali1_all.deb
+sudo dpkg -i linux-kbuild-5.16_5.16.18-1kali1_arm64.deb
+sudo dpkg -i linux-headers-5.16.0-kali7-arm64_5.16.18-1kali1_arm64.deb
+
+Install tools
+sudo mount -oro,exec,remount /media/cdrom0
+sudo /media/cdrom0/install
+
+Hope that helps.
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;如果已经更新了5.18的版本可以重启到启动解决，选择高级-&amp;gt;选择5.16的版本进行启动然后按照上面的步骤进行。&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+      
+    </item>
     
     <item>
       <title>Java代码审计-URLDNS链分析</title>
@@ -14746,307 +14961,6 @@ $ filecap -a
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://www.projectatomic.io/blog/2016/03/no-new-privs-docker/&#34;&gt;Added no-new-privileges Security Flag to Docker&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://turbin.github.io/2017/01/28/no_new_privs%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E%E7%BF%BB%E8%AF%91/&#34;&gt;关于 no new privs 翻译稿&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;本文转载米开朗基杨的&lt;a href=&#34;https://fuckcloudnative.io/posts/linux-capabilities-why-they-exist-and-how-they-work/&#34;&gt;Linux Capabilities 入门系列&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-</description>
-      
-    </item>
-    
-    <item>
-      <title>Linux Capabilities 入门教程：概念篇</title>
-      <link>https://xxe.icu/posts/linux_capabilities_0/</link>
-      <pubDate>Wed, 12 Jan 2022 11:04:34 +0800</pubDate>
-      
-      <guid>https://xxe.icu/posts/linux_capabilities_0/</guid>
-      
-        <description>&lt;h2 id=&#34;深入理解-linux-capabilities-的原理&#34;&gt;深入理解 Linux Capabilities 的原理&lt;/h2&gt;
-&lt;p&gt;Linux 是一种安全的操作系统，它把所有的系统权限都赋予了一个单一的 root 用户，只给普通用户保留有限的权限。root 用户拥有超级管理员权限，可以安装软件、允许某些服务、管理用户等。&lt;/p&gt;
-&lt;p&gt;作为普通用户，如果想执行某些只有管理员才有权限的操作，以前只有两种办法：一是通过 &lt;code&gt;sudo&lt;/code&gt; 提升权限，如果用户很多，配置管理和权限控制会很麻烦；二是通过 &lt;a href=&#34;https://en.wikipedia.org/wiki/Setuid&#34;&gt;SUID&lt;/a&gt;（Set User ID on execution）来实现，它可以让普通用户允许一个 &lt;code&gt;owner&lt;/code&gt; 为 root 的可执行文件时具有 root 的权限。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;SUID&lt;/code&gt; 的概念比较晦涩难懂，举个例子就明白了，以常用的 &lt;code&gt;passwd&lt;/code&gt; 命令为例，修改用户密码是需要 root 权限的，但普通用户却可以通过这个命令来修改密码，这就是因为 &lt;code&gt;/bin/passwd&lt;/code&gt; 被设置了 &lt;code&gt;SUID&lt;/code&gt; 标识，所以普通用户执行 passwd 命令时，进程的 owner 就是 passwd 的所有者，也就是 root 用户。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;SUID&lt;/code&gt; 虽然可以解决问题，但却带来了安全隐患。当运行设置了 &lt;code&gt;SUID&lt;/code&gt; 的命令时，通常只是需要很小一部分的特权，但是 &lt;code&gt;SUID&lt;/code&gt; 给了它 root 具有的全部权限。这些可执行文件是黑客的主要目标，如果他们发现了其中的漏洞，就很容易利用它来进行安全攻击。简而言之，&lt;strong&gt;&lt;code&gt;SUID&lt;/code&gt; 机制增大了系统的安全攻击面。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;为了对 root 权限进行更细粒度的控制，实现按需授权，Linux 引入了另一种机制叫 &lt;code&gt;capabilities&lt;/code&gt;。&lt;/p&gt;
-&lt;h2 id=&#34;1-linux-capabilities-是什么&#34;&gt;1. Linux capabilities 是什么？&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;&lt;code&gt;Capabilities&lt;/code&gt; 机制是在 Linux 内核 &lt;code&gt;2.2&lt;/code&gt; 之后引入的，原理很简单，就是将之前与超级用户 root（UID=0）关联的特权细分为不同的功能组，Capabilites 作为线程（&lt;strong&gt;Linux 并不真正区分进程和线程&lt;/strong&gt;）的属性存在，每个功能组都可以独立启用和禁用。其本质上就是将内核调用分门别类，具有相似功能的内核调用被分到同一组中。&lt;/p&gt;
-&lt;p&gt;这样一来，权限检查的过程就变成了：在执行特权操作时，如果线程的有效身份不是 root，就去检查其是否具有该特权操作所对应的 capabilities，并以此为依据，决定是否可以执行特权操作。&lt;/p&gt;
-&lt;p&gt;Capabilities 可以在进程执行时赋予，也可以直接从父进程继承。所以理论上如果给 nginx 可执行文件赋予了 &lt;code&gt;CAP_NET_BIND_SERVICE&lt;/code&gt; capabilities，那么它就能以普通用户运行并监听在 80 端口上。&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;capability 名称&lt;/th&gt;
-&lt;th&gt;描述&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_AUDIT_CONTROL&lt;/td&gt;
-&lt;td&gt;启用和禁用内核审计；改变审计过滤规则；检索审计状态和过滤规则&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_AUDIT_READ&lt;/td&gt;
-&lt;td&gt;允许通过 multicast netlink 套接字读取审计日志&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_AUDIT_WRITE&lt;/td&gt;
-&lt;td&gt;将记录写入内核审计日志&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_BLOCK_SUSPEND&lt;/td&gt;
-&lt;td&gt;使用可以阻止系统挂起的特性&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_CHOWN&lt;/td&gt;
-&lt;td&gt;修改文件所有者的权限&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_DAC_OVERRIDE&lt;/td&gt;
-&lt;td&gt;忽略文件的 DAC 访问限制&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_DAC_READ_SEARCH&lt;/td&gt;
-&lt;td&gt;忽略文件读及目录搜索的 DAC 访问限制&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_FOWNER&lt;/td&gt;
-&lt;td&gt;忽略文件属主 ID 必须和进程用户 ID 相匹配的限制&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_FSETID&lt;/td&gt;
-&lt;td&gt;允许设置文件的 setuid 位&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_IPC_LOCK&lt;/td&gt;
-&lt;td&gt;允许锁定共享内存片段&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_IPC_OWNER&lt;/td&gt;
-&lt;td&gt;忽略 IPC 所有权检查&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_KILL&lt;/td&gt;
-&lt;td&gt;允许对不属于自己的进程发送信号&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_LEASE&lt;/td&gt;
-&lt;td&gt;允许修改文件锁的 FL_LEASE 标志&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_LINUX_IMMUTABLE&lt;/td&gt;
-&lt;td&gt;允许修改文件的 IMMUTABLE 和 APPEND 属性标志&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_MAC_ADMIN&lt;/td&gt;
-&lt;td&gt;允许 MAC 配置或状态更改&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_MAC_OVERRIDE&lt;/td&gt;
-&lt;td&gt;忽略文件的 DAC 访问限制&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_MKNOD&lt;/td&gt;
-&lt;td&gt;允许使用 mknod() 系统调用&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_NET_ADMIN&lt;/td&gt;
-&lt;td&gt;允许执行网络管理任务&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_NET_BIND_SERVICE&lt;/td&gt;
-&lt;td&gt;允许绑定到小于 1024 的端口&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_NET_BROADCAST&lt;/td&gt;
-&lt;td&gt;允许网络广播和多播访问&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_NET_RAW&lt;/td&gt;
-&lt;td&gt;允许使用原始套接字&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SETGID&lt;/td&gt;
-&lt;td&gt;允许改变进程的 GID&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SETFCAP&lt;/td&gt;
-&lt;td&gt;允许为文件设置任意的 capabilities&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SETPCAP&lt;/td&gt;
-&lt;td&gt;参考 capabilities man page&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SETUID&lt;/td&gt;
-&lt;td&gt;允许改变进程的 UID&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_ADMIN&lt;/td&gt;
-&lt;td&gt;允许执行系统管理任务，如加载或卸载文件系统、设置磁盘配额等&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_BOOT&lt;/td&gt;
-&lt;td&gt;允许重新启动系统&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_CHROOT&lt;/td&gt;
-&lt;td&gt;允许使用 chroot() 系统调用&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_MODULE&lt;/td&gt;
-&lt;td&gt;允许插入和删除内核模块&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_NICE&lt;/td&gt;
-&lt;td&gt;允许提升优先级及设置其他进程的优先级&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_PACCT&lt;/td&gt;
-&lt;td&gt;允许执行进程的 BSD 式审计&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_PTRACE&lt;/td&gt;
-&lt;td&gt;允许跟踪任何进程&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_RAWIO&lt;/td&gt;
-&lt;td&gt;允许直接访问 /devport、/dev/mem、/dev/kmem 及原始块设备&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_RESOURCE&lt;/td&gt;
-&lt;td&gt;忽略资源限制&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_TIME&lt;/td&gt;
-&lt;td&gt;允许改变系统时钟&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYS_TTY_CONFIG&lt;/td&gt;
-&lt;td&gt;允许配置 TTY 设备&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_SYSLOG&lt;/td&gt;
-&lt;td&gt;允许使用 syslog() 系统调用&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CAP_WAKE_ALARM&lt;/td&gt;
-&lt;td&gt;允许触发一些能唤醒系统的东西(比如 CLOCK_BOOTTIME_ALARM 计时器)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id=&#34;2-capabilities-的赋予和继承&#34;&gt;2. capabilities 的赋予和继承&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;Linux capabilities 分为进程 capabilities 和文件 capabilities。对于进程来说，capabilities 是细分到线程的，即每个线程可以有自己的capabilities。对于文件来说，capabilities 保存在文件的扩展属性中。&lt;/p&gt;
-&lt;p&gt;下面分别介绍线程（进程）的 capabilities 和文件的 capabilities。&lt;/p&gt;
-&lt;h3 id=&#34;线程的-capabilities&#34;&gt;线程的 capabilities&lt;/h3&gt;
-&lt;p&gt;每一个线程，具有 5 个 capabilities 集合，每一个集合使用 &lt;code&gt;64&lt;/code&gt; 位掩码来表示，显示为 &lt;code&gt;16&lt;/code&gt; 进制格式。这 5 个 capabilities 集合分别是：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Permitted&lt;/li&gt;
-&lt;li&gt;Effective&lt;/li&gt;
-&lt;li&gt;Inheritable&lt;/li&gt;
-&lt;li&gt;Bounding&lt;/li&gt;
-&lt;li&gt;Ambient&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;每个集合中都包含零个或多个 capabilities。这5个集合的具体含义如下：&lt;/p&gt;
-&lt;h4 id=&#34;permitted&#34;&gt;Permitted&lt;/h4&gt;
-&lt;p&gt;定义了线程能够使用的 capabilities 的上限。它并不使能线程的 capabilities，而是作为一个规定。也就是说，线程可以通过系统调用 &lt;code&gt;capset()&lt;/code&gt; 来从 &lt;code&gt;Effective&lt;/code&gt; 或 &lt;code&gt;Inheritable&lt;/code&gt; 集合中添加或删除 capability，前提是添加或删除的 capability 必须包含在 &lt;code&gt;Permitted&lt;/code&gt; 集合中（其中 Bounding 集合也会有影响，具体参考下文）。 如果某个线程想向 &lt;code&gt;Inheritable&lt;/code&gt; 集合中添加或删除 capability，首先它的 &lt;code&gt;Effective&lt;/code&gt; 集合中得包含 &lt;code&gt;CAP_SETPCAP&lt;/code&gt; 这个 capabiliy。&lt;/p&gt;
-&lt;h4 id=&#34;effective&#34;&gt;Effective&lt;/h4&gt;
-&lt;p&gt;内核检查线程是否可以进行特权操作时，检查的对象便是 &lt;code&gt;Effective&lt;/code&gt; 集合。如之前所说，&lt;code&gt;Permitted&lt;/code&gt; 集合定义了上限，线程可以删除 Effective 集合中的某 capability，随后在需要时，再从 Permitted 集合中恢复该 capability，以此达到临时禁用 capability 的功能。&lt;/p&gt;
-&lt;h4 id=&#34;inheritable&#34;&gt;Inheritable&lt;/h4&gt;
-&lt;p&gt;当执行&lt;code&gt;exec()&lt;/code&gt; 系统调用时，能够被新的可执行文件继承的 capabilities，被包含在 &lt;code&gt;Inheritable&lt;/code&gt; 集合中。这里需要说明一下，包含在该集合中的 capabilities 并不会自动继承给新的可执行文件，即不会添加到新线程的 &lt;code&gt;Effective&lt;/code&gt; 集合中，它只会影响新线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合。&lt;/p&gt;
-&lt;h4 id=&#34;bounding&#34;&gt;Bounding&lt;/h4&gt;
-&lt;p&gt;&lt;code&gt;Bounding&lt;/code&gt; 集合是 &lt;code&gt;Inheritable&lt;/code&gt; 集合的超集，如果某个 capability 不在 &lt;code&gt;Bounding&lt;/code&gt;集合中，即使它在 &lt;code&gt;Permitted&lt;/code&gt; 集合中，该线程也不能将该 capability 添加到它的 &lt;code&gt;Inheritable&lt;/code&gt; 集合中。&lt;/p&gt;
-&lt;p&gt;Bounding 集合的 capabilities 在执行 &lt;code&gt;fork()&lt;/code&gt; 系统调用时会传递给子进程的 Bounding 集合，并且在执行 &lt;code&gt;execve&lt;/code&gt; 系统调用后保持不变。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;当线程运行时，不能向 Bounding 集合中添加 capabilities。&lt;/li&gt;
-&lt;li&gt;一旦某个 capability 被从 Bounding 集合中删除，便不能再添加回来。&lt;/li&gt;
-&lt;li&gt;将某个 capability 从 Bounding 集合中删除后，如果之前 &lt;code&gt;Inherited&lt;/code&gt; 集合包含该 capability，将继续保留。但如果后续从 &lt;code&gt;Inheritable&lt;/code&gt; 集合中删除了该 capability，便不能再添加回来。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;ambient&#34;&gt;Ambient&lt;/h4&gt;
-&lt;p&gt;Linux &lt;code&gt;4.3&lt;/code&gt; 内核新增了一个 capabilities 集合叫 &lt;code&gt;Ambient&lt;/code&gt; ，用来弥补 &lt;code&gt;Inheritable&lt;/code&gt;的不足。&lt;code&gt;Ambient&lt;/code&gt; 具有如下特性：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Permitted&lt;/code&gt; 和 &lt;code&gt;Inheritable&lt;/code&gt; 未设置的 capabilities，&lt;code&gt;Ambient&lt;/code&gt; 也不能设置。&lt;/li&gt;
-&lt;li&gt;当 &lt;code&gt;Permitted&lt;/code&gt; 和 &lt;code&gt;Inheritable&lt;/code&gt; 关闭某权限（比如 &lt;code&gt;CAP_SYS_BOOT&lt;/code&gt;）后，&lt;code&gt;Ambient&lt;/code&gt; 也随之关闭对应权限。这样就确保了降低权限后子进程也会降低权限。&lt;/li&gt;
-&lt;li&gt;非特权用户如果在 &lt;code&gt;Permitted&lt;/code&gt; 集合中有一个 capability，那么可以添加到 &lt;code&gt;Ambient&lt;/code&gt; 集合中，这样它的子进程便可以在 &lt;code&gt;Ambient&lt;/code&gt;、&lt;code&gt;Permitted&lt;/code&gt; 和 &lt;code&gt;Effective&lt;/code&gt; 集合中获取这个 capability。现在不知道为什么也没关系，后面会通过具体的公式来告诉你。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;code&gt;Ambient&lt;/code&gt; 的好处显而易见，举个例子，如果你将 &lt;code&gt;CAP_NET_ADMIN&lt;/code&gt; 添加到当前进程的 &lt;code&gt;Ambient&lt;/code&gt; 集合中，它便可以通过 &lt;code&gt;fork()&lt;/code&gt; 和 &lt;code&gt;execve()&lt;/code&gt; 调用 shell 脚本来执行网络管理任务，因为 &lt;code&gt;CAP_NET_ADMIN&lt;/code&gt; 会自动继承下去。&lt;/p&gt;
-&lt;h3 id=&#34;文件的-capabilities&#34;&gt;文件的 capabilities&lt;/h3&gt;
-&lt;p&gt;文件的 capabilities 被保存在文件的扩展属性中。如果想修改这些属性，需要具有 &lt;code&gt;CAP_SETFCAP&lt;/code&gt; 的 capability。文件与线程的 capabilities 共同决定了通过 &lt;code&gt;execve()&lt;/code&gt;运行该文件后的线程的 capabilities。&lt;/p&gt;
-&lt;p&gt;文件的 capabilities 功能，需要文件系统的支持。如果文件系统使用了 &lt;code&gt;nouuid&lt;/code&gt; 选项进行挂载，那么文件的 capabilities 将会被忽略。&lt;/p&gt;
-&lt;p&gt;类似于线程的 capabilities，文件的 capabilities 包含了 3 个集合：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Permitted&lt;/li&gt;
-&lt;li&gt;Inheritable&lt;/li&gt;
-&lt;li&gt;Effective&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;这3个集合的具体含义如下：&lt;/p&gt;
-&lt;h4 id=&#34;permitted-1&#34;&gt;Permitted&lt;/h4&gt;
-&lt;p&gt;这个集合中包含的 capabilities，在文件被执行时，会与线程的 Bounding 集合计算交集，然后添加到线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合中。&lt;/p&gt;
-&lt;h4 id=&#34;inheritable-1&#34;&gt;Inheritable&lt;/h4&gt;
-&lt;p&gt;这个集合与线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合的交集，会被添加到执行完 &lt;code&gt;execve()&lt;/code&gt; 后的线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合中。&lt;/p&gt;
-&lt;h4 id=&#34;effective-1&#34;&gt;Effective&lt;/h4&gt;
-&lt;p&gt;这不是一个集合，仅仅是一个标志位。如果设置开启，那么在执行完 &lt;code&gt;execve()&lt;/code&gt; 后，线程 &lt;code&gt;Permitted&lt;/code&gt; 集合中的 capabilities 会自动添加到它的 &lt;code&gt;Effective&lt;/code&gt; 集合中。对于一些旧的可执行文件，由于其不会调用 capabilities 相关函数设置自身的 &lt;code&gt;Effective&lt;/code&gt;集合，所以可以将可执行文件的 Effective bit 开启，从而可以将 &lt;code&gt;Permitted&lt;/code&gt; 集合中的 capabilities 自动添加到 &lt;code&gt;Effective&lt;/code&gt; 集合中。&lt;/p&gt;
-&lt;p&gt;详情请参考 &lt;a href=&#34;http://man7.org/linux/man-pages/man7/capabilities.7.html&#34;&gt;Linux capabilities 的 man page&lt;/a&gt;。&lt;/p&gt;
-&lt;h2 id=&#34;3-运行-execve-后-capabilities-的变化&#34;&gt;3. 运行 execve() 后 capabilities 的变化&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;上面介绍了线程和文件的 capabilities，你们可能会觉得有些抽象难懂。下面通过具体的计算公式，来说明执行 &lt;code&gt;execve()&lt;/code&gt; 后 capabilities 是如何被确定的。&lt;/p&gt;
-&lt;p&gt;我们用 &lt;code&gt;P&lt;/code&gt; 代表执行 &lt;code&gt;execve()&lt;/code&gt; 前线程的 capabilities，&lt;code&gt;P&#39;&lt;/code&gt; 代表执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 capabilities，&lt;code&gt;F&lt;/code&gt; 代表可执行文件的 capabilities。那么：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;P&#39;(ambient) = (file is privileged) ? 0 : P(ambient)&lt;/p&gt;
-&lt;p&gt;P&#39;(permitted) = (P(inheritable) &amp;amp; F(inheritable)) |
-(F(permitted) &amp;amp; P(bounding))) | P&#39;(ambient)&lt;/p&gt;
-&lt;p&gt;P&#39;(effective)  = F(effective) ? P&#39;(permitted) : P&#39;(ambient)&lt;/p&gt;
-&lt;p&gt;P&#39;(inheritable) = P(inheritable) [i.e., unchanged]&lt;/p&gt;
-&lt;p&gt;P&#39;(bounding) = P(bounding) [i.e., unchanged]&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;我们一条一条来解释：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;如果用户是 root 用户，那么执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 &lt;code&gt;Ambient&lt;/code&gt; 集合是空集；如果是普通用户，那么执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 &lt;code&gt;Ambient&lt;/code&gt; 集合将会继承执行 &lt;code&gt;execve()&lt;/code&gt; 前线程的 &lt;code&gt;Ambient&lt;/code&gt; 集合。&lt;/li&gt;
-&lt;li&gt;执行 &lt;code&gt;execve()&lt;/code&gt; 前线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合与可执行文件的 &lt;code&gt;Inheritable&lt;/code&gt; 集合取交集，会被添加到执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合；可执行文件的 capability bounding 集合与可执行文件的 &lt;code&gt;Permitted&lt;/code&gt; 集合取交集，也会被添加到执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合；同时执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 &lt;code&gt;Ambient&lt;/code&gt; 集合中的 capabilities 会被自动添加到该线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合中。&lt;/li&gt;
-&lt;li&gt;如果可执行文件开启了 Effective 标志位，那么在执行完 &lt;code&gt;execve()&lt;/code&gt; 后，线程 &lt;code&gt;Permitted&lt;/code&gt; 集合中的 capabilities 会自动添加到它的 &lt;code&gt;Effective&lt;/code&gt; 集合中。&lt;/li&gt;
-&lt;li&gt;执行 &lt;code&gt;execve()&lt;/code&gt; 前线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合会继承给执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;这里有几点需要着重强调：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;上面的公式是针对系统调用 &lt;code&gt;execve()&lt;/code&gt; 的，如果是 &lt;code&gt;fork()&lt;/code&gt;，那么子线程的 capabilities 信息完全复制父进程的 capabilities 信息。&lt;/li&gt;
-&lt;li&gt;可执行文件的 &lt;code&gt;Inheritable&lt;/code&gt; 集合与线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合并没有什么关系，可执行文件 &lt;code&gt;Inheritable&lt;/code&gt; 集合中的 capabilities 不会被添加到执行 &lt;code&gt;execve()&lt;/code&gt; 后线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合中。如果想让新线程的 &lt;code&gt;Inheritable&lt;/code&gt;集合包含某个 capability，只能通过 &lt;code&gt;capset()&lt;/code&gt; 将该 capability 添加到当前线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合中（因为 P&#39;(inheritable) = P(inheritable)）。&lt;/li&gt;
-&lt;li&gt;如果想让当前线程 &lt;code&gt;Inheritable&lt;/code&gt; 集合中的 capabilities 传递给新的可执行文件，该文件的 &lt;code&gt;Inheritable&lt;/code&gt; 集合中也必须包含这些 capabilities（因为 P&#39;(permitted)  = (P(inheritable) &amp;amp; F(inheritable))|…）。&lt;/li&gt;
-&lt;li&gt;将当前线程的 capabilities 传递给新的可执行文件时，仅仅只是传递给新线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合。如果想让其生效，新线程必须通过 &lt;code&gt;capset()&lt;/code&gt; 将 capabilities 添加到 &lt;code&gt;Effective&lt;/code&gt; 集合中。或者开启新的可执行文件的 Effective 标志位（因为 P&#39;(effective)  = F(effective) ? P&#39;(permitted) : P&#39;(ambient)）。&lt;/li&gt;
-&lt;li&gt;在没有 &lt;code&gt;Ambient&lt;/code&gt; 集合之前，如果某个脚本不能调用 &lt;code&gt;capset()&lt;/code&gt;，但想让脚本中的线程都能获得该脚本的 &lt;code&gt;Permitted&lt;/code&gt; 集合中的 capabilities，只能将 &lt;code&gt;Permitted&lt;/code&gt; 集合中的 capabilities 添加到 &lt;code&gt;Inheritable&lt;/code&gt; 集合中（P&#39;(permitted) = P(inheritable) &amp;amp; F(inheritable)|…），同时开启 Effective 标志位（P&#39;(effective)  = F(effective) ? P&#39;(permitted) : P&#39;(ambient)）。有 有 &lt;code&gt;Ambient&lt;/code&gt;集合之后，事情就变得简单多了，后续的文章会详细解释。&lt;/li&gt;
-&lt;li&gt;如果某个 UID 非零（普通用户）的线程执行了 &lt;code&gt;execve()&lt;/code&gt;，那么 &lt;code&gt;Permitted&lt;/code&gt; 和 &lt;code&gt;Effective&lt;/code&gt; 集合中的 capabilities 都会被清空。&lt;/li&gt;
-&lt;li&gt;从 root 用户切换到普通用户，那么 &lt;code&gt;Permitted&lt;/code&gt; 和 &lt;code&gt;Effective&lt;/code&gt; 集合中的 capabilities 都会被清空，除非设置了 SECBIT_KEEP_CAPS 或者更宽泛的 SECBIT_NO_SETUID_FIXUP。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;关于上述计算公式的逻辑流程图如下所示（不包括 &lt;code&gt;Ambient&lt;/code&gt; 集合）：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://jsdelivr.fuckcloudnative.io/gh/yangchuansheng/imghosting@master/img/20200723163240.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;4-简单示例&#34;&gt;4. 简单示例&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;下面我们用一个例子来演示上述公式的计算逻辑，以 &lt;code&gt;ping&lt;/code&gt; 文件为例。如果我们将 &lt;code&gt;CAP_NET_RAW&lt;/code&gt; capability添加到 ping 文件的 &lt;code&gt;Permitted&lt;/code&gt; 集合中（F(Permitted)），它就会添加到执行后的线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合中（P&#39;(Permitted)）。由于 ping 文件具有 &lt;strong&gt;capabilities 感知能力&lt;/strong&gt;，即能够调用 &lt;code&gt;capset()&lt;/code&gt; 和 &lt;code&gt;capget()&lt;/code&gt; ，它在运行时会调用 &lt;code&gt;capset()&lt;/code&gt; 将 &lt;code&gt;CAP_NET_RAW&lt;/code&gt; capability 添加到线程的 &lt;code&gt;Effective&lt;/code&gt; 集合中。&lt;/p&gt;
-&lt;p&gt;换句话说，如果可执行文件不具有 &lt;strong&gt;capabilities 感知能力&lt;/strong&gt;，我们就必须要开启 Effective 标志位（F(Effective)），这样就会将该 capability 自动添加到线程的 &lt;code&gt;Effective&lt;/code&gt; 集合中。具有&lt;strong&gt;capabilities 感知能力&lt;/strong&gt;的可执行文件更安全，因为它会限制线程使用该 capability 的时间。&lt;/p&gt;
-&lt;p&gt;我们也可以将 capabilities 添加到文件的 &lt;code&gt;Inheritable&lt;/code&gt; 集合中，文件的 &lt;code&gt;Inheritable&lt;/code&gt; 集合会与当前线程的 &lt;code&gt;Inheritable&lt;/code&gt; 集合取交集，然后添加到新线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合中。这样就可以控制可执行文件的运行环境。&lt;/p&gt;
-&lt;p&gt;看起来很有道理，但有一个问题：如果可执行文件的有效用户是普通用户，且没有 &lt;code&gt;Inheritable&lt;/code&gt; 集合，即 &lt;code&gt;F(inheritable) = 0&lt;/code&gt;，那么 &lt;code&gt;P(inheritable)&lt;/code&gt; 将会被忽略（P(inheritable) &amp;amp; F(inheritable)）。由于绝大多数可执行文件都是这种情况，因此 &lt;code&gt;Inheritable&lt;/code&gt; 集合的可用性受到了限制。我们无法让脚本中的线程自动继承该脚本文件中的 capabilities，除非让脚本具有 &lt;strong&gt;capabilities 感知能力&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;要想改变这种状况，可以使用 &lt;code&gt;Ambient&lt;/code&gt; 集合。&lt;code&gt;Ambient&lt;/code&gt; 集合会自动从父线程中继承，同时会自动添加到当前线程的 &lt;code&gt;Permitted&lt;/code&gt; 集合中。举个例子，在一个 Bash 环境中（例如某个正在执行的脚本），该环境所在的线程的 &lt;code&gt;Ambient&lt;/code&gt; 集合中包含 &lt;code&gt;CAP_NET_RAW&lt;/code&gt; capability，那么在该环境中执行 ping 文件可以正常工作，即使该文件是普通文件（没有任何 capabilities，也没有设置 SUID）。&lt;/p&gt;
-&lt;h2 id=&#34;5-终极案例&#34;&gt;5. 终极案例&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;最后拿 docker 举例，如果你使用普通用户来启动官方的 nginx 容器，会出现以下错误：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;bind() to 0.0.0.0:80 failed (13: Permission denied)
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;因为 nginx 进程的 &lt;code&gt;Effective&lt;/code&gt; 集合中不包含 &lt;code&gt;CAP_NET_BIND_SERVICE&lt;/code&gt; capability，且不具有 &lt;strong&gt;capabilities 感知能力&lt;/strong&gt;（普通用户），所以启动失败。要想启动成功，至少需要将该 capability 添加到 nginx 文件的 &lt;code&gt;Inheritable&lt;/code&gt; 集合中，同时开启 Effective 标志位，并且在 Kubernetes Pod 的部署清单中的 securityContext –&amp;gt; capabilities 字段下面添加 &lt;code&gt;NET_BIND_SERVICE&lt;/code&gt;（这个 capability 会被添加到 nginx 进程的 &lt;code&gt;Bounding&lt;/code&gt;集合中），最后还要将 capability 添加到 nginx 文件的 &lt;code&gt;Permitted&lt;/code&gt; 集合中。如此一来就大功告成了，参考公式：P&#39;(permitted) = …|(F(permitted) &amp;amp; P(bounding)))|…，P&#39;(effective)  = F(effective) ? P&#39;(permitted) : P&#39;(ambient)。&lt;/p&gt;
-&lt;p&gt;如果容器开启了 &lt;code&gt;securityContext/allowPrivilegeEscalation&lt;/code&gt;，上述设置仍然可以生效。如果 nginx 文件具有 &lt;strong&gt;capabilities 感知能力&lt;/strong&gt;，那么只需要将 &lt;code&gt;CAP_NET_BIND_SERVICE&lt;/code&gt; capability 添加到它的 &lt;code&gt;Inheritable&lt;/code&gt; 集合中就可以正常工作了。&lt;/p&gt;
-&lt;p&gt;当然了，除了上述使用文件扩展属性的方法外，还可以使用 &lt;code&gt;Ambient&lt;/code&gt; 集合来让非 root 容器进程正常工作，但 Kubernetes 目前还不支持这个属性，具体参考 &lt;a href=&#34;https://github.com/kubernetes/kubernetes/issues/56374&#34;&gt;Kubernetes 项目的 issue&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;虽然 Kubernetes 官方不支持，但我们可以自己来实现，具体实现方式可以关注我后续的文章。&lt;/p&gt;
-&lt;h2 id=&#34;6-参考资料&#34;&gt;6. 参考资料&lt;/h2&gt;
-&lt;hr&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.container-solutions.com/linux-capabilities-why-they-exist-and-how-they-work&#34;&gt;Linux Capabilities: Why They Exist and How They Work&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.ploetzli.ch/2014/understanding-linux-capabilities/&#34;&gt;Understanding Capabilities in Linux&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://k3a.me/linux-capabilities-in-a-nutshell/&#34;&gt;Linux Capabilities in a nutshell&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://rk700.github.io/2016/10/26/linux-capabilities/&#34;&gt;Linux的capabilities机制&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
 &lt;p&gt;本文转载米开朗基杨的&lt;a href=&#34;https://fuckcloudnative.io/posts/linux-capabilities-why-they-exist-and-how-they-work/&#34;&gt;Linux Capabilities 入门系列&lt;/a&gt;&lt;/p&gt;
