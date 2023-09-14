@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DedeCMS on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/dedecms.html</link>
+    <description>Recent content in DedeCMS on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Jul 2018 14:14:56 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/dedecms/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DedeCMS V5.7后台过滤不当导致Getshell(每周一洞)</title>
+      <link>https://xxe.icu/dedecms-v5.7-background-filtering-improperly-leads-to-getshell.html</link>
+      <pubDate>Fri, 27 Jul 2018 14:14:56 +0000</pubDate>
+      
+      <guid>https://xxe.icu/dedecms-v5.7-background-filtering-improperly-leads-to-getshell.html</guid>
+      <description>0x01 前言 前两天看到七月火表哥再先知发的一篇审计文章，感觉不错，是dedecms的getshell。就分析了一下，顺便写一篇文章学习。 0x02 环境 环境</description>
+    </item>
+    
+    <item>
+      <title>DedeCMS V5.7 SP2后台Getshell 代码执行漏洞(每日一洞)</title>
+      <link>https://xxe.icu/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability.html</link>
+      <pubDate>Sat, 10 Mar 2018 00:11:57 +0000</pubDate>
+      
+      <guid>https://xxe.icu/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability.html</guid>
+      <description>前言 这两天费劲脑力去撩小姐姐，感觉好难啊，还不如审计代码。 环境 Web： phpstudy System： Windows 10 X64 Browser： Firefox Quantum Python version ： 2.7 Tools： PhpStorm 2017.1.1 复现</description>
+    </item>
+    
+  </channel>
+</rss>

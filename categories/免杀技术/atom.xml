@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>免杀技术 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/categories/%E5%85%8D%E6%9D%80%E6%8A%80%E6%9C%AF.html</link>
+    <description>Recent content in 免杀技术 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 01 Apr 2022 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E5%85%8D%E6%9D%80%E6%8A%80%E6%9C%AF/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>免杀技术- Python分离免杀</title>
+      <link>https://xxe.icu/python_separation_to_antivirus.html</link>
+      <pubDate>Fri, 01 Apr 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/python_separation_to_antivirus.html</guid>
+      <description>0x00 前言 最新复习了一下鱼叉攻击的内容，发现在制作木马这一块过不去了，各种被查杀，于是又重新复习了一下免杀这块的内容。 网上也有很多教程文章，还是</description>
+    </item>
+    
+  </channel>
+</rss>

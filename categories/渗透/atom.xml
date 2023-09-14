@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>渗透 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/categories/%E6%B8%97%E9%80%8F.html</link>
+    <description>Recent content in 渗透 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 13 Jun 2020 00:24:46 +0000</lastBuildDate><atom:link href="https://xxe.icu/categories/%E6%B8%97%E9%80%8F/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>bc站渗透日记</title>
+      <link>https://xxe.icu/bc-penetration-diary.html</link>
+      <pubDate>Sat, 13 Jun 2020 00:24:46 +0000</pubDate>
+      
+      <guid>https://xxe.icu/bc-penetration-diary.html</guid>
+      <description>0x01前言 不废话了，反正就是遇到这个网站了哈哈哈 0x02 过程 看了是do结尾的，以为是struts2，随便输点字符发现是thinkphp的： 直接上</description>
+    </item>
+    
+    <item>
+      <title>一次艰难的渗透提权过程</title>
+      <link>https://xxe.icu/a-difficult-penetration-process.html</link>
+      <pubDate>Mon, 09 Sep 2019 02:11:19 +0000</pubDate>
+      
+      <guid>https://xxe.icu/a-difficult-penetration-process.html</guid>
+      <description>0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g</description>
+    </item>
+    
+    <item>
+      <title>H5神兽棋牌游戏渗透之旅</title>
+      <link>https://xxe.icu/h5-beast-game-penetration-journey.html</link>
+      <pubDate>Fri, 11 May 2018 22:14:47 +0000</pubDate>
+      
+      <guid>https://xxe.icu/h5-beast-game-penetration-journey.html</guid>
+      <description>0x01 前言 本来不想发的，涉及太多利益了,这些棋牌游戏的源码最高能卖到几万。开发起来不比一个商场程序难。 最近又太忙了，没时间去做代码审计的文章了，</description>
+    </item>
+    
+  </channel>
+</rss>

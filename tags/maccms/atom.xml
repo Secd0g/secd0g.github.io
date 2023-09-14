@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Maccms on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/maccms.html</link>
+    <description>Recent content in Maccms on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 22 Dec 2019 11:17:18 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/maccms/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Maccms8最新命令执行漏洞</title>
+      <link>https://xxe.icu/maccms8-latest-command-execution-vulnerability.html</link>
+      <pubDate>Sun, 22 Dec 2019 11:17:18 +0000</pubDate>
+      
+      <guid>https://xxe.icu/maccms8-latest-command-execution-vulnerability.html</guid>
+      <description>0x01 前言 太久太久没写文章。。。最近还发布了一些法律，许多网站都关了，我还在考虑是否去开这个博客，因为分享技术还得承担法律责任，不过不会再公布具</description>
+    </item>
+    
+    <item>
+      <title>动态调试|Maccms SQL 注入分析(附注入盲注脚本)</title>
+      <link>https://xxe.icu/maccms-sql-injection-analysis.html</link>
+      <pubDate>Sun, 26 Aug 2018 15:49:02 +0000</pubDate>
+      
+      <guid>https://xxe.icu/maccms-sql-injection-analysis.html</guid>
+      <description>0x01 前言 已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。 0x02 环境 Web： phpstudy Sys</description>
+    </item>
+    
+  </channel>
+</rss>

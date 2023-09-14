@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HDWiki on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/hdwiki.html</link>
+    <description>Recent content in HDWiki on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 22 Jul 2018 17:13:30 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/hdwiki/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HDWiki v6.0最新版referer注入漏洞(每周一洞)</title>
+      <link>https://xxe.icu/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability.html</link>
+      <pubDate>Sun, 22 Jul 2018 17:13:30 +0000</pubDate>
+      
+      <guid>https://xxe.icu/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability.html</guid>
+      <description>0x01 前言 经拖稿一个月了，差了四篇文章没补回来， 现在都补上，虽然说这样没有坚持的按时写下去，但是只要记得要做这个事情就行了，不能中途而废。这个漏</description>
+    </item>
+    
+  </channel>
+</rss>

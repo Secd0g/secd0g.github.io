@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ThinkPHP5 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/thinkphp5.html</link>
+    <description>Recent content in ThinkPHP5 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 22 Dec 2018 11:17:18 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/thinkphp5/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ThinkPHP5 远程代码执行漏洞动态分析</title>
+      <link>https://xxe.icu/thinkphp5-remote-code-execution-vulnerability-dynamic-analysis.html</link>
+      <pubDate>Sat, 22 Dec 2018 11:17:18 +0000</pubDate>
+      
+      <guid>https://xxe.icu/thinkphp5-remote-code-execution-vulnerability-dynamic-analysis.html</guid>
+      <description>0x01 前言 这个漏洞已经过去了十多天了，最近比较忙，一直没有写分析的文章。今天抽点时间出来写一篇动态分析的文章，远程执行漏洞用动态分析比较方便也看</description>
+    </item>
+    
+  </channel>
+</rss>

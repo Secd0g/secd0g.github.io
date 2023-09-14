@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/sdl.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="SDL(安全开发生命周期) - F0rmat&#39;s Blog">
+    <meta property="og:title" content="SDL(安全开发生命周期) - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="SDL(安全开发生命周期) - F0rmat&#39;s Blog">
+    <meta name="description" content="0x0 前言 最近在读《互联网企业安全高级指南》里面的一章SDL有感，结合工作经验之谈，遂写此文。 0x01 SDL概念 当我们谈到SDL（Security Development L">
+    <meta property="og:description" content="0x0 前言 最近在读《互联网企业安全高级指南》里面的一章SDL有感，结合工作经验之谈，遂写此文。 0x01 SDL概念 当我们谈到SDL（Security Development L">
+    <meta property="twitter:description" content="0x0 前言 最近在读《互联网企业安全高级指南》里面的一章SDL有感，结合工作经验之谈，遂写此文。 0x01 SDL概念 当我们谈到SDL（Security Development L">
+    <meta property="og:type" content="article">
+    <title>SDL(安全开发生命周期) - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/sdl.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/sdl.html" title="SDL(安全开发生命周期)">SDL(安全开发生命周期)</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-03-22 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 22 Mar 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            6136 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            13 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+        <li><a href="#0x0-前言">0x0 前言</a></li>
+        <li><a href="#0x01-sdl概念">0x01 SDL概念</a>
+          <ul>
+            <li><a href="#sdlsdlc和s-sdlc">SDL、SDLC和S-SDLC</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x02-sdl实践">0x02 SDL实践</a>
+          <ul>
+            <li><a href="#1安全培训">1、安全培训</a></li>
+            <li><a href="#2安全需求">2、安全需求</a></li>
+            <li><a href="#3安全设计">3、安全设计</a></li>
+            <li><a href="#4安全开发">4、安全开发</a></li>
+            <li><a href="#5安全测试">5、安全测试</a></li>
+            <li><a href="#6发布审核">6、发布审核</a></li>
+            <li><a href="#7安全响应">7、安全响应</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x03-结尾">0x03 结尾</a></li>
+        <li><a href="#0x04-参考">0x04 参考</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h2 id="0x0-前言">0x0 前言</h2>
+<p>最近在读《互联网企业安全高级指南》里面的一章SDL有感，结合工作经验之谈，遂写此文。</p>
+<h2 id="0x01-sdl概念">0x01 SDL概念</h2>
+<p>当我们谈到SDL（Security Development Lifecycle）安全开发生命周期，就不得不说到微软，因为SDL是微软在2004年提出来的一个从安全角度指导软件开发过程的管理模式。微软当时的最受欢迎产品是OS和Office，在2004年之前病毒横行霸道，严重影响了微软的客户，而且美国政府是微软的最大客户，当时因为事情美国政府限制了微软产品的发布。</p>
+<p>微软为了降低风险和挽回市场，2004年将SDL引入其内部软件开发流程中，目的是减少其软件中的漏洞数量和降低其严重级别。SDL侧重于长期维护、流程改进并能够帮助开发过程应对不断变化的威胁状况，Windows Vista是 第一个通过完整 SDL的操作系统。</p>
+<p>总的来说SDL是在传统软件开发生命周期的各 个阶段增加了一些必要的安全活动，软件开发的不同阶段所执行的安全活动也 不同，每个活动就算单独执行也都能对软件安全起到一定作用。</p>
+<h3 id="sdlsdlc和s-sdlc">SDL、SDLC和S-SDLC</h3>
+<p>有很多刚入门的小伙伴一开始看到这些名词的时候也一脸懵，下面来介绍这三个名词的含义：</p>
+<ul>
+<li>SDL：Security Development Lifecycle，安全开发生命周期</li>
+<li>SDLC：Software Development Life Cycle，软件开发生命周期</li>
+<li>S-SDLC：Secure Software Development Life Cycle，安全软件开发生命周期，是由开源Web安全组织OWASP推出的一个项目</li>
+</ul>
+<h2 id="0x02-sdl实践">0x02 SDL实践</h2>
+<p>SDL 的核心理念就是将安全考虑集成在软件开发的每一个阶段:需求分析、设计、编码、测试和维护。从需求、设计到发布产品的每一个阶段都增加相应 的安全活动，以减少软件中漏洞的数量并将安全缺陷降低到最小程度。其流程分为以下七部分:</p>
+<p>安全培训、安全需求、安全设计、安全开发、安全测试、发布审核、安全响应。</p>
+<h3 id="1安全培训">1、安全培训</h3>
+<p>安全是每个人的工作。开发人员、服务工程师以及程序和产品经理必须了解安全基础知识，并知道如何将安全性构建到软件和服务中，以使产品更加安全，同时仍能满足业务需求并提供用户价值。</p>
+<p>有效的培训将补充和加强安全政策、SDL 实践、标准和软件安全要求，并以从数据或新可用技术能力中获得的见解为指导。</p>
+<p>尽管安全是每个人的工作，但重要的是要记住，并不是每个人都需要成为安全专家，也不是每个人都需要努力成为熟练的渗透测试人员。然而，确保每个人都了解攻击者的观点、他们的目标和可能的艺术将有助于吸引每个人的注意力并提高集体知识水平。</p>
+<p>基础软件安全培训应该包含的基础概念如下：</p>
+<ul>
+<li>安全设计，包括以下主题：
+<ul>
+<li>减小攻击面</li>
+<li>深度防御</li>
+<li>最小权限原则</li>
+<li>安全默认设置</li>
+</ul>
+</li>
+<li>威胁建模，包括以下主题：
+<ul>
+<li>威胁建模概述</li>
+<li>威胁模型的设计意义</li>
+<li>基于威胁模型的编码约束</li>
+</ul>
+</li>
+<li>安全编码，包括以下主题：
+<ul>
+<li>缓冲区溢出（对于使用 C 和 C++ 的应用程序）</li>
+<li>整数算法错误（对于使用 C 和 C++ 的应用程序）</li>
+<li>跨站点脚本（对于托管代码和 Web 应用程序）</li>
+<li>SQL 注入（对于托管代码和 Web 应用程序）</li>
+</ul>
+</li>
+<li>弱加密安全测试，包括以下主题：
+<ul>
+<li>安全测试与功能测试之间的区别</li>
+<li>风险评估</li>
+<li>安全测试方法</li>
+</ul>
+</li>
+<li>隐私，包括以下主题：
+<ul>
+<li>隐私敏感数据的类型</li>
+<li>隐私设计最佳实践</li>
+<li>风险评估</li>
+<li>隐私开发最佳实践</li>
+<li>隐私测试最佳实践</li>
+</ul>
+</li>
+</ul>
+<h3 id="2安全需求">2、安全需求</h3>
+<p>为减少安全问题带来的损失，以及线上安全问题整改带来的成本，需要将 安全工作进行前置。在需求分析阶段，应该对软件产品的风险进行评估，建立 安全需求。由于产品多且功能繁杂、项目管理未覆盖到每条业务线、安全团队 人员少等诸多因素，ROI 是最头疼的难题。不过可以因地制宜，借助纵深防御 思想并落实到该阶段，建立基本或通用的安全需求。</p>
+<ul>
+<li>安全需求：“预先”考虑安全和隐私是开发安全系统过程的基础环节。为软件项目定义信任度要求的最佳时间是在初始计划阶段。尽早定义要求有助于开发团队确定关键里程碑和交付成果，并使集成安全和隐私的过程尽量不影响到计划和安排。对安全和隐私要求的分析在项目初期执行，所做工作涉及为设计在计划运行环境中运行的应用程序确定最低安全要求，并确立和部署安全漏洞/工作项跟踪系统。</li>
+<li>质量门/Bug栏：用于确立安全和隐私质量的最低可接受级别。</li>
+<li>安全和隐私风险评估：安全风险评估 (SRA) 和隐私风险评估 (PRA) 是必需的过程，用于确定软件中需要深入评析的功能环节。</li>
+</ul>
+<h3 id="3安全设计">3、安全设计</h3>
+<p>SDL 安全设计核心原则:</p>
+<ul>
+<li>
+<p>Attack Surface Reduction:攻击面最小化</p>
+</li>
+<li>
+<p>Basic Privacy: 基本隐私</p>
+</li>
+<li>
+<p>Least Privilege: 权限最小化</p>
+</li>
+<li>
+<p>Secure Defaults: 默认安全</p>
+</li>
+<li>
+<p>Defense in Depth:纵深防御</p>
+</li>
+<li>
+<p>Threat Modeling:威胁建模</p>
+</li>
+</ul>
+<p><strong>攻击面最小化</strong></p>
+<p>攻击面是指程序任何能被用户或者其它程序所访问到的部分，这些暴露给用 户的地方往往也是最可能被恶意攻击者攻击的地方。
+攻击面最小化即是指尽量减少暴露恶意用户可能发现并试图利用的攻击面 数量。</p>
+<p>软件产品的受攻击面是一个混合体，不仅包括代码、接口、服务，也包括 对所有用户提供服务的协议。尤其是那些未被验证或者远程的用户都可以访问到的协议，安全人员在攻击面最小化时首先要对攻击面进行分析，攻击面分析就是 枚举所有访问入库、接口、协议一剂可执行代码的过程，从高层次来说，攻击面 分析着重于:</p>
+<ul>
+<li>
+<p>降低默认执行的代码量</p>
+</li>
+<li>
+<p>限制可访问到代码的人员范围</p>
+</li>
+<li>
+<p>限定可访问到代码的人员身份</p>
+</li>
+<li>
+<p>降低代码执行所需权限</p>
+</li>
+</ul>
+<p><strong>基本隐私</strong></p>
+<p>用户使用软件时无可避免个人信息被收集、使用甚至分发，企业则有责任和 义务建立保护个人信息的保护措施，抵御敌对攻击行为，确保用户基本隐私的安 全性。隐私安全是建立可信任应用程序的关键因素。</p>
+<p>在软件设计时考虑用户基本隐私的必要性及意义有:</p>
+<ul>
+<li>
+<p>履行法律规定和义务</p>
+</li>
+<li>
+<p>增加客户的信赖</p>
+</li>
+<li>
+<p>防止堵塞部署</p>
+</li>
+</ul>
+<p><strong>权限最小化</strong></p>
+<p>如果一个应用程序或网站被攻击、破坏，权限最小化机制能够有效的将潜在 损害最小化。常见的权限最小化实践如:</p>
+<ul>
+<li>普通管理员/系统管理员等角色管理</li>
+<li>文件只读权限/文件访问权限等访问控制</li>
+<li>进程/服务以所需最小用户权限运行</li>
+</ul>
+<p>在进行软件设计时，安全设计人员可以评估应用程序的行为及功能所需的最
+低限度权限及访问级别，从而合理分配相应的权限。如果程序特定情况必须要较 高级别的权限，也可以考虑特权赋予及释放的机制。即便程序遭到攻击，也可以 将损失降到最低。</p>
+<p><strong>默认安全</strong></p>
+<p>默认安全配置在客户熟悉安全配置选项之前不仅有利于更好的帮助客户掌 握安全配置经验，同时也可以确保应用程序初始状态下处于较安全状态。而客户 可根据实际使用情况而决定应用程序安全与隐私的等级水平是否降低。</p>
+<p><strong>纵深防御</strong></p>
+<p>与默认安全一样，纵深防御也是设计安全方案时的重要指导思想。纵深防御 包含两层含义:首先，要在各个不同层面、不同方面实施安全方案，避免出现疏 漏，不同安全方案之间需要相互配合，构成一个整体;其次，要在正确的地方做 正确的事情，即在解决根本问题的地方实施针对性的安全方案。
+纵深防御并不是同一个安全方案要做两遍或多遍，而是要从不同的层面、不 同的角度对系统做出整体的解决方案。</p>
+<p><strong>威胁建模</strong></p>
+<p>威胁建模是一种分析应用程序威胁的过程和方法。这里的威胁是指恶意用户 可能会试图利用以破坏系统，和我们常说的漏洞并不相同。漏洞是一个特定的可 以被利用的威胁，如缓冲区溢出、sql 注入等。
+作为 SDL 设计阶段的一部分安全活动，威胁建模允许安全设计人员尽在的 识别潜在的安全问题并实施相应缓解措施。在设计阶段把潜在的威胁发现有助于威胁的全面和更有效的解决，同时也有助于降低开发和后期维护的成本。威胁建 模的一般流程如下:
+与系统架构师及设计人员沟通，了解设计详情</p>
+<ul>
+<li>使用成熟的威胁建模方法分析当前设计潜在的安全问题</li>
+<li>提出安全建议及对潜在威胁的缓解措施</li>
+<li>对安全设计进行验证并对整个设计方案进行回顾并再次确认 微软使用的威胁建模方法是STRIDE威胁建模方法。为了便于安全人员快速便捷的进行威胁建模，微软开发基于 STRIDE 威胁建模方法的 SDL Threat Modeling Tool2威胁建模工具，该工具可以帮助安全人员画数据流图、分析威胁、 生成并导出威胁建模报告。</li>
+</ul>
+<p>STRIDE威胁建模：STRIDE威胁建模是由微软提出的一种威胁建模方法，该方法将威胁类型分为Spoofing（仿冒）、Tampering（篡改）、Repudiation（抵赖）、Information Disclosure（信息泄漏）、Denial of Service（拒绝服务）和 Elevation of Privilege（权限提升）。STRIDE威胁模型几乎可以涵盖目前绝大部分安全问题。</p>
+<p>相关概念解释如下表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">威胁</th>
+<th style="text-align:left">定义</th>
+<th style="text-align:left">对应的安全属性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Spoofing</td>
+<td style="text-align:left">冒充他人身份</td>
+<td style="text-align:left">认证</td>
+</tr>
+<tr>
+<td style="text-align:left">Tampering</td>
+<td style="text-align:left">修改数据或代码</td>
+<td style="text-align:left">完整性</td>
+</tr>
+<tr>
+<td style="text-align:left">Repudiation</td>
+<td style="text-align:left">否认做过的事</td>
+<td style="text-align:left">不可抵赖性</td>
+</tr>
+<tr>
+<td style="text-align:left">Information Disclosure</td>
+<td style="text-align:left">机密信息泄露</td>
+<td style="text-align:left">机密性</td>
+</tr>
+<tr>
+<td style="text-align:left">Denial of Service</td>
+<td style="text-align:left">拒绝服务</td>
+<td style="text-align:left">可用性</td>
+</tr>
+<tr>
+<td style="text-align:left">Elevation of Privilege</td>
+<td style="text-align:left">未经授权获得许可</td>
+<td style="text-align:left">授权</td>
+</tr>
+</tbody>
+</table>
+<p>STRIDE威胁建模流程和前面介绍的一样：</p>
+<ul>
+<li>绘制数据流图</li>
+<li>识别威胁</li>
+<li>提出缓解措施</li>
+<li>安全验证</li>
+</ul>
+<h3 id="4安全开发">4、安全开发</h3>
+<p>在确定产品原型与功能之后，便交由开发负责推进。然而他们的关注点大多仅在于业务流程与功能点的实现，具体使用的技术决定于公司技术栈和个人能力，对于带着安全意识去编码这件事儿，大多都没太在意。</p>
+<p>本块主要包含了安全开发规范、安全组件接入、静态代码扫描三方面：</p>
+<p><strong>安全开发规范</strong></p>
+<p>从隐私和安全角度两方面出发，结合当前发现的高危问题;参考业界的安全开发规范，融合公司当前的技术栈;站在开发视角，进行安全开发规范的编写。规范项不在多，关键是需要清晰、易懂、针对性强、易判断是否违规。</p>
+<p><strong>安全组件接入</strong></p>
+<p>分析企业中存在的常见安全漏洞，来源可能是内部安全测试结果、外部漏洞收集(SRC、第三方漏洞平台、CVND 等)，并结合漏洞影响、开发难易程度、加固效果，对业务部门输出统一的安全组件，快速、高效、低成本解决普遍存在的安全问题。常见的可能有:统一登录安全网关、短信安全网关、CSRF-token 组件、XSS 过滤器(适用于非富文本框场景)等。</p>
+<p><strong>静态代码扫描</strong></p>
+<p>代码的白盒测试，最好是嵌入到发布流程中。一方面对源代码起到保护作用，不用另辟蹊径存放源代码，打破源代码统一管控的好局势;另一方面可以在流程中设置卡点，形成强有力的抓手。不少人对代码分析存在恐惧，觉得是效率低并且要求高的工作，但是在代码层面找出问题对于整个 SDL 都是十分必 要、有效的一环。市面上的代码审计工具不少，商业的包括 checkmarx、fortify、coverity，开源的有 check style、findbugs、cobra、Rips 等，需要从语言的支持、误报率、购买以及维护成本等不同维度进行综合评估。</p>
+<h3 id="5安全测试">5、安全测试</h3>
+<p>SDL 可视作为软件安全方面的纵深防御，到了测试阶段也就代表着软件架构与设计已经定型、第三方开源组件的引用已基本不太可能改变、前面各环节 的漏网安全 bug 已迎来最后一次发布前的检测。</p>
+<p><strong>安全提测信息</strong></p>
+<ul>
+<li>测试环境一致:确保待测系统与生产环境一样，是保证安全测试质量 的基础，但往往却较难实现。</li>
+<li>测试环境可访问:由于网络 ACL 限制等因素导致安全测试人员一时不能访问，也是常见的一种现象，将安全测试时间花费在环境的准备上比较可惜。</li>
+<li>测试账号提供:待测系统通常会有不同权限的账号，如果业务方不能完整提供，可能会导致越权、SQLi、信息泄露等常见安全 bug 漏测。</li>
+<li>测试范围确定:指明安全提测类型是全量还是增量，如果是增量需要 说明新增功能点至关重要，可提升安全测试的速度并保证一定的安全 质量。</li>
+</ul>
+<p>解决安全提测信息中可能遇到的各类问题，可以通过规范提测信息填写要求、提测信息核对处理流程、设置专人校对(刚入门不久的外包、实习生等)
+来解决。</p>
+<p><strong>安全测试思路</strong></p>
+<ul>
+<li>
+<p>安全测试用例:在实现自动化安全测试前，沉淀一份具有本公司特点、集成团队成员测试技能的安全测试用例，变得十分有必要。首先，一定程度上能弥补团队成员因能力层次不齐而导致的安全测试质量不一，再者可以为实现自动化提供高命中规则。其次，可提供给新人快速上手，帮助新人成长至胜任安全测试工作;最后，对外输出给测试团队，赋能测试团队减轻安全团队的压力。</p>
+</li>
+<li>
+<p>安全测试工具:被动测试工具，在团队内部越来越收到青睐，特别是 面对多工单任务繁重的场景。将针对性强检测的插件集成到
+BurpSuite，进行被动式扫描，不失为一种简单高效的方法。</p>
+</li>
+<li>
+<p>安全测试方法论:标准的安全测试流程不能督促团队成员去标准作 业，亦不能弥补团队成员的能力差异。自动化安全测试，或许是解决 这些问题的最佳方案。</p>
+</li>
+</ul>
+<p><strong>安全漏洞管理</strong></p>
+<p>漏洞的产生到修复离不开安全人员和业务方，然而串联起他们之间的便是 漏洞的管理流程和扭转状态。</p>
+<p>前者需要流程管理系统来支持，比如 jira;后者需要自定义漏洞状态以及状态改变的触发动作，整个环节最终目标就是让漏洞被及时修复。</p>
+<h3 id="6发布审核">6、发布审核</h3>
+<p>在本环节中，已经不再涉及到 SDL 中的“工具”，转而到“流程”。产品 发布前的最后一道关卡，做最终的安全验收。无论是否能满足安全质量要求，产品均有可能发布上线，但一定得有兜底的措施。</p>
+<p>对于符合安全部门要求的产品，放行发布上线;对不符合安全要求的产品，理论上则不允许上线。然而在实际的场景中，业务和安全孰轻孰重一直是热议的话题，即使是在大型互联网公司也会存在部分业务优先。但在放行不达标产品前，需要将安全风险降低和安全责任抛出，并制定一系列的第二或第三选择安全方案进行兜底，切实起到公司安全投入有产出、安全赋能产品的初衷。</p>
+<p>主要分为以下三项：</p>
+<p><strong>事件响应计划</strong></p>
+<p>受SD要求约束的每个软件发布都必须包含事件响应计划。即使在发布时不包含任何已知漏洞的程序也可能面临日后新出现的威胁。事件响应计划应包括：</p>
+<ul>
+<li>单独指定的可持续工程 (SE) 团队；或者，如果团队太小以至于无法拥有 SE 资源，则应制定紧急响应计划 (ERP)，在该计划中确定相应的工程、市场营销、通信和管理人员充当发生安全紧急事件时的首要联系点。</li>
+<li>与决策机构的电话联系（7 x 24 随时可用）。</li>
+<li>针对从组织中其他小组继承的代码的安全维护计划。</li>
+<li>针对获得许可的第三方代码的安全维护计划，包括文件名、版本、源代码、第三方联系信息以及要更改的合同许可（如果适用）。</li>
+</ul>
+<p><strong>最终安全评审</strong></p>
+<p>最终安全评析 (FSR) 是在发布之前仔细检查对软件应用程序执行的所有安全活动。FSR 由安全顾问在普通开发人员以及安全和隐私团队负责人的协助下执行。FSR 不是“渗透和修补”活动，也不是用于执行以前忽略或忘记的安全活动的时机。FSR 通常要根据以前确定的质量门或 Bug 栏检查威胁模型、异常请求、工具输出和性能。</p>
+<p><strong>发布/存档</strong></p>
+<p>指派负责发布事宜的安全顾问必须证明（使用 FSR 和其他数据）项目团队已满足安全要求。此外，必须对所有相关信息和数据进行存档，以便可以对软件进行发布后维护。这些信息和数据包括所有规范、源代码、二进制文件、专用符号、威胁模型、文档、紧急响应计划、任何第三方软件的许可证和服务条款以及执行发布后维护任务所需的任何其他数据。</p>
+<h3 id="7安全响应">7、安全响应</h3>
+<p>漏洞总是在不断的涌现，即使是前面的各项安全活动中均已达标，产品在上线后依旧会面临新增漏洞的攻击。对于安全风险的警觉和发现能力以及渠道，需要逐步建立并完善、运营。</p>
+<p>在传统软件开发生命周期中，与技术相关的最后一阶段是响应，微软在该阶段所推崇的安全活动为执行事件响应计划。在实际落地时，可针对响应的渠 道进行扩展，比如从漏洞预警信息监测、从 SRC 接收到产品相关的漏洞信息等入手;也可将被动式接收产品漏洞信息，转变为每季度进行漏洞扫描，主动发现已上线产品的漏洞并进行安全响应。</p>
+<h2 id="0x03-结尾">0x03 结尾</h2>
+<p>其实要推动整个SDL落地还是比较难的，所以现在很多公司都从SDL过度到DevSecOps主要还是因为现在的DevOps的交付模式、历史问题、业务模式、SDL的门槛等等。</p>
+<h2 id="0x04-参考">0x04 参考</h2>
+<p>1、<a href="http://www.mi1k7ea.com/2021/05/16/%E6%B5%85%E8%B0%88SDL%E4%B8%8EDevSecOps/">浅谈SDL与DevSecOps-Mi1k7ea</a></p>
+<p>2、SDL的最初实践-aerfa</p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/sdl.html">https://xxe.icu/sdl.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/using_bloodhound_under_macos.html" class="underline text-yellow-600">域渗透-MacOS下的BloodHound攻击</a></li>
+    
+    <li><a href="/ad_delegation.html" class="underline text-yellow-600">域渗透-委派攻击原理与实战</a></li>
+    
+    <li><a href="/ad_ptt.html" class="underline text-yellow-600">域渗透-票据传递攻击（Pass the Ticket）</a></li>
+    
+    <li><a href="/ad_spn.html" class="underline text-yellow-600">域渗透-SPN</a></li>
+    
+    <li><a href="/ad_kerberoasting.html" class="underline text-yellow-600">域渗透-Kerberoasting</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+        <li><a href="#0x0-前言">0x0 前言</a></li>
+        <li><a href="#0x01-sdl概念">0x01 SDL概念</a>
+          <ul>
+            <li><a href="#sdlsdlc和s-sdlc">SDL、SDLC和S-SDLC</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x02-sdl实践">0x02 SDL实践</a>
+          <ul>
+            <li><a href="#1安全培训">1、安全培训</a></li>
+            <li><a href="#2安全需求">2、安全需求</a></li>
+            <li><a href="#3安全设计">3、安全设计</a></li>
+            <li><a href="#4安全开发">4、安全开发</a></li>
+            <li><a href="#5安全测试">5、安全测试</a></li>
+            <li><a href="#6发布审核">6、发布审核</a></li>
+            <li><a href="#7安全响应">7、安全响应</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x03-结尾">0x03 结尾</a></li>
+        <li><a href="#0x04-参考">0x04 参考</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

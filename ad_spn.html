@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/ad_spn.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="域渗透-SPN - F0rmat&#39;s Blog">
+    <meta property="og:title" content="域渗透-SPN - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="域渗透-SPN - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 SPN是服务器上所运行服务的唯一标示，每个使用Kerberos的服务都需要一个SPN，这样客户端才可以辨认这个服务。 在之前写的一篇关于">
+    <meta property="og:description" content="0x00 前言 SPN是服务器上所运行服务的唯一标示，每个使用Kerberos的服务都需要一个SPN，这样客户端才可以辨认这个服务。 在之前写的一篇关于">
+    <meta property="twitter:description" content="0x00 前言 SPN是服务器上所运行服务的唯一标示，每个使用Kerberos的服务都需要一个SPN，这样客户端才可以辨认这个服务。 在之前写的一篇关于">
+    <meta property="og:type" content="article">
+    <title>域渗透-SPN - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/ad_spn.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/ad_spn.html" title="域渗透-SPN">域渗透-SPN</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-02-27 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 27 Feb 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            4305 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            9 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-基础概念">0x01 基础概念</a>
+      <ul>
+        <li><a href="#spn-简介">SPN 简介</a></li>
+        <li><a href="#spn的作用">SPN的作用</a></li>
+        <li><a href="#spn类型">SPN类型</a></li>
+        <li><a href="#spn语法格式与配置">SPN语法格式与配置</a>
+          <ul>
+            <li><a href="#spn的语法格式">SPN的语法格式</a></li>
+            <li><a href="#spn的配置">SPN的配置</a></li>
+          </ul>
+        </li>
+        <li><a href="#ldap协议">LDAP协议</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-mssql注册spn实践">0x02 MSSQL注册SPN实践</a>
+      <ul>
+        <li><a href="#环境">环境</a></li>
+        <li><a href="#注册spn">注册SPN</a></li>
+        <li><a href="#赋予普通域用户读写spn权限">赋予普通域用户读写SPN权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-扫描spn">0x03 扫描SPN</a>
+      <ul>
+        <li><a href="#powerview">PowerView</a></li>
+        <li><a href="#getuserspnsvbs">GetUserSPNs.vbs</a></li>
+        <li><a href="#getuserspnsps1">GetUserSPNs.ps1</a></li>
+        <li><a href="#getuserspnspy">GetUserSPNs.py</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>SPN是服务器上所运行服务的唯一标示，每个使用Kerberos的服务都需要一个SPN，这样客户端才可以辨认这个服务。</p>
+<p>在之前写的一篇关于kerberos认证<a href="https://xxe.icu/posts/kerberos_authentication/">域渗透-Kerberos认证</a>里面就有相关与SPN的知识，但是没有展开写，这里就详细写一篇关于SPN的文章。</p>
+<p>SPN的识别也是Kerberoasting攻击的第一步，所以我们也要了解SPN才可以去做相关的攻击，那我们接下来就从基础概念由浅入深来介绍SPN。</p>
+<h1 id="0x01-基础概念">0x01 基础概念</h1>
+<h2 id="spn-简介">SPN 简介</h2>
+<p>服务主体名称（SPN：ServicePrincipal Names）是服务实例（可以理解为一个服务，比如 HTTP、MSSQL）的唯一标识符。Kerberos 身份验证使用 SPN 将服务实例与服务登录帐户相关联。如果在整个林或域中的计算机上安装多个服务实例，则每个实例都必须具有自己的 SPN。如果客户端可能使用多个名称进行身份验证，则给定服务实例可以具有多个 SPN。SPN 始终包含运行服务实例的主机的名称，因此服务实例可以为其主机的每个名称或别名注册 SPN。</p>
+<p>如果用一句话来说明的话就是如果想使用 Kerberos 协议来认证服务，那么必须正确配置 SPN。</p>
+<p>由于每台服务器都需要注册用于Kerberos身份验证服务的SPN因此这为在不进行大规模端口扫描的情况下收集有关内网域环境的信息提供了一个更加隐蔽的方法。</p>
+<h2 id="spn的作用">SPN的作用</h2>
+<p>当某用户需要访问MySQL服务时，系统会以当前用户的身份向域控查询SPN为MySQL的记录。当找到该SPN记录后，用户会再次与KDC通信，将KDC发放的TGT作为身份凭据发送给客户，并将需要访问的SPN发送给KDC。</p>
+<p>KDC中的TGS服务对TGT进行解密。确认无误后，由TGS将一张允许访问该SPN所对应的服务的ST服务票据和该SPN所对应的服务的地址发送给用户，用户使用该票据即可访问MySQL服务。</p>
+<h2 id="spn类型">SPN类型</h2>
+<p>SPN的类型分为两种：</p>
+<ol>
+<li>一种是注册在活动目录的机器帐户(Computers)下，当一个服务的权限为 Local System 或 Network Service，则SPN注册在机器帐户(Computers)下。</li>
+<li>一种是注册在活动目录的域用户帐户(Users)下，当一个服务的权限为一个域用户，则SPN注册在域用户帐户(Users)下。</li>
+</ol>
+<blockquote>
+<p>一般想要利用的话都是找以域用户身份注册的，因为Local System和Network Service没有利用价值，就算跑出来了，在自己的理解方面，也没有可以利用的方向</p>
+</blockquote>
+<p>如下图所示，CN=Computers那就是主机，CN=Users那就是在域用户下注册：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/1.png" alt="1"></p>
+<h2 id="spn语法格式与配置">SPN语法格式与配置</h2>
+<h3 id="spn的语法格式">SPN的语法格式</h3>
+<p>在 SPN 的语法中存在四种元素，两个必须元素和两个额外元素，其中<code>&lt;service class&gt;</code>和为<code>&lt;host&gt;</code>必须元素：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;serviceclass&gt;/&lt;host&gt;:&lt;port&gt;/&lt;service name&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;service class&gt;：标识服务类的字符串
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;host&gt;：服务所在主机名称
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;port&gt;：服务端口
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;service name&gt;：服务名称，所谓的实例名称
+</span></span></code></pre></div><p>例如下面的一条：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">MSSQLSvc(标识服务类)/SQL.hack.lab(服务所在主机名称):1433(服务端口)/mssql(服务名称)
+</span></span></code></pre></div><p><strong>主机名称</strong>：可以分为FQDN和netbios，一个是运行SQL Server的计算机的FQDN（SQL.hack.lab）。还有一种就是SQL Server的计算机的netbios名字（SQL），俗称短名。</p>
+<p><strong>端口号/实例名</strong>：服务所监听的计算机端口号。对于SQL Server而言，如果SQL运行在默认端口（1433）上，则端口号可以省略。</p>
+<p>例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">MSSQLSvc/myserver.corp.mycomany.com:1433
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">MSSQLSvc/myserver:1433
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">MSSQLSvc/myserver.corp.mycomany.com
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">MSSQLSvc/myserver:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">MSSQLSvc/myserver.corp.mycomany.com:instancename
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">MSSQLSvc/myserver:instancename
+</span></span></code></pre></div><p>想再详细了解可以在微软的官方文档中阅读：<a href="https://docs.microsoft.com/en-us/windows/win32/ad/name-formats-for-unique-spns?redirectedfrom=MSDN">Name Formats for Unique SPNs</a></p>
+<h3 id="spn的配置">SPN的配置</h3>
+<p>这一块分为SPN的查询、注册、删除等操作，更详细的可以查阅官方文档：<a href="https://docs.microsoft.com/zh-cn/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc731241(v=ws.11)#spn-format">Setspn</a></p>
+<ol>
+<li>
+<p>查询</p>
+<p>查询全部已注册的条目：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn –q */* 
+</span></span></code></pre></div><p>查询指定域注册的条目：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn –T hack.lab –q */* 
+</span></span></code></pre></div><p>查询指定域用户或者域主机的条目：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn –L lucky(域用户)
+</span></span></code></pre></div><blockquote>
+<p>所有域内的用户都有权限查询SPN</p>
+</blockquote>
+</li>
+</ol>
+<p>如果查询出现以下的错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Ldap 错误(0x31 -- 无效凭据): ldap_bind_sW
+</span></span><span class="line"><span class="cl">无法检索域“”的 DN: 0x00000031
+</span></span><span class="line"><span class="cl">警告: 未指定有效的目标，正在还原为当前域。
+</span></span><span class="line"><span class="cl">Ldap 错误(0x31 -- 无效凭据): ldap_bind_sW
+</span></span><span class="line"><span class="cl">搜索现有 SPN 时出错: 0x00000031
+</span></span></code></pre></div><p>原因是：域主机未能和域控时间同步</p>
+<p>解决的办法就是配置域控的时间与互联网同步，可以参考文章：<a href="https://www.drpneu.com/key/%E5%9F%9F%E6%8E%A7%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%B6%E9%97%B4%E4%B8%8D%E5%87%86.html"> 域控服务器时间不准</a></p>
+<p>然后在域主机上配置同步域控时间：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">net time \\dc.hack.lab /set
+</span></span></code></pre></div><ol start="2">
+<li>
+<p>注册</p>
+<p>方法一：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn -A MSSQLSvc/SQL.hack.lab:1433 lucky
+</span></span></code></pre></div><p>意思就是说注册一条服务类为MSSQLSvc，主机为SQL.hack.lab，端口为1433，注册在lucky域用户下。</p>
+<p>部分的服务会自动尝试利用自己的账户进行注册SPN，比如SQLServer在每次启动的时候，都会去尝试注册SPN。</p>
+<p>方法二：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn -S MSSQLSvc/SQL.hack.lab:1433 lucky
+</span></span></code></pre></div><p>跟上面的区别就是，-S可以验证是否有重复的SPN，如果有就禁止注册。因为如果有重复的SPN会导致kerberos认证的时候失败，在下面的MSSQL实战中会有一个例子。</p>
+<blockquote>
+<p>域管理用户和机器用户本身有注册SPN的权限，域用户没有，如果要注册要赋予Read servicePrincipalName和Write serverPrincipalName权限</p>
+</blockquote>
+</li>
+<li>
+<p>删除</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn -D MSSQLSvc/SQL.hack.lab:1433 lucky
+</span></span></code></pre></div></li>
+<li>
+<p>查重</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn -X
+</span></span></code></pre></div></li>
+</ol>
+<h2 id="ldap协议">LDAP协议</h2>
+<p>去查询SPN的时候，都会用到一个协议，叫做LDAP（LightweightDirectory Access Protocol），中文名为轻量目录访问协议。是一种用来查询与更新 Active Directory 的目录服务通信协议。AD 域服务利用 LDAP 命名路径（LDAP naming path）来表示对象在 AD 内的位置，以便用它来访问 AD 内的对象。</p>
+<p>LDAP 数据的组织方式：</p>
+<p>更直观的说可以把 LDAP 协议理解为一个关系型数据库，其中存储了域内主机的各种配置信息。</p>
+<p>在域控中默认安装了 ADSI 编辑器，全称 ActiveDirectory Service Interfaces Editor (ADSI Edit)，是一种 LDAP 的编辑器，可以通过在域控中运行 <code>adsiedit.msc </code>来打开（服务器上都有，但是只有域控中的有整个域内的配置信息）。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/2.png" alt="2"></p>
+<p>通过 adsiedit.msc 我们可以修改和编辑 LADP，在 SPN 查询时实际上就是查询 LADP 中存储的内容。</p>
+<blockquote>
+<p>LDAP默认是监听在DC的389端口</p>
+</blockquote>
+<p>我们可以看到使用Wireshark抓波ldap协议的内容：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/3.png" alt="3"></p>
+<h1 id="0x02-mssql注册spn实践">0x02 MSSQL注册SPN实践</h1>
+<h2 id="环境">环境</h2>
+<table>
+<thead>
+<tr>
+<th>主机名称</th>
+<th style="text-align:left">IP地址</th>
+<th>所在域</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DC</td>
+<td style="text-align:left">172.16.0.106</td>
+<td>hack.lab</td>
+<td>提供SPN服务和kerberos认证</td>
+</tr>
+<tr>
+<td>SQL</td>
+<td style="text-align:left">172.16.0.111</td>
+<td>hack.lab</td>
+<td>提供SQL Server服务</td>
+</tr>
+<tr>
+<td>WIN7A</td>
+<td style="text-align:left">172.16.0.105</td>
+<td>hack.lab</td>
+<td>使用域用户登录SQL主机的SQL Server服务</td>
+</tr>
+</tbody>
+</table>
+<p>在主机SQL（172.16.0.111）上安装SQL Server 2019 Express 版本，我们先去官网下载：<a href="https://go.microsoft.com/fwlink/?linkid=866658">立即下载 </a></p>
+<p>我们还要去安装一个SQL管理工具：<a href="https://aka.ms/ssmsfullsetup"> SQL Server Management Studio (SSMS)</a></p>
+<p>具体安装步骤在此就不再讲述，可以参考网上的文章：<a href="https://blog.csdn.net/CHQC388/article/details/104550963">SQL Server 2019 安装教程</a></p>
+<p>如果想在IIS上注册SPN可以参考文章：<a href="https://blog.csdn.net/qq_26886929/article/details/55058264?spm=1001.2014.3001.5502">IIS 开启 Kerberos 认证</a></p>
+<h2 id="注册spn">注册SPN</h2>
+<p>我们可以发现，在安装完SQL Server的时候已经在SPN中自动注册了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/4.png" alt="4"></p>
+<p>这个是因为在安装的时候是默认使用Network Service来启动服务，内置账户Network Service和Local System代表计算机本身，SPN需要注册在运行SQL Server的计算机账户下。但Network Service和Local System<strong>本身有权限为本机注册和删除SPN</strong>，一般情况不需要手动修改。</p>
+<blockquote>
+<p>Local System权限过大，不推荐使用做服务启动账户</p>
+</blockquote>
+<p>首先我们要开启远程连接，打开配置管理器：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/6.png" alt="6"></p>
+<p>在网络配置里面启用TCP/IP：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/7.png" alt="7"></p>
+<p>完成上面的远程访问配置我们开始从WIN7A主机连接SQL主机的SQL Sever服务：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/5.png" alt="5"></p>
+<p>登录之后我们可以在SQL主机用sa或者是域管理用户去查询该连接：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="n">auth_scheme</span><span class="p">,</span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">dm_exec_connections</span><span class="w">
+</span></span></span></code></pre></div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/8.png" alt="8"></p>
+<p>然而我们一般是会使用域用户去注册SPN的MSSQL服务，我们首先要在MSSQL的配置器中修改成域用户，因为我们的Kerberoasting攻击就要用到这一块的内容：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/9.png" alt="9"></p>
+<p>修改完后我们再从WIN7A主机进行登录，发现报错了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/10.png" alt="10"></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">The target principal name is incorrect.  Cannot generate SSPI context
+</span></span></code></pre></div><p>这个是什么原因呢，因为我们一开始安装SQL Server的时候是自动使用机器用户注册在SPN上的，而且现在我们选择的这个testsql用户没有权限去注册SPN，所以就会导致进行登录的时候去查询SPN发现testsql用户下没有注册。</p>
+<p>现在我们需要正确去配置SPN，我这里是利用域管的账户进行操作，首先是添加正确的SPN：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn -S MSSQLSvc/SQL.hack.lab:1433 testsql
+</span></span><span class="line"><span class="cl">setspn -S MSSQLSvc/SQL.hack.lab testsql
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/11.png" alt="11"></p>
+<p>我们再查询一下SPN记录：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn -L testsql
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/12.png" alt="12"></p>
+<p>现在我们重新去使用WIN7A主机进行登录，发现成功登录了。</p>
+<p>如果发现总是出现错误可以使用微软的Kerberos Configuration Manager for SQL Server的工具：</p>
+<p><a href="https://www.microsoft.com/en-ca/download/details.aspx?id=39046">https://www.microsoft.com/en-ca/download/details.aspx?id=39046</a></p>
+<p>下载安装后要在目录才可以找到：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/24.png" alt="24"></p>
+<p>打开后直接点connect即可，不用输入任何信息：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/25.png" alt="25"></p>
+<p>它会显示出我们那些出现了错误，点击旁边的fix即可修复：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/26.png" alt="26"></p>
+<p>具体可以参考文章：<a href="https://www.mssqltips.com/sqlservertip/6772/kerberos-configuration-manager-for-sql-server/">Using Kerberos Configuration Manager for SPNs Validation</a></p>
+<h2 id="赋予普通域用户读写spn权限">赋予普通域用户读写SPN权限</h2>
+<p>如果权限不够执行注册SPN会出现下面的错误：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/19.png" alt="19"></p>
+<p>由于我们上面说到因为使用testsql域用户来启动SQL Server服务没有权限注册SPN，所以我们想要普通的域用户我们可以执行下面的操作。</p>
+<p>在ADSI 编辑器（adsiedit.msc）中，选择testsql用户，然后点击下面的<code>高级</code>按钮：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/13.png" alt="13"></p>
+<p>弹出高级安全设置后点击下面的<code>添加</code>按钮：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/14.png" alt="14"></p>
+<p>这里我们选择主体：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/15.png" alt="15"></p>
+<p>选择SELF：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/16.png" alt="16"></p>
+<p>确定后，我们在下面的这两项打勾即可：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/17.png" alt="17"></p>
+<p>现在我们域用户testsql就有权限去注册SPN了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/18.png" alt="18"></p>
+<h1 id="0x03-扫描spn">0x03 扫描SPN</h1>
+<p>我们除了可以使用SetSPN也可以使用其他的一些脚本进行查询。</p>
+<h2 id="powerview">PowerView</h2>
+<p>PowerView是 PowerSpolit 中 Recon目录下的一个powershell脚本PowerView 相对于上面几种是根据不同用户的 objectsid 返回的信息更加详细。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="nb">Import-Module</span> <span class="p">.\</span><span class="n">PowerView</span><span class="p">.</span><span class="py">ps1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Get-NetUser</span> <span class="n">-SPN</span>
+</span></span></code></pre></div><p>结果如图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/20.png" alt="20"></p>
+<h2 id="getuserspnsvbs">GetUserSPNs.vbs</h2>
+<p>GetUserSPNs 是 Kerberoast 工具集中的一个 vbs 脚本用来查询域内用户注册的 SPN。</p>
+<p>下载地址：https://github.com/nidem/kerberoast/blob/master/GetUserSPNs.vbs</p>
+<p>执行命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cscript ./GetUserSPNs.vbs
+</span></span></code></pre></div><p>结果如图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/21.png" alt="21"></p>
+<h2 id="getuserspnsps1">GetUserSPNs.ps1</h2>
+<p>GetUserSPNs 是 Kerberoast 工具集中的一个 powershell 脚本用来查询域内用户注册的 SPN。</p>
+<p>下载地址：https://github.com/nidem/kerberoast/blob/master/GetUserSPNs.ps1</p>
+<p>执行命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Import-Module .\GetUserSPNs.ps1
+</span></span></code></pre></div><p>结果如图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/22.png" alt="22"></p>
+<h2 id="getuserspnspy">GetUserSPNs.py</h2>
+<p>GetUserSPNs.py是<strong>impacket</strong>工具包的一款工具，该工具包用于对SMB1-3或IPv4 / IPv6 上的TCP、UDP、ICMP、IGMP，ARP，IPv4，IPv6，SMB，MSRPC，NTLM，Kerberos，WMI，LDAP等协议进行低级编程访问，可使用该工具对目标主机进行SPN探测。</p>
+<p>安装地址：https://github.com/SecureAuthCorp/impacket</p>
+<p>该工具在最新版本的kali是内置的，直接运行即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">GetUserSPNs.py hack.lab/lucky:p@ssw0rd -dc-ip 172.16.0.106 -request
+</span></span></code></pre></div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad-spn/23.png" alt="23"></p>
+<p>当然这款工具也利用于Kerberoasting的攻击，Kerberoasting在另外一篇文章中讲到：</p>
+<h1 id="0x04-参考">0x04 参考</h1>
+<p><a href="https://www.modb.pro/db/62849">https://www.modb.pro/db/62849</a></p>
+<p><a href="https://www.freebuf.com/articles/system/196434.html">https://www.freebuf.com/articles/system/196434.html</a></p>
+<p><a href="https://chowdera.com/2021/12/20211201194023144R.html">https://chowdera.com/2021/12/20211201194023144R.html</a></p>
+<p><a href="http://f5.pm/go-8673.html">http://f5.pm/go-8673.html</a></p>
+<p><a href="https://www.anquanke.com/post/id/219934">https://www.anquanke.com/post/id/219934</a></p>
+<p><a href="https://www.cnblogs.com/zpchcbd/p/11707776.html">https://www.cnblogs.com/zpchcbd/p/11707776.html</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/ad_spn.html">https://xxe.icu/ad_spn.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/ad_kerberoasting.html" class="underline text-yellow-600">域渗透-Kerberoasting</a></li>
+    
+    <li><a href="/ad_as_reproasting.html" class="underline text-yellow-600">域渗透-AS_REPRoasting</a></li>
+    
+    <li><a href="/ad_pass_key.html" class="underline text-yellow-600">域渗透-哈希传递攻击(Pass The Hash/Key)</a></li>
+    
+    <li><a href="/kerberos_user_enumerate.html" class="underline text-yellow-600">域渗透-用户名枚举</a></li>
+    
+    <li><a href="/kerberos_authentication.html" class="underline text-yellow-600">域渗透-Kerberos认证</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-基础概念">0x01 基础概念</a>
+      <ul>
+        <li><a href="#spn-简介">SPN 简介</a></li>
+        <li><a href="#spn的作用">SPN的作用</a></li>
+        <li><a href="#spn类型">SPN类型</a></li>
+        <li><a href="#spn语法格式与配置">SPN语法格式与配置</a>
+          <ul>
+            <li><a href="#spn的语法格式">SPN的语法格式</a></li>
+            <li><a href="#spn的配置">SPN的配置</a></li>
+          </ul>
+        </li>
+        <li><a href="#ldap协议">LDAP协议</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-mssql注册spn实践">0x02 MSSQL注册SPN实践</a>
+      <ul>
+        <li><a href="#环境">环境</a></li>
+        <li><a href="#注册spn">注册SPN</a></li>
+        <li><a href="#赋予普通域用户读写spn权限">赋予普通域用户读写SPN权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-扫描spn">0x03 扫描SPN</a>
+      <ul>
+        <li><a href="#powerview">PowerView</a></li>
+        <li><a href="#getuserspnsvbs">GetUserSPNs.vbs</a></li>
+        <li><a href="#getuserspnsps1">GetUserSPNs.ps1</a></li>
+        <li><a href="#getuserspnspy">GetUserSPNs.py</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

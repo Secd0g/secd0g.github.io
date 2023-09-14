@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/kerberos_user_enumerate.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="域渗透-用户名枚举 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="域渗透-用户名枚举 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="域渗透-用户名枚举 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 简介 在之前的一编域渗透-Kerberos认证文章中已经写过kerberos的认证过程，这次写的是如何去枚举域中的用户名，得到用户名后我们才">
+    <meta property="og:description" content="0x00 简介 在之前的一编域渗透-Kerberos认证文章中已经写过kerberos的认证过程，这次写的是如何去枚举域中的用户名，得到用户名后我们才">
+    <meta property="twitter:description" content="0x00 简介 在之前的一编域渗透-Kerberos认证文章中已经写过kerberos的认证过程，这次写的是如何去枚举域中的用户名，得到用户名后我们才">
+    <meta property="og:type" content="article">
+    <title>域渗透-用户名枚举 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/kerberos_user_enumerate.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/kerberos_user_enumerate.html" title="域渗透-用户名枚举">域渗透-用户名枚举</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-02-21 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 21 Feb 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            1752 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            4 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-简介">0x00 简介</a></li>
+    <li><a href="#0x01-认证过程分析">0x01 认证过程分析</a></li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#metasploit">Metasploit</a></li>
+        <li><a href="#userenum">UserEnum</a></li>
+        <li><a href="#kerbrutego">Kerbrute（Go）</a></li>
+        <li><a href="#kerbrutepython">kerbrute（Python）</a></li>
+        <li><a href="#krbguess">krbguess</a></li>
+        <li><a href="#nmap-krb5-enum-users-nse-script">Nmap krb5-enum-users NSE Script</a></li>
+        <li><a href="#pykerbrute">pyKerbrute</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-简介">0x00 简介</h1>
+<p>在之前的一编<a href="https://xxe.icu/posts/kerberos_authentication/">域渗透-Kerberos认证</a>文章中已经写过kerberos的认证过程，这次写的是如何去枚举域中的用户名，得到用户名后我们才可以做下一步的操作，比如密码喷洒等。</p>
+<h1 id="0x01-认证过程分析">0x01 认证过程分析</h1>
+<p>对于用户名枚举需要对根据以下错误信息来辨别用户名是否正确：</p>
+<table>
+<thead>
+<tr>
+<th>用户状态</th>
+<th><strong>Kerberos 错误信息</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用户启用</td>
+<td>KDC_ERR_PREAUTH_REQUIRED</td>
+</tr>
+<tr>
+<td>用户锁定</td>
+<td>KDC_ERR_CLIENT_REVOKED</td>
+</tr>
+<tr>
+<td>用户不存在</td>
+<td>KDC_ERR_C_PRINCIPAL_UNKNOWN</td>
+</tr>
+</tbody>
+</table>
+<p>我们来看下用户不存在的AS_REQ包，主要是在cname的参数里面设置：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate//1.png" alt="1"></p>
+<p>返回了一个PRINCIPAL_UNKNOWN 错误的包，：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate//2.png" alt="2"></p>
+<p>那如果是用户名正确，密码不正确的包呢：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate//4.png" alt="4"></p>
+<h1 id="0x02-实战">0x02 实战</h1>
+<p>从上面我们可以知道，通过返回不同的错误信息就可以知道是否存在正确的用户名，下面我们来通过几款枚举的工具进行实战。</p>
+<h2 id="metasploit">Metasploit</h2>
+<p><code>aduser.txt</code>文件是用户名列表文件，需要设置域控IP地址、域名信息</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">msf6 &gt; use auxiliary/gather/kerberos_enumusers
+</span></span><span class="line"><span class="cl">msf6 auxiliary(gather/kerberos_enumusers) &gt; show options
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Module options (auxiliary/gather/kerberos_enumusers):
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Name       Current Setting  Required  Description
+</span></span><span class="line"><span class="cl">   ----       ---------------  --------  -----------
+</span></span><span class="line"><span class="cl">   DOMAIN                      yes       The Domain Eg: demo.local
+</span></span><span class="line"><span class="cl">   RHOSTS                      yes       The target host(s), see https://github.com/rapid7/metasploit-framework/wiki/Using-Metasploit
+</span></span><span class="line"><span class="cl">   RPORT      88               yes       The target port
+</span></span><span class="line"><span class="cl">   Timeout    10               yes       The TCP timeout to establish connection and read data
+</span></span><span class="line"><span class="cl">   USER_FILE                   yes       Files containing usernames, one per line
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">msf6 auxiliary(gather/kerberos_enumusers) &gt; set rhosts 172.16.0.106
+</span></span><span class="line"><span class="cl">rhosts =&gt; 172.16.0.106
+</span></span><span class="line"><span class="cl">msf6 auxiliary(gather/kerberos_enumusers) &gt; set user_file ~/aduser.txt
+</span></span><span class="line"><span class="cl">user_file =&gt; ~/aduser.txt
+</span></span><span class="line"><span class="cl">msf6 auxiliary(gather/kerberos_enumusers) &gt; set domain hack.lab
+</span></span><span class="line"><span class="cl">domain =&gt; hack.lab
+</span></span><span class="line"><span class="cl">msf6 auxiliary(gather/kerberos_enumusers) &gt; exploit 
+</span></span></code></pre></div><p>下面可以知道枚举出存在的域用户：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate//5.png" alt="5"></p>
+<p>在运行完成之后会将结果保存在 metasploit 的数据库中，输入命令 <code>creds</code>即可查看存在的用户。</p>
+<blockquote>
+<p>这里要注意如果存在AS-REPRoasting漏洞的用户会出现报错</p>
+</blockquote>
+<h2 id="userenum">UserEnum</h2>
+<p>这个项目提供了三个脚本，分别是使用DsrGetDcNameEx2,CLDAP ping和NetBIOS MailSlot ping三种方法去枚举。</p>
+<p>下载：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/sensepost/UserEnum.git
+</span></span></code></pre></div><p>进入目录安装一下模块：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python2 -m pip install -r requirements.txt
+</span></span></code></pre></div><p>这里如果还是报错记得安装下面的版本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python2 -m pip install <span class="nv">asn1tools</span><span class="o">==</span>0.100.0
+</span></span></code></pre></div><p>填写爆破信息，开始执行脚本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python2 UserEnum_LDAP.py 172.16.0.106 hack.lab ~/aduser.txt
+</span></span></code></pre></div><p>会显示出爆破出的域用户：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate//6.png" alt="6"></p>
+<h2 id="kerbrutego">Kerbrute（Go）</h2>
+<p>Kerbrute会发送没有预认证的TGT请求。如果KDC响应主本文未知错误，则不存在用户名。但是，如果KDC提示预先验证，我们知道用户名存在，我们继续。这不会导致任何登录失败，因此它不会锁定任何帐户。如果启用了Kerberos日志记录，则会生成Windows事件ID 4768。</p>
+<p>下载地址：</p>
+<p><a href="https://github.com/ropnop/kerbrute/releases/tag/v1.0.3">https://github.com/ropnop/kerbrute/releases/tag/v1.0.3</a></p>
+<p>因为我的是kali，所以选择 <a href="https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64">kerbrute_linux_amd64</a></p>
+<p>下面填写域名和文件信息即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>oscp㉿oscp<span class="o">)</span>-<span class="o">[</span>~/tools/windows<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ ./kerbrute_linux_amd64 userenum -d hack.lab ~/aduser.txt --dc 172.16.0.106 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    __             __               __     
+</span></span><span class="line"><span class="cl">   / /_____  _____/ /_  _______  __/ /____ 
+</span></span><span class="line"><span class="cl">  / //_/ _ <span class="se">\/</span> ___/ __ <span class="se">\/</span> ___/ / / / __/ _ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> / ,&lt; /  __/ /  / /_/ / /  / /_/ / /_/  __/
+</span></span><span class="line"><span class="cl">/_/<span class="p">|</span>_<span class="p">|</span><span class="se">\_</span>__/_/  /_.___/_/   <span class="se">\_</span>_,_/<span class="se">\_</span>_/<span class="se">\_</span>__/                                        
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Version: v1.0.3 <span class="o">(</span>9dad6e1<span class="o">)</span> - 02/21/22 - Ronnie Flathers @ropnop
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;  Using KDC<span class="o">(</span>s<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;   172.16.0.106:88
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;  <span class="o">[</span>+<span class="o">]</span> VALID USERNAME:       lucky@hack.lab
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;  <span class="o">[</span>+<span class="o">]</span> VALID USERNAME:       testuser@hack.lab
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;  <span class="o">[</span>+<span class="o">]</span> VALID USERNAME:       testsql@hack.lab
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;  <span class="o">[</span>+<span class="o">]</span> VALID USERNAME:       administrator@hack.lab
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;  <span class="o">[</span>+<span class="o">]</span> VALID USERNAME:       sqlsql@hack.lab
+</span></span><span class="line"><span class="cl">2022/02/21 21:21:28 &gt;  Done! Tested <span class="m">8</span> usernames <span class="o">(</span><span class="m">5</span> valid<span class="o">)</span> in 0.010 seconds
+</span></span></code></pre></div><h2 id="kerbrutepython">kerbrute（Python）</h2>
+<p>使用iPhacket库执行Kerberos Bruteforcing的脚本。</p>
+<p>当执行时，作为输入，它会收到用户或密码列表或密码列表。然后是对枚举攻击进行枚举：</p>
+<ul>
+<li>
+<p>有效的用户名/密码对</p>
+</li>
+<li>
+<p>有效的用户名</p>
+</li>
+<li>
+<p>无需预先验证的用户名</p>
+</li>
+</ul>
+<p>因此，该脚本生成发现的有效凭据列表，而TGT生成的已生成这些有效凭据。</p>
+<p>安装方法1：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pip3 install kerbrute
+</span></span></code></pre></div><p>安装方法2：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/TarlogicSecurity/kerbrute
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> kerbrute
+</span></span><span class="line"><span class="cl">pip install -r requirements.txt
+</span></span></code></pre></div><p>可以看下命令参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@kali:~# kerbrute
+</span></span><span class="line"><span class="cl">Impacket v0.9.18 - Copyright <span class="m">2018</span> SecureAuth Corporation
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">usage: kerbrute.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-debug<span class="o">]</span> <span class="o">(</span>-user USER <span class="p">|</span> -users USERS<span class="o">)</span>
+</span></span><span class="line"><span class="cl">                   <span class="o">[</span>-password PASSWORD <span class="p">|</span> -passwords PASSWORDS<span class="o">]</span> -domain DOMAIN
+</span></span><span class="line"><span class="cl">                   <span class="o">[</span>-dc-ip &lt;ip_address&gt;<span class="o">]</span> <span class="o">[</span>-threads THREADS<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                   <span class="o">[</span>-outputfile OUTPUTFILE<span class="o">]</span> <span class="o">[</span>-no-save-ticket<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">optional arguments:
+</span></span><span class="line"><span class="cl">  -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">  -debug                Turn DEBUG output ON
+</span></span><span class="line"><span class="cl">  -user USER            User to perform bruteforcing
+</span></span><span class="line"><span class="cl">  -users USERS          File with user per line
+</span></span><span class="line"><span class="cl">  -password PASSWORD    Password to perform bruteforcing
+</span></span><span class="line"><span class="cl">  -passwords PASSWORDS  File with password per line
+</span></span><span class="line"><span class="cl">  -domain DOMAIN        Domain to perform bruteforcing
+</span></span><span class="line"><span class="cl">  -dc-ip &lt;ip_address&gt;   IP Address of the domain controller
+</span></span><span class="line"><span class="cl">  -threads THREADS      Number of threads to perform bruteforcing. <span class="nv">Default</span> <span class="o">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">  -outputfile OUTPUTFILE
+</span></span><span class="line"><span class="cl">                        File to save discovered user:password
+</span></span><span class="line"><span class="cl">  -no-save-ticket       Do not save retrieved TGTs with correct credentials
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Examples: 
+</span></span><span class="line"><span class="cl">	./kerbrute.py -users users_file.txt -passwords passwords_file.txt -domain contoso.com
+</span></span></code></pre></div><p>填写相关的信息，执行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kerbrute -users ./aduser.txt -domain hack.lab -dc-ip 172.16.0.106
+</span></span></code></pre></div><p>可以看到除了枚举域用户还可以检测出存在AS-REPRoasting漏洞的用户lucky：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate//7.png" alt="7"></p>
+<h2 id="krbguess">krbguess</h2>
+<p>这个工具已经找不到下载地址了，我弄了一个放在了GitHub上，但是要求的java版本很低才能执行。</p>
+<p><a href="https://github.com/Secd0g/krbGuess/releases/tag/krbguess">https://github.com/Secd0g/krbGuess/releases/tag/krbguess</a></p>
+<p>命令参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Java –jar kerbguess.jar –r <span class="o">[</span>domain<span class="o">]</span> –d <span class="o">[</span>user list<span class="o">]</span> –s <span class="o">[</span>DC IP<span class="o">]</span>
+</span></span></code></pre></div><h2 id="nmap-krb5-enum-users-nse-script">Nmap krb5-enum-users NSE Script</h2>
+<p>使用的方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nmap  --script krb5-enum-users –script-args krb5-enum-users.realm<span class="o">=</span><span class="s1">&#39;[domain]&#39;</span>,userdb<span class="o">=[</span>user list<span class="o">][</span>DC IP<span class="o">]</span> -p <span class="m">88</span> 
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate//8.png" alt="8"></p>
+<h2 id="pykerbrute">pyKerbrute</h2>
+<p>这是一款由3gstudent大佬改写的一款工具，使用Python快速BruteForce通过Kerberos预认证枚举有效的Active Directory帐户。</p>
+<p>GitHub地址：https://github.com/3gstudent/pyKerbrute</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/3gstudent/pyKerbrute
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> pyKerbrute
+</span></span></code></pre></div><p>使用python2，因为kerberos是使用88端口进行通信的，可以使用tcp或者udp方式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python2 EnumADUser.py 172.16.0.106 hack.lab ~/aduser.txt udp
+</span></span></code></pre></div><p>枚举结果：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Kerberos_user_enumerate/9.png" alt="9"></p>
+<h1 id="0x03-总结">0x03 总结</h1>
+<p>本文主要是通过在没有账户密码情况下对dc进行域用户进行枚举，如果在域用户登录情况下可以使用<code>net user /domain</code>来查询当前域的所有用户，但排除是在有权限查询的情况下，要不然你使用其他的工具也是白搭。</p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/kerberos_user_enumerate.html">https://xxe.icu/kerberos_user_enumerate.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/kerberos_authentication.html" class="underline text-yellow-600">域渗透-Kerberos认证</a></li>
+    
+    <li><a href="/responder_ntlmv2.html" class="underline text-yellow-600">使用Responder进行NTLM重放攻击</a></li>
+    
+    <li><a href="/llmnr_nbt-ns.html" class="underline text-yellow-600">LLMNR/NBT-NS欺骗攻击</a></li>
+    
+    <li><a href="/ssh_tunnel.html" class="underline text-yellow-600">SSH隧道技术研究和实战</a></li>
+    
+    <li><a href="/windows_set_ip_access.html" class="underline text-yellow-600">Windows设置指定IP远程访问3389</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-简介">0x00 简介</a></li>
+    <li><a href="#0x01-认证过程分析">0x01 认证过程分析</a></li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#metasploit">Metasploit</a></li>
+        <li><a href="#userenum">UserEnum</a></li>
+        <li><a href="#kerbrutego">Kerbrute（Go）</a></li>
+        <li><a href="#kerbrutepython">kerbrute（Python）</a></li>
+        <li><a href="#krbguess">krbguess</a></li>
+        <li><a href="#nmap-krb5-enum-users-nse-script">Nmap krb5-enum-users NSE Script</a></li>
+        <li><a href="#pykerbrute">pyKerbrute</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

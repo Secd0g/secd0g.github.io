@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>企业安全建设 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/categories/%E4%BC%81%E4%B8%9A%E5%AE%89%E5%85%A8%E5%BB%BA%E8%AE%BE.html</link>
+    <description>Recent content in 企业安全建设 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 22 Mar 2022 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BC%81%E4%B8%9A%E5%AE%89%E5%85%A8%E5%BB%BA%E8%AE%BE/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SDL(安全开发生命周期)</title>
+      <link>https://xxe.icu/sdl.html</link>
+      <pubDate>Tue, 22 Mar 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/sdl.html</guid>
+      <description>0x0 前言 最近在读《互联网企业安全高级指南》里面的一章SDL有感，结合工作经验之谈，遂写此文。 0x01 SDL概念 当我们谈到SDL（Security Development L</description>
+    </item>
+    
+  </channel>
+</rss>

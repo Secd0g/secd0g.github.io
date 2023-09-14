@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Meltdown on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/meltdown.html</link>
+    <description>Recent content in Meltdown on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 29 Mar 2018 10:16:39 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/meltdown/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>漏洞预警|Windows 7 Meltdown 补丁发现漏洞，允许任意进程读写内核</title>
+      <link>https://xxe.icu/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels.html</link>
+      <pubDate>Thu, 29 Mar 2018 10:16:39 +0000</pubDate>
+      
+      <guid>https://xxe.icu/vulnerability-alert_windows-7-meltdown-patch-discovery-vulnerability-allows-any-process-to-read-and-write-kernels.html</guid>
+      <description>前言 今晚本来想养生睡个早觉的，睡前浏览了下twitter，看到大佬的高危漏洞，看着有点好笑，微软拿起自己的石头砸自己的脚操作哈哈，这个洞在2</description>
+    </item>
+    
+  </channel>
+</rss>

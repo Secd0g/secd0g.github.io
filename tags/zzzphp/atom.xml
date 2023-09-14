@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>zzzphp on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/zzzphp.html</link>
+    <description>Recent content in zzzphp on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 10 Mar 2019 17:56:36 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/zzzphp/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>zzzphp1.61 代码审计-从SQL注入到Getshell</title>
+      <link>https://xxe.icu/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell.html</link>
+      <pubDate>Sun, 10 Mar 2019 17:56:36 +0000</pubDate>
+      
+      <guid>https://xxe.icu/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell.html</guid>
+      <description>0x01 前言 前天看到zzzphp这一个cms，看着有点像zzzcms，去看了也是zzzcms开发的一套程序，于是就去审计一下，这zzzcms我之前</description>
+    </item>
+    
+  </channel>
+</rss>

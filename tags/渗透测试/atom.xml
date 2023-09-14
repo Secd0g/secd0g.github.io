@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>渗透测试 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95.html</link>
+    <description>Recent content in 渗透测试 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 09 Sep 2019 02:11:19 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一次艰难的渗透提权过程</title>
+      <link>https://xxe.icu/a-difficult-penetration-process.html</link>
+      <pubDate>Mon, 09 Sep 2019 02:11:19 +0000</pubDate>
+      
+      <guid>https://xxe.icu/a-difficult-penetration-process.html</guid>
+      <description>0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g</description>
+    </item>
+    
+  </channel>
+</rss>

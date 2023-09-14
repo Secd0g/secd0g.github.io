@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/linux_capabilities_2.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Linux Capabilities 入门教程：进阶实战篇 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Linux Capabilities 入门教程：进阶实战篇 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Linux Capabilities 入门教程：进阶实战篇 - F0rmat&#39;s Blog">
+    <meta name="description" content="原文链接：Linux Capabilities In Practice Linux capabilities 非常晦涩难懂，为此我专门写了两篇文章来解释其基本原理和设置方法。 本文将会继续研究 Linux capabilities 更高级的应用案例，并结合 Docker">
+    <meta property="og:description" content="原文链接：Linux Capabilities In Practice Linux capabilities 非常晦涩难懂，为此我专门写了两篇文章来解释其基本原理和设置方法。 本文将会继续研究 Linux capabilities 更高级的应用案例，并结合 Docker">
+    <meta property="twitter:description" content="原文链接：Linux Capabilities In Practice Linux capabilities 非常晦涩难懂，为此我专门写了两篇文章来解释其基本原理和设置方法。 本文将会继续研究 Linux capabilities 更高级的应用案例，并结合 Docker">
+    <meta property="og:type" content="article">
+    <title>Linux Capabilities 入门教程：进阶实战篇 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/linux_capabilities_2.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/linux_capabilities_2.html" title="Linux Capabilities 入门教程：进阶实战篇">Linux Capabilities 入门教程：进阶实战篇</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-01-13 15:35:33 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 13 Jan 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            3829 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            8 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+        <li><a href="#1-快速回顾">1. 快速回顾</a></li>
+        <li><a href="#2-为可执行文件分配-capabilities">2. 为可执行文件分配 capabilities</a></li>
+        <li><a href="#3-特殊规则">3. 特殊规则</a></li>
+        <li><a href="#4-构建半特权环境">4. 构建半特权环境</a></li>
+        <li><a href="#5-容器与-capabilities">5. 容器与 capabilities</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <blockquote>
+<p>原文链接：<a href="https://blog.container-solutions.com/linux-capabilities-in-practice">Linux Capabilities In Practice</a></p>
+</blockquote>
+<p>Linux capabilities 非常晦涩难懂，为此我专门写了两篇文章来解释其基本原理和设置方法。</p>
+<p>本文将会继续研究 Linux capabilities 更高级的应用案例，并结合 Docker 和 Kubernetes 来加深理解。</p>
+<h2 id="1-快速回顾">1. 快速回顾</h2>
+<p>如果你看过该系列教程的第一篇，那你应该大致了解下面的计算公式：</p>
+<blockquote>
+<p>P&rsquo;(ambient) = (file is privileged) ? 0 : P(ambient)</p>
+<p>P&rsquo;(permitted) = (P(inheritable) &amp; F(inheritable)) |
+(F(permitted) &amp; P(bounding))) | P&rsquo;(ambient)</p>
+<p>P&rsquo;(effective) = F(effective) ? P&rsquo;(permitted) : P&rsquo;(ambient)</p>
+<p>P&rsquo;(inheritable) = P(inheritable) [i.e., unchanged]</p>
+<p>P&rsquo;(bounding) = P(bounding) [i.e., unchanged]</p>
+</blockquote>
+<p>想不起来也没关系，请回去再阅读消化一遍，然后再来看本文，不然你会跟不上我的思路。</p>
+<p>你还需要复习第二篇文章中的内容，了解如何通过基本的工具来设置 <code>capabilities</code>。如果一切准备就绪，下面我们就开始了。</p>
+<p>在 <code>Ubuntu 18.04</code> 上，以普通用户的身份运行 <code>capsh</code> 将会得到如下结果：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ capsh --print
+</span></span><span class="line"><span class="cl">Current: =
+</span></span><span class="line"><span class="cl">Bounding set =cap_chown,cap_dac_override,cap_dac_read_search,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_linux_immutable,cap_net_bind_service,cap_net_broadcast,cap_net_admin,cap_net_raw,cap_ipc_lock,cap_ipc_owner,cap_sys_module,cap_sys_rawio,cap_sys_chroot,cap_sys_ptrace,cap_sys_pacct,cap_sys_admin,cap_sys_boot,cap_sys_nice,cap_sys_resource,cap_sys_time,cap_sys_tty_config,cap_mknod,cap_lease,cap_audit_write,cap_audit_control,cap_setfcap,cap_mac_override,cap_mac_admin,cap_syslog,cap_wake_alarm,cap_block_suspend,cap_audit_read
+</span></span><span class="line"><span class="cl">Securebits: 00/0x0/1&#39;b0
+</span></span><span class="line"><span class="cl"> secure-noroot: no (unlocked)
+</span></span><span class="line"><span class="cl"> secure-no-suid-fixup: no (unlocked)
+</span></span><span class="line"><span class="cl"> secure-keep-caps: no (unlocked)
+</span></span><span class="line"><span class="cl">uid=1000(fox)
+</span></span><span class="line"><span class="cl">gid=1000(fox)
+</span></span><span class="line"><span class="cl">groups=4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),108(lxd),114(docker),1000(fox)
+</span></span></code></pre></div><p>可以看到普通用户当前所在的 shell 进程没有任何 capabilities（即 <code>Effective</code> 集合为空），<code>Bounding</code> 集合包含了所有 capabilities。</p>
+<p>这个命令输出的信息比较有限，完整的信息可以查看 /proc 文件系统，比如当前 shell 进程就可以查看 <code>/proc/$$/status</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ grep Cap /proc/$$/status
+</span></span><span class="line"><span class="cl">CapInh:	0000000000000000
+</span></span><span class="line"><span class="cl">CapPrm:	0000000000000000
+</span></span><span class="line"><span class="cl">CapEff:	0000000000000000
+</span></span><span class="line"><span class="cl">CapBnd:	0000003fffffffff
+</span></span><span class="line"><span class="cl">CapAmb:	0000000000000000
+</span></span></code></pre></div><p>输出中的 <code>16</code> 进制掩码表示对应集合中的 capabilities，可以使用 <code>capsh</code> 对其进行解码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ capsh --decode=0000003fffffffff
+</span></span><span class="line"><span class="cl">0x0000003fffffffff=cap_chown,cap_dac_override,cap_dac_read_search,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_linux_immutable,cap_net_bind_service,cap_net_broadcast,cap_net_admin,cap_net_raw,cap_ipc_lock,cap_ipc_owner,cap_sys_module,cap_sys_rawio,cap_sys_chroot,cap_sys_ptrace,cap_sys_pacct,cap_sys_admin,cap_sys_boot,cap_sys_nice,cap_sys_resource,cap_sys_time,cap_sys_tty_config,cap_mknod,cap_lease,cap_audit_write,cap_audit_control,cap_setfcap,cap_mac_override,cap_mac_admin,cap_syslog,cap_wake_alarm,cap_block_suspend,cap_audit_read
+</span></span></code></pre></div><p>和 <code>capsh --print</code> 命令输出的结果一样。</p>
+<p>如果是 root 用户，得到的结果和普通用户是不一样的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ grep Cap /proc/$$/status
+</span></span><span class="line"><span class="cl">CapInh:	0000000000000000
+</span></span><span class="line"><span class="cl">CapPrm:	0000003fffffffff
+</span></span><span class="line"><span class="cl">CapEff:	0000003fffffffff
+</span></span><span class="line"><span class="cl">CapBnd:	0000003fffffffff
+</span></span><span class="line"><span class="cl">CapAmb:	0000000000000000
+</span></span></code></pre></div><p>所有的 capabilities 都包含在了 <code>Permitted</code>、<code>Effective</code> 和 <code>Bounding</code> 集合中，所以 root 用户可以执行任何内核调用。</p>
+<h2 id="2-为可执行文件分配-capabilities">2. 为可执行文件分配 capabilities</h2>
+<p>我在上一篇文章中提到过，通过适当的配置，进程可以获取可执行文件的 <code>Bounding</code>集合中的 capabilities。下面通过一个例子来加深理解。</p>
+<p>以 <code>ping</code> 这个命令为例，它的二进制文件被设置了 <code>SUID</code>，所以可以以 root 身份运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ which ping
+</span></span><span class="line"><span class="cl">/bin/ping
+</span></span><span class="line"><span class="cl">$ ls -l /bin/ping
+</span></span><span class="line"><span class="cl">-rwsr-xr-x 1 root root 64424 Mar 9 2017 /bin/ping
+</span></span></code></pre></div><p>更安全的机制是使用 capabilities，不过 <code>Ubuntu</code> 上面的 ping 没有这么做。没关系，我们可以通过 ping 的源码来自己编译，首先克隆源代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git clone https://github.com/iputils/iputils
+</span></span></code></pre></div><p>安装编译所需的依赖：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ sudo apt install -y ninja-build meson libcap-dev gettext
+</span></span></code></pre></div><p>开始编译：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ cd iputils
+</span></span><span class="line"><span class="cl">$ ./configure
+</span></span><span class="line"><span class="cl">$ make
+</span></span></code></pre></div><p>新编译的 ping 文件并没有设置 SUID：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ls -l builddir/ping/ping
+</span></span><span class="line"><span class="cl">-rwxrwxr-x 1 fox fox 168K Oct 19 15:26 builddir/ping/ping
+</span></span></code></pre></div><p>也没有任何的 capabilities：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ getcap builddir/ping/ping
+</span></span></code></pre></div><p>所以无法正常工作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ builddir/ping/ping www.baidu.com
+</span></span><span class="line"><span class="cl">builddir/ping/ping: socket: Operation not permitted
+</span></span></code></pre></div><p>我们可以手动设置 capabilities：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ setcap &#39;cap_net_raw+p&#39; builddir/ping/ping
+</span></span><span class="line"><span class="cl">unable to set CAP_SETFCAP effective capability: Operation not permitted
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ sudo setcap &#39;cap_net_raw+p&#39; builddir/ping/ping
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ getcap builddir/ping/ping
+</span></span><span class="line"><span class="cl">builddir/ping/ping = cap_net_raw+p
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ builddir/ping/ping www.baidu.com -c 1
+</span></span><span class="line"><span class="cl">PING www.a.shifen.com (180.101.49.12) 56(84) bytes of data.
+</span></span><span class="line"><span class="cl">64 bytes from 180.101.49.12 (180.101.49.12): icmp_seq=1 ttl=53 time=10.0 ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">--- www.a.shifen.com ping statistics ---
+</span></span><span class="line"><span class="cl">1 packets transmitted, 1 received, 0% packet loss, time 0ms
+</span></span><span class="line"><span class="cl">rtt min/avg/max/mdev = 10.028/10.028/10.028/0.000 ms
+</span></span></code></pre></div><p>这里再活学活用一下，为什么普通用户无法执行 <code>setcap</code> 呢？因为执行 <code>setcap</code> 的用户需要在 <code>Permitted</code> 集合中包含 <code>CAP_SETFCAP</code> capabilities，而普通用户不具备这个 capabilities，所以必须使用 root 用户。</p>
+<p>查看 ping 进程的 capabilities：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ builddir/ping/ping wwwww.baidu.com &gt; /dev/null&amp;
+</span></span><span class="line"><span class="cl">[1] 9823
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ grep Cap /proc/9823/status
+</span></span><span class="line"><span class="cl">CapInh:	0000000000000000
+</span></span><span class="line"><span class="cl">CapPrm:	0000000000002000
+</span></span><span class="line"><span class="cl">CapEff:	0000000000000000
+</span></span><span class="line"><span class="cl">CapBnd:	0000003fffffffff
+</span></span><span class="line"><span class="cl">CapAmb:	0000000000000000
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ $ capsh --decode=0000000000002000
+</span></span><span class="line"><span class="cl">0x0000000000002000=cap_net_raw
+</span></span></code></pre></div><p>只有 <code>Permitted</code> 集合中包含了 <code>CAP_NET_RAW</code> capabilities，<code>Effective</code> 集合中并不包含，按常理 ping 是无法正常工作的。这是为啥呢？</p>
+<p>其实 ping 在执行过程中会将 Permitted 集合中的 <code>CAP_NET_RAW</code> capabilities 加入 <code>Effective</code> 集合中，打开 Socket 之后再将该 capabilities 从 <code>Effective</code> 集合中移除，所以 <code>grep</code> 是看不到的。其中这就是我在第一篇文章提到的 ping 文件具有 <strong>capabilities 感知能力</strong>。可以通过 <code>stace</code> 跟踪系统调用来验证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ sudo strace builddir/ping/ping -c 1 wwwww.baidu.com
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">capget({version=_LINUX_CAPABILITY_VERSION_3, pid=0}, NULL) = 0
+</span></span><span class="line"><span class="cl">capget({version=_LINUX_CAPABILITY_VERSION_3, pid=0}, {effective=0, permitted=1&lt;&lt;CAP_NET_ADMIN|1&lt;&lt;CAP_NET_RAW, inheritable=0}) = 0
+</span></span><span class="line"><span class="cl">capset({version=_LINUX_CAPABILITY_VERSION_3, pid=0}, {effective=1&lt;&lt;CAP_NET_RAW, permitted=1&lt;&lt;CAP_NET_ADMIN|1&lt;&lt;CAP_NET_RAW, inheritable=0}) = 0
+</span></span><span class="line"><span class="cl">socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP) = -1 EACCES (Permission denied)
+</span></span><span class="line"><span class="cl">socket(AF_INET, SOCK_RAW, IPPROTO_ICMP) = 3
+</span></span><span class="line"><span class="cl">socket(AF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6) = -1 EACCES (Permission denied)
+</span></span><span class="line"><span class="cl">socket(AF_INET6, SOCK_RAW, IPPROTO_ICMPV6) = 4
+</span></span><span class="line"><span class="cl">capget({version=_LINUX_CAPABILITY_VERSION_3, pid=0}, NULL) = 0
+</span></span><span class="line"><span class="cl">capget({version=_LINUX_CAPABILITY_VERSION_3, pid=0}, {effective=1&lt;&lt;CAP_NET_RAW, permitted=1&lt;&lt;CAP_NET_ADMIN|1&lt;&lt;CAP_NET_RAW, inheritable=0}) = 0
+</span></span><span class="line"><span class="cl">capset({version=_LINUX_CAPABILITY_VERSION_3, pid=0}, {effective=0, permitted=1&lt;&lt;CAP_NET_ADMIN|1&lt;&lt;CAP_NET_RAW, inheritable=0}) = 0
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><p>第三行表示 <code>CAP_NET_RAW</code> capabilities 被添加到了 <code>Effective</code> 集合中，下一行试图创建一个 IPV4 ping socket，但创建失败，这是由 <code>ping_group_range</code> 内核配置参数导致的。然后再次尝试创建 IPV4 ping socket，这次创建成功了。IPv6 重复上面的步骤。最后将 <code>CAP_NET_RAW</code> capabilities 从 <code>Effective</code> 集合中移除。</p>
+<p>如果 ping 二进制文件不具备 <strong>capabilities 感知能力</strong>，即没有调用 capset 和 capget 的权限，我们就必须要开启 <code>Effective</code> 标志位（F(Effective)），这样就会将该 capabilities 自动添加到进程的 <code>Effective</code> 集合中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ setcap &#39;cap_net_raw+ep&#39; builddir/ping/ping
+</span></span></code></pre></div><p>不明白为什么的，再好好理解下这个公式：<code>P'(effective) = F(effective) ? P'(permitted) : P'(ambient)</code>。</p>
+<h2 id="3-特殊规则">3. 特殊规则</h2>
+<p>本文不会涉及从 root 用户切换到普通用户时 capabilities 的变化，这里面的变动比较复杂，我也搞不清楚。我只知道 <code>capsh --print</code> 输出中的 <code>Securebits</code> 控制着从普通用户切换到 UID 0 或者从 UID 0 切换到普通用户时如何继承 capabilities。详细的解释可以参考 <a href="http://man7.org/linux/man-pages/man7/capabilities.7.html">man capabilities</a>。</p>
+<h2 id="4-构建半特权环境">4. 构建半特权环境</h2>
+<p>前文中只用到了 <code>Permitted</code> 和 <code>Effective</code> 集合，下面再来聊聊 <code>Ambient</code> 和 <code>Inheritable</code> 集合。这两个集合的意义就在于可以<strong>帮助我们在进程树或 namespace 的范围内创建一个允许任意进程使用某些 capabilities 的环境。</strong></p>
+<p>例如，我们可以在 <code>Ambient</code> 集合中加入 <code>CAP_NET_BIND_SERVICE</code> capabilities 来创建一个可以绑定到 80 端口的 “webserver” 环境，不需要额外的 capabilities，也不需要以 root 用户身份运行。webserver 可以通过解释器或辅助脚本启动，并且不需要给可执行文件设置 capabilities。如果不明白为什么，再看十分钟这两个公式：</p>
+<blockquote>
+<p>P&rsquo;(ambient) = (file is privileged) ? 0 : P(ambient)
+P&rsquo;(effective) = F(effective) ? P&rsquo;(permitted) : P&rsquo;(ambient)</p>
+</blockquote>
+<p>如果理解了，再往下动手实践。我用 C 写了一个简单的程序 <a href="https://github.com/ContainerSolutions/capabilities-blog/blob/master/set_ambient.c">set_ambient</a>，核心功能是使用 <a href="https://people.redhat.com/sgrubb/libcap-ng/index.html">cap-ng library</a> 将 CAP_NET_BIND_SERVICE capabilities 添加到新进程的 <code>Ambient</code> 集合中。编译完成后，需要给二进制文件添加该 capabilities，如果它自己没有这个 capabilities，是无法将其添加到新进程中的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ sudo setcap cap_net_bind_service+p set_ambient
+</span></span><span class="line"><span class="cl">$ getcap ./set_ambient
+</span></span><span class="line"><span class="cl">./set_ambient = cap_net_bind_service+p
+</span></span></code></pre></div><p>通过 <code>set_ambient</code> 来启动一个 bash 环境：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ./set_ambient /bin/bash
+</span></span><span class="line"><span class="cl">Starting process with CAP_NET_BIND_SERVICE in ambient
+</span></span><span class="line"><span class="cl">$ grep Cap /proc/$BASHPID/status
+</span></span><span class="line"><span class="cl">CapInh: 0000000000000400
+</span></span><span class="line"><span class="cl">CapPrm: 0000000000000400
+</span></span><span class="line"><span class="cl">CapEff: 0000000000000400
+</span></span><span class="line"><span class="cl">CapBnd: 0000003fffffffff
+</span></span><span class="line"><span class="cl">CapAmb: 0000000000000400
+</span></span><span class="line"><span class="cl">$ capsh --decode=0000000000000400
+</span></span><span class="line"><span class="cl">0x0000000000000400=cap_net_bind_service
+</span></span><span class="line"><span class="cl">$ exit
+</span></span></code></pre></div><p>可以看到 <code>CAP_NET_BIND_SERVICE</code> capabilities 被添加到 bash 环境的 <code>Ambient</code> 集合中，同时也会添加到 <code>Permitted</code> 和 <code>Inheritable</code> 集合中，不明白为什么的继续看文章开头的公式。。。</p>
+<p>接着运行一个 <a href="https://github.com/ContainerSolutions/capabilities-blog/blob/master/server.go">Go Web 服务</a>，并绑定到 80 端口，既不给它相应的 capabilities，也不以 root 身份运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-zed" data-lang="zed"><span class="line"><span class="cl"><span class="err">$</span><span class="w"> </span><span class="err">$</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="n">server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="err">2019</span><span class="o">/</span><span class="err">09</span><span class="o">/</span><span class="err">09</span><span class="w"> </span><span class="err">13</span><span class="o">:</span><span class="err">42</span><span class="o">:</span><span class="err">06</span><span class="w"> </span><span class="n">listen</span><span class="w"> </span><span class="n">tcp</span><span class="w"> </span><span class="o">:</span><span class="err">80</span><span class="o">:</span><span class="w"> </span><span class="n">bind</span><span class="o">:</span><span class="w"> </span><span class="kd">permission</span><span class="w"> </span><span class="n">denied</span><span class="w">
+</span></span></span></code></pre></div><p>运行失败，因为它没有绑定到小于 1024 的端口的权限。下面利用 <code>set_ambient</code> 创建一个 “webserver” 环境再运行试试：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ./set_ambient /bin/bash
+</span></span><span class="line"><span class="cl">Starting process with CAP_NET_BIND_SERVICE in ambient
+</span></span><span class="line"><span class="cl">$ ./server &amp;
+</span></span><span class="line"><span class="cl">[1] 2360
+</span></span><span class="line"><span class="cl">$ curl localhost:80
+</span></span><span class="line"><span class="cl">Successfully serving on port 80
+</span></span><span class="line"><span class="cl">$ kill 2360
+</span></span><span class="line"><span class="cl">$ exit
+</span></span></code></pre></div><p>这次运行成功了！你也可以直接执行 <code>./set_ambient ./server</code>，但使用 shell 的好处是：具有 <code>Ambient</code> 集合中 capabilities 的 bash 环境变成了一个<strong>半特权环境</strong>，在这个环境中不仅可以运行 Web 服务，也可以运行相关脚本和程序，而这些脚本和程序又可以正常启动 webserver。</p>
+<p>这个方法对 Python 很有效，如果不希望给 Python 可执行文件赋予更多的 capabilities，可以使用上面的方法来实现这个目的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ python3 -m http.server 80
+</span></span><span class="line"><span class="cl">Traceback (most recent call last):
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">PermissionError: [Errno 13] Permission denied
+</span></span><span class="line"><span class="cl">$ ./set_ambient /usr/bin/python3 -m http.server 80
+</span></span><span class="line"><span class="cl">Starting process with CAP_NET_BIND_SERVICE in ambient
+</span></span><span class="line"><span class="cl">Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
+</span></span></code></pre></div><p>最后讲一下 <code>Inheritable</code> 与 <code>Ambient</code> 集合的区别，如果想使用 Inheritable 达到上述目的，需要将 <code>CAP_NET_BIND_SERVICE</code> capabilities 添加到 Go web 服务可执行文件的 <code>Inheritable</code> 集合中，同时还需要开启 Effective 标志位。</p>
+<p>看起来很有道理，但有一个问题：如果可执行文件的有效用户是普通用户，且没有 <code>Inheritable</code> 集合，即 <code>F(inheritable) = 0</code>，那么 <code>P(inheritable)</code> 将会被忽略（P(inheritable) &amp; F(inheritable)）。由于绝大多数可执行文件都是这种情况，因此 <code>Inheritable</code> 集合的可用性受到了限制。</p>
+<h2 id="5-容器与-capabilities">5. 容器与 capabilities</h2>
+<p>如果你理解了上一节的内容，应该可以猜到 capabilities 和容器是相辅相成的，至少在一定程度上是这样。</p>
+<p>本节内容将在容器中实践 capabilities。我已经创建了一个测试镜像，并安装了 <code>capsh</code>和上文所述的程序，代码在 <a href="https://github.com/ContainerSolutions/capabilities-blog">GitHub 仓库</a>中。如果不加任何参数直接运行容器，结果如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ docker run -it amouat/caps
+</span></span><span class="line"><span class="cl">root@cfeb81ec0fab:/# capsh --print
+</span></span><span class="line"><span class="cl">Current: = cap_chown,cap_dac_override,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_net_bind_service,cap_net_raw,cap_sys_chroot,cap_mknod,cap_audit_write,cap_setfcap+eip
+</span></span><span class="line"><span class="cl">Bounding set =cap_chown,cap_dac_override,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_net_bind_service,cap_net_raw,cap_sys_chroot,cap_mknod,cap_audit_write,cap_setfcap
+</span></span><span class="line"><span class="cl">Securebits: 00/0x0/1&#39;b0
+</span></span><span class="line"><span class="cl">secure-noroot: no (unlocked)
+</span></span><span class="line"><span class="cl">secure-no-suid-fixup: no (unlocked)
+</span></span><span class="line"><span class="cl">secure-keep-caps: no (unlocked)
+</span></span><span class="line"><span class="cl">uid=0(root)
+</span></span><span class="line"><span class="cl">gid=0(root)
+</span></span><span class="line"><span class="cl">groups=
+</span></span><span class="line"><span class="cl">root@cfeb81ec0fab:/# grep Cap /proc/$BASHPID/status
+</span></span><span class="line"><span class="cl">CapInh: 00000000a80425fb
+</span></span><span class="line"><span class="cl">CapPrm: 00000000a80425fb
+</span></span><span class="line"><span class="cl">CapEff: 00000000a80425fb
+</span></span><span class="line"><span class="cl">CapBnd: 00000000a80425fb
+</span></span><span class="line"><span class="cl">CapAmb: 0000000000000000
+</span></span></code></pre></div><p>和宿主机还是有些区别的，容器中的 root 用户并没有包含所有的 capabilities，比如 <code>SYS_TIME</code>。如果你可以在容器中修改系统时间，那么宿主机和其他容器中的系统时间都会被改变。</p>
+<p>另外需要注意的是，容器中的 <code>Ambient</code> 集合是空的，目前在 Docker 和 Kubernetes 中还无法配置 Ambient 集合，过在底层的 <code>runc</code> 运行时中是可以配置的。具体参考 <a href="https://github.com/kubernetes/kubernetes/issues/56374">Kubernetes 项目的 issue</a>。</p>
+<p>如果使用指定的用户运行容器，会得到全新的结果：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ docker run -it --user=nobody amouat/caps
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ grep Cap /proc/$BASHPID/status
+</span></span><span class="line"><span class="cl">CapInh: 00000000a80425fb
+</span></span><span class="line"><span class="cl">CapPrm: 0000000000000000
+</span></span><span class="line"><span class="cl">CapEff: 0000000000000000
+</span></span><span class="line"><span class="cl">CapBnd: 00000000a80425fb
+</span></span><span class="line"><span class="cl">CapAmb: 0000000000000000
+</span></span></code></pre></div><p><code>Permitted</code> 和 <code>Effective</code> 集合被清空了，这跟上文提到的特殊规则有关，从 root 用户切换到普通用户， <code>Permitted</code> 和 <code>Effective</code> 集合中的 capabilities 都会被清空。可以通过将 capabilities 添加到可执行文件的 <code>Inheritable</code> 集合中，同时开启 Effective 标志位来使其正常工作。amouat/caps 已经包含了一个具备此条件的可执行文件，可以用来测试一下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ docker run --user nobody amouat/caps getcap /inh_server
+</span></span><span class="line"><span class="cl">/inh_server = cap_net_bind_service+ei
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ docker run -d -p 8000:80 --user nobody amouat/caps /inh_server
+</span></span><span class="line"><span class="cl">d8f13e6990c5802e2beb6e435dd74bcae7959b94c1293349d33d9fe6c053c0fe
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ curl localhost:8000
+</span></span><span class="line"><span class="cl">Successfully serving on port 80
+</span></span></code></pre></div><p>要想在容器中利用 capabilities 实现一个可以正常工作的非 root 环境，需要使用上文所述的 <code>set_ambient</code> 程序。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-zed" data-lang="zed"><span class="line"><span class="cl"><span class="err">$</span><span class="w"> </span><span class="n">docker</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="err">8000</span><span class="o">:</span><span class="err">80</span><span class="w"> </span><span class="o">--</span><span class="n">user</span><span class="w"> </span><span class="n">nobody</span><span class="w"> </span><span class="nn">amouat/</span><span class="n">caps</span><span class="w"> </span><span class="o">/</span><span class="n">server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="err">2019</span><span class="o">/</span><span class="err">09</span><span class="o">/</span><span class="err">09</span><span class="w"> </span><span class="err">19</span><span class="o">:</span><span class="err">14</span><span class="o">:</span><span class="err">13</span><span class="w"> </span><span class="n">listen</span><span class="w"> </span><span class="n">tcp</span><span class="w"> </span><span class="o">:</span><span class="err">80</span><span class="o">:</span><span class="w"> </span><span class="n">bind</span><span class="o">:</span><span class="w"> </span><span class="kd">permission</span><span class="w"> </span><span class="n">denied</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="err">$</span><span class="w"> </span><span class="n">docker</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="o">-</span><span class="n">d</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="err">8000</span><span class="o">:</span><span class="err">80</span><span class="w"> </span><span class="o">--</span><span class="n">user</span><span class="w"> </span><span class="n">nobody</span><span class="w"> </span><span class="nn">amouat/</span><span class="n">caps</span><span class="w"> </span><span class="o">/</span><span class="n">set_ambient</span><span class="w"> </span><span class="o">/</span><span class="n">server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">de09fe34a623c3bf40c2eea7229696acfa8d192c19adfa4065a380a583372907</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="err">$</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="n">localhost</span><span class="o">:</span><span class="err">8000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Successfully</span><span class="w"> </span><span class="n">serving</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">port</span><span class="w"> </span><span class="err">80</span><span class="w">
+</span></span></span></code></pre></div><p>在容器中限制 capabilities 最简单最常见的方法是 <code>--cap-drop</code> 和 <code>--cap-add</code> 参数，这些参数只会影响所有用户的 <code>Bounding</code> 集合，包括 root 用户。安全的做法是移除所有的 capabilities，只添加需要的 capabilities，例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ docker run --cap-drop all --cap-add NET_BIND_SERVICE -it amouat/caps capsh --print
+</span></span><span class="line"><span class="cl">Current: = cap_net_bind_service+eip
+</span></span><span class="line"><span class="cl">Bounding set =cap_net_bind_service
+</span></span><span class="line"><span class="cl">Securebits: 00/0x0/1&#39;b0
+</span></span><span class="line"><span class="cl">secure-noroot: no (unlocked)
+</span></span><span class="line"><span class="cl">secure-no-suid-fixup: no (unlocked)
+</span></span><span class="line"><span class="cl">secure-keep-caps: no (unlocked)
+</span></span><span class="line"><span class="cl">uid=0(root)
+</span></span><span class="line"><span class="cl">gid=0(root)
+</span></span><span class="line"><span class="cl">groups=
+</span></span></code></pre></div><p>然后就可以以 root 身份或普通用户身份运行容器，例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ docker run --cap-drop all --cap-add NET_BIND_SERVICE \
+</span></span><span class="line"><span class="cl">-d -p 8000:80 --user nobody amouat/caps /set_ambient /server
+</span></span><span class="line"><span class="cl">9c176555ea86add95839d02b6c2c5ae7d8a3fd79e36f484852b8f8641104aac1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ curl localhost:8000
+</span></span><span class="line"><span class="cl">Successfully serving on port 80
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ docker top 9c17
+</span></span><span class="line"><span class="cl">UID ... CMD
+</span></span><span class="line"><span class="cl">nobody ... /server
+</span></span></code></pre></div><p>现在容器中的进程只有单一的 <code>NET_BIND_SERVICE</code> capabilities，并且是以非 root 用户身份运行的。即使容器的进程被黑客攻击，攻击者只会拥有有限的文件系统权限，无法施展拳脚。</p>
+<p>Docker 中还有一个选项可以防止容器中的用户获得新的 capabilities，它可以有效阻止攻击者提升权限来避免受到攻击，同时也阻止了再容器中执行 <code>set_ambient</code> 程序。例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ docker run -p 8000:80 --security-opt=no-new-privileges:true \
+</span></span><span class="line"><span class="cl">--user nobody amouat/caps /set_ambient /server
+</span></span><span class="line"><span class="cl">Cannot set cap: Operation not permitted
+</span></span></code></pre></div><p>详细解释可参考 <a href="https://fuckcloudnative.io/posts/linux-capabilities-in-practice-1/#no_new_privs">no_new_privs</a>。</p>
+<p>对于容器玩家，我的最终建议是：<strong>移除所有非必要的 capabilities，并以非 root 身份运行。</strong> 使用 <code>Ambient</code> 集合与可执行文件的 capabilities 进行逻辑运算可以得到一个相对安全的容器环境，大部分情况下应该不需要使用 <code>set_ambient</code> 这样的辅助程序。</p>
+<p>Linux capabilities 与容器领域有着紧密的联系，我很期待看到 <code>Ambient</code> capabilities 被广泛应用到容器领域，以支持以非 root 身份运行的半特权容器。</p>
+<blockquote>
+<p>本文转载米开朗基杨的<a href="https://fuckcloudnative.io/posts/linux-capabilities-why-they-exist-and-how-they-work/">Linux Capabilities 入门系列</a></p>
+</blockquote>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/linux_capabilities_2.html">https://xxe.icu/linux_capabilities_2.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/linux_capabilities_1.html" class="underline text-yellow-600">Linux Capabilities 入门教程：基础实战篇</a></li>
+    
+    <li><a href="/linux_capabilities_0.html" class="underline text-yellow-600">Linux Capabilities 入门教程：概念篇</a></li>
+    
+    <li><a href="/hugo_theme_record.html" class="underline text-yellow-600">Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)</a></li>
+    
+    <li><a href="/hugo_github.html" class="underline text-yellow-600">如何使用Hugo&#43;Github搭建一个博客</a></li>
+    
+    <li><a href="/install-parallels-tools-on-kali-linux-2020.4.html" class="underline text-yellow-600">Kali Linux 2020.4安装Parallels Tools</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+        <li><a href="#1-快速回顾">1. 快速回顾</a></li>
+        <li><a href="#2-为可执行文件分配-capabilities">2. 为可执行文件分配 capabilities</a></li>
+        <li><a href="#3-特殊规则">3. 特殊规则</a></li>
+        <li><a href="#4-构建半特权环境">4. 构建半特权环境</a></li>
+        <li><a href="#5-容器与-capabilities">5. 容器与 capabilities</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

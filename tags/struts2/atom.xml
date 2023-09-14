@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Struts2 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/struts2.html</link>
+    <description>Recent content in Struts2 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 30 Aug 2017 07:12:56 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/struts2/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Struts2漏洞POC汇总</title>
+      <link>https://xxe.icu/struts2-vulnerability-poc-summary.html</link>
+      <pubDate>Wed, 30 Aug 2017 07:12:56 +0000</pubDate>
+      
+      <guid>https://xxe.icu/struts2-vulnerability-poc-summary.html</guid>
+      <description>&lt;p&gt;免责申明：文章中的工具以及POC等仅供个人测试研究，请在下载后24小时内删除，不得用于商业或非法用途，否则后果自负，如有使用于黑产者，与本文无关
+Struts2框架漏洞不断，鉴于struts2使用之广泛，本文汇总Struts2系列漏洞的Poc，给网络管理员或者站长提供查询便利，以便更好的检测自身网站存在的漏洞，也可以让安全从业者更好的了解此漏洞。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Struts2 S2-045 Jakarta插件远程代码执行漏洞利用与修补</title>
+      <link>https://xxe.icu/struts2-s2-045-jakarta-plug-in-remote-code-execution-vulnerability-exploitation-and-repair.html</link>
+      <pubDate>Tue, 29 Aug 2017 22:53:58 +0000</pubDate>
+      
+      <guid>https://xxe.icu/struts2-s2-045-jakarta-plug-in-remote-code-execution-vulnerability-exploitation-and-repair.html</guid>
+      <description>&lt;p&gt;近日，安恒信息安全研究院WEBIN实验室高级安全研究员nike.zheng发现著名J2EE框架-Struts2存在远程代码执行的严重漏洞。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

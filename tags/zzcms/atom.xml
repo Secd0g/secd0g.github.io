@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ZZCMS on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/zzcms.html</link>
+    <description>Recent content in ZZCMS on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 06 Mar 2018 22:41:35 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/zzcms/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ZZCMS8.2任意文件删除至getshell(每日一洞)</title>
+      <link>https://xxe.icu/zzcms8.2-any-file-deleted-to-getshell.html</link>
+      <pubDate>Tue, 06 Mar 2018 22:41:35 +0000</pubDate>
+      
+      <guid>https://xxe.icu/zzcms8.2-any-file-deleted-to-getshell.html</guid>
+      <description>前言 今天就审计一个洞，时间不够用了。明天或者周末看看有空有拿一些难的漏洞来审计复现一下。 环境 Web： Apache+PHP+MySql System： Ubuntu Browser： Firefox Quantum 漏</description>
+    </item>
+    
+    <item>
+      <title>ZZCMS8.2任意用户密码修改漏洞代码分析(每日一洞)</title>
+      <link>https://xxe.icu/zzcms-any-user-password-changes-loopholes-code-points.html</link>
+      <pubDate>Tue, 06 Mar 2018 00:03:07 +0000</pubDate>
+      
+      <guid>https://xxe.icu/zzcms-any-user-password-changes-loopholes-code-points.html</guid>
+      <description>前言 这几天感冒很难受，再加上比赛的培训，估计后面会两天一篇。 这个小型CMS前段时间我也挖到了很多洞，这次就找seebug发的一篇来做审计。 环</description>
+    </item>
+    
+  </channel>
+</rss>

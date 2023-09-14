@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>代码审计 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html</link>
+    <description>Recent content in 代码审计 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 28 May 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用dompdf漏洞从XSS到RCE</title>
+      <link>https://xxe.icu/using_dompdf_vulnerability_from_xss_to_rce.html</link>
+      <pubDate>Sun, 28 May 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/using_dompdf_vulnerability_from_xss_to_rce.html</guid>
+      <description>0x00 前言 这个漏洞是在去年的三月份爆出来的，今天刚好遇到这个漏洞的环境，遂写一文记录。 0x01 漏洞详情 漏洞描述 dompdf是一个用于将HTML转换为P</description>
+    </item>
+    
+    <item>
+      <title>Java代码审计-CommonsCollections1链分析</title>
+      <link>https://xxe.icu/commonscollections1_chain_analysis.html</link>
+      <pubDate>Tue, 22 Nov 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonscollections1_chain_analysis.html</guid>
+      <description>0x00 前言 本文所讲述的CommonsCollections1链也被称为CC1链，它是属于Apache Commons Collections是Java中应用广泛</description>
+    </item>
+    
+    <item>
+      <title>Java代码审计-URLDNS链分析</title>
+      <link>https://xxe.icu/urldns_chain_analysis.html</link>
+      <pubDate>Wed, 01 Jun 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/urldns_chain_analysis.html</guid>
+      <description>0x00 前言 本文所述的是URLDNS利用链分析，在此之前还要先介绍一下一个⾥程碑碑式的工具：ysoserial 引用官网的一句描述： ysoserial is a collection of utilities and property-oriented</description>
+    </item>
+    
+    <item>
+      <title>Maccms8最新命令执行漏洞</title>
+      <link>https://xxe.icu/maccms8-latest-command-execution-vulnerability.html</link>
+      <pubDate>Sun, 22 Dec 2019 11:17:18 +0000</pubDate>
+      
+      <guid>https://xxe.icu/maccms8-latest-command-execution-vulnerability.html</guid>
+      <description>0x01 前言 太久太久没写文章。。。最近还发布了一些法律，许多网站都关了，我还在考虑是否去开这个博客，因为分享技术还得承担法律责任，不过不会再公布具</description>
+    </item>
+    
+    <item>
+      <title>Seacms9.92从变量覆盖到getshell</title>
+      <link>https://xxe.icu/seacms9.92-from-variable-override-to-getshell.html</link>
+      <pubDate>Tue, 22 Oct 2019 11:17:18 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms9.92-from-variable-override-to-getshell.html</guid>
+      <description>文章的markdown的版本弄丢了，之前在知乎写的还在 https://zhuanlan.zhihu.com/p/86986342</description>
+    </item>
+    
+    <item>
+      <title>Seacms&lt;=9.92前台Getshell</title>
+      <link>https://xxe.icu/seacms-front-desk-getshell.html</link>
+      <pubDate>Fri, 27 Sep 2019 01:01:30 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms-front-desk-getshell.html</guid>
+      <description>0x01 前言 好久没发代码审计的文章了，最近挺多事情的，无意中看到90Sec上面有一篇seacms前台的getshell，突然就很感兴趣，之前审计这</description>
+    </item>
+    
+    <item>
+      <title>某云分发APP上传漏洞</title>
+      <link>https://xxe.icu/an-app-distribution-system-upload-vulnerability.html</link>
+      <pubDate>Fri, 06 Sep 2019 10:47:03 +0000</pubDate>
+      
+      <guid>https://xxe.icu/an-app-distribution-system-upload-vulnerability.html</guid>
+      <description>0x01 前言 大概有几个月没写文章了，最近都在忙(咸鱼),在某此渗透行动中发现的一个洞，感觉是开发留的一个后门。 0x02 漏洞复现 Payload： POST /source/pack/upload/index-uplog.php HTTP/1.1 Host: 127.0.0.1</description>
+    </item>
+    
+    <item>
+      <title>浅析PHP反序列化漏洞</title>
+      <link>https://xxe.icu/analysis-of-php-deserialization-vulnerabilities.html</link>
+      <pubDate>Wed, 05 Jun 2019 17:00:57 +0000</pubDate>
+      
+      <guid>https://xxe.icu/analysis-of-php-deserialization-vulnerabilities.html</guid>
+      <description>0x01 前言 很久没有些文章了，今天复习了反序列化漏洞的知识，顺便写了一篇文章。 0x02 PHP序列化和反序列化基础 我们想要将数组值存储到数据库时，就可以对</description>
+    </item>
+    
+    <item>
+      <title>zzzphp1.61 代码审计-从SQL注入到Getshell</title>
+      <link>https://xxe.icu/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell.html</link>
+      <pubDate>Sun, 10 Mar 2019 17:56:36 +0000</pubDate>
+      
+      <guid>https://xxe.icu/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell.html</guid>
+      <description>0x01 前言 前天看到zzzphp这一个cms，看着有点像zzzcms，去看了也是zzzcms开发的一套程序，于是就去审计一下，这zzzcms我之前</description>
+    </item>
+    
+    <item>
+      <title>Seacms 8.7版本SQL注入分析</title>
+      <link>https://xxe.icu/seacms8.7-sql-injection-analysis.html</link>
+      <pubDate>Mon, 04 Mar 2019 15:49:11 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms8.7-sql-injection-analysis.html</guid>
+      <description>0x01 前言 好像没发文章了，在t00ls看到一篇seacms8.7的分析文，不过不是最新的版本，好久没看到seacms和maccms这两个cms发</description>
+    </item>
+    
+    <item>
+      <title>ThinkPHP5 远程代码执行漏洞动态分析</title>
+      <link>https://xxe.icu/thinkphp5-remote-code-execution-vulnerability-dynamic-analysis.html</link>
+      <pubDate>Sat, 22 Dec 2018 11:17:18 +0000</pubDate>
+      
+      <guid>https://xxe.icu/thinkphp5-remote-code-execution-vulnerability-dynamic-analysis.html</guid>
+      <description>0x01 前言 这个漏洞已经过去了十多天了，最近比较忙，一直没有写分析的文章。今天抽点时间出来写一篇动态分析的文章，远程执行漏洞用动态分析比较方便也看</description>
+    </item>
+    
+    <item>
+      <title>upload-labs 通关笔记</title>
+      <link>https://xxe.icu/upload-labs.html</link>
+      <pubDate>Sat, 24 Nov 2018 15:41:37 +0000</pubDate>
+      
+      <guid>https://xxe.icu/upload-labs.html</guid>
+      <description>upload-labs 通关笔记 前言 把上传的所有类型的漏洞都过一遍，然后做一个笔记，方便以后查看，在此也很感谢c0ny1大佬的平台。 运行环境 php版本：推荐5.2</description>
+    </item>
+    
+    <item>
+      <title>Finecms 5.0.10 Multiple vulnerability analysis</title>
+      <link>https://xxe.icu/finecms-5.0.10-multiple-vulnerabilities.html</link>
+      <pubDate>Wed, 07 Nov 2018 14:30:25 +0000</pubDate>
+      
+      <guid>https://xxe.icu/finecms-5.0.10-multiple-vulnerabilities.html</guid>
+      <description>0x01 前言 已经一个月没有写文章了，最近发生了很多事情，之前的每日一洞、每周一洞，到现在的每月一洞了。感觉去审计多了就好比如去刷题，但是我觉得应该</description>
+    </item>
+    
+    <item>
+      <title>yxcms 1.4.7 最新版漏洞分析</title>
+      <link>https://xxe.icu/yxcms-1.4.7-latest-version-of-vulnerability-analysis.html</link>
+      <pubDate>Mon, 17 Sep 2018 13:16:06 +0000</pubDate>
+      
+      <guid>https://xxe.icu/yxcms-1.4.7-latest-version-of-vulnerability-analysis.html</guid>
+      <description>0x01前言 在先知看到的，大部分都是后台漏洞，部分厂商对于后台的漏洞都不认可，因为厂商觉得能进入后台这些漏洞都不是漏洞。最恐怖的是厂商否认了</description>
+    </item>
+    
+    <item>
+      <title>动态调试|Maccms SQL 注入分析(附注入盲注脚本)</title>
+      <link>https://xxe.icu/maccms-sql-injection-analysis.html</link>
+      <pubDate>Sun, 26 Aug 2018 15:49:02 +0000</pubDate>
+      
+      <guid>https://xxe.icu/maccms-sql-injection-analysis.html</guid>
+      <description>0x01 前言 已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。 0x02 环境 Web： phpstudy Sys</description>
+    </item>
+    
+    <item>
+      <title>禅知Pro 1.6 前台任意文件读取分析</title>
+      <link>https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html</link>
+      <pubDate>Sun, 19 Aug 2018 10:00:02 +0000</pubDate>
+      
+      <guid>https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html</guid>
+      <description>0x01 前言 这两天看到禅知这个CMS有一个前台的任意文件读取漏洞，就在此写一片分析文章。 0x02 环境 下载安装安装程序，这个CMS是封装起来的，连着Apa</description>
+    </item>
+    
+    <item>
+      <title>CVE-2018-1000094-CMSMS 2.2.5代码执行漏洞(每周一洞)</title>
+      <link>https://xxe.icu/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html</link>
+      <pubDate>Sat, 11 Aug 2018 09:31:30 +0000</pubDate>
+      
+      <guid>https://xxe.icu/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html</guid>
+      <description>0x01 前言 CMS Made Simple是一个简单易于使用的内容管理系统。它使用PHP，MySQL和Smarty模板引擎开发。 昨天看漏洞库的时候看到这一款CM</description>
+    </item>
+    
+    <item>
+      <title>phpok4.9后台getshell(每周一洞)</title>
+      <link>https://xxe.icu/phpok4.9-background-getshell.html</link>
+      <pubDate>Mon, 06 Aug 2018 08:19:40 +0000</pubDate>
+      
+      <guid>https://xxe.icu/phpok4.9-background-getshell.html</guid>
+      <description>0x01 前言 昨天看到phpok可以申请cve就去审计了一下，存在漏洞的地方还是挺多的，时间不多找了个简单的任意文件上传漏洞。 0x02 环境 程序下载：htt</description>
+    </item>
+    
+    <item>
+      <title>phpok 4.9代码审计(每周一洞)</title>
+      <link>https://xxe.icu/phpok-4.9-code-audit.html</link>
+      <pubDate>Sun, 05 Aug 2018 14:54:07 +0000</pubDate>
+      
+      <guid>https://xxe.icu/phpok-4.9-code-audit.html</guid>
+      <description>0x01 前言 一放暑假就特别多事情，很多事情都耽误了，看吐司文章看到一篇不错的审计文章，就学习下。 0x02 环境搭建 环境没什么要求PHPstudy就能搞定，</description>
+    </item>
+    
+    <item>
+      <title>DedeCMS V5.7后台过滤不当导致Getshell(每周一洞)</title>
+      <link>https://xxe.icu/dedecms-v5.7-background-filtering-improperly-leads-to-getshell.html</link>
+      <pubDate>Fri, 27 Jul 2018 14:14:56 +0000</pubDate>
+      
+      <guid>https://xxe.icu/dedecms-v5.7-background-filtering-improperly-leads-to-getshell.html</guid>
+      <description>0x01 前言 前两天看到七月火表哥再先知发的一篇审计文章，感觉不错，是dedecms的getshell。就分析了一下，顺便写一篇文章学习。 0x02 环境 环境</description>
+    </item>
+    
+  </channel>
+</rss>

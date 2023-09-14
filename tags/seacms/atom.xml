@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SeaCMS on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/seacms.html</link>
+    <description>Recent content in SeaCMS on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 22 Oct 2019 11:17:18 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/seacms/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Seacms9.92从变量覆盖到getshell</title>
+      <link>https://xxe.icu/seacms9.92-from-variable-override-to-getshell.html</link>
+      <pubDate>Tue, 22 Oct 2019 11:17:18 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms9.92-from-variable-override-to-getshell.html</guid>
+      <description>文章的markdown的版本弄丢了，之前在知乎写的还在 https://zhuanlan.zhihu.com/p/86986342</description>
+    </item>
+    
+    <item>
+      <title>Seacms&lt;=9.92前台Getshell</title>
+      <link>https://xxe.icu/seacms-front-desk-getshell.html</link>
+      <pubDate>Fri, 27 Sep 2019 01:01:30 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms-front-desk-getshell.html</guid>
+      <description>0x01 前言 好久没发代码审计的文章了，最近挺多事情的，无意中看到90Sec上面有一篇seacms前台的getshell，突然就很感兴趣，之前审计这</description>
+    </item>
+    
+    <item>
+      <title>Seacms 8.7版本SQL注入分析</title>
+      <link>https://xxe.icu/seacms8.7-sql-injection-analysis.html</link>
+      <pubDate>Mon, 04 Mar 2019 15:49:11 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms8.7-sql-injection-analysis.html</guid>
+      <description>0x01 前言 好像没发文章了，在t00ls看到一篇seacms8.7的分析文，不过不是最新的版本，好久没看到seacms和maccms这两个cms发</description>
+    </item>
+    
+    <item>
+      <title>SeaCMS v6.54和v6.55前台Getshell 代码执行漏洞(每日一洞)</title>
+      <link>https://xxe.icu/seacms-v6.54-and-v6.55-front-desk-getshell-code-execution-vulnerability-one-hole-a-day.html</link>
+      <pubDate>Sat, 03 Mar 2018 23:32:41 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms-v6.54-and-v6.55-front-desk-getshell-code-execution-vulnerability-one-hole-a-day.html</guid>
+      <description>前言 这两个版本修复上次的v6.45版本中的order传值后执行的漏洞，但是在新的版本里面利用parseIf函数的功能还可以继续利用。 因为上一</description>
+    </item>
+    
+    <item>
+      <title>SeaCMS v6.45前台Getshell 代码执行漏洞(每日一洞)</title>
+      <link>https://xxe.icu/seacms-v6.45-front-desk-getshell-code-execution-vulnerability-one-hole-a-day.html</link>
+      <pubDate>Fri, 02 Mar 2018 19:28:36 +0000</pubDate>
+      
+      <guid>https://xxe.icu/seacms-v6.45-front-desk-getshell-code-execution-vulnerability-one-hole-a-day.html</guid>
+      <description>前言 昨晚审计到了三点，今天还要整理宿舍就没有写文章。这个CMS没有用框架，漏洞的执行过程我看了很久才看完，下面就写漏洞执行过程和POC构造还</description>
+    </item>
+    
+  </channel>
+</rss>

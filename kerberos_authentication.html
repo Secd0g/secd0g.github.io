@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/kerberos_authentication.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="域渗透-Kerberos认证 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="域渗透-Kerberos认证 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="域渗透-Kerberos认证 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 简介 Kerberos是一种计算机网络授权协议,由MIT(麻省理工学院)开放的一套计算机软件。软件设计上采用客户端/服务器结构，并且能够进行">
+    <meta property="og:description" content="0x00 简介 Kerberos是一种计算机网络授权协议,由MIT(麻省理工学院)开放的一套计算机软件。软件设计上采用客户端/服务器结构，并且能够进行">
+    <meta property="twitter:description" content="0x00 简介 Kerberos是一种计算机网络授权协议,由MIT(麻省理工学院)开放的一套计算机软件。软件设计上采用客户端/服务器结构，并且能够进行">
+    <meta property="og:type" content="article">
+    <title>域渗透-Kerberos认证 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/kerberos_authentication.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/kerberos_authentication.html" title="域渗透-Kerberos认证">域渗透-Kerberos认证</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-02-20 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 20 Feb 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            8176 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            17 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-简介">0x00 简介</a></li>
+    <li><a href="#0x01-环境">0x01 环境</a>
+      <ul>
+        <li><a href="#主机环境">主机环境</a></li>
+        <li><a href="#工具">工具</a></li>
+        <li><a href="#域环境">域环境</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-认证过程">0x02 认证过程</a>
+      <ul>
+        <li><a href="#基础认证">基础认证</a></li>
+        <li><a href="#as认证">AS认证</a>
+          <ul>
+            <li><a href="#as_req">AS_REQ</a></li>
+            <li><a href="#as_rep">AS_REP</a></li>
+          </ul>
+        </li>
+        <li><a href="#tgs认证">TGS认证</a>
+          <ul>
+            <li><a href="#tgs_req">TGS_REQ</a></li>
+            <li><a href="#tgs_rep">TGS_REP</a></li>
+          </ul>
+        </li>
+        <li><a href="#ap认证">AP认证</a>
+          <ul>
+            <li><a href="#ap_req">AP_REQ</a></li>
+            <li><a href="#ap_rep">AP_REP</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x03-参考">0x03 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-简介">0x00 简介</h1>
+<p><strong>Kerberos</strong>是一种计算机网络授权协议,由MIT(麻省理工学院)开放的一套计算机软件。软件设计上采用客户端/服务器结构，并且能够进行相互认证，即客户端和服务器端均可对对方进行身份认证。可以用于防止窃听、防止重放攻击、保护数据完整性等场合，是一种应用对称密钥体制进行密钥管理的系统。</p>
+<p>之前在文章<a href="https://xxe.icu/posts/domain-security/">Windows认证与域渗透</a>当中挖了一个坑，说要把里面的认证过程和认证中的缺陷(漏洞)重新复习一遍。温故而知新，通过这几天不断的复习，学到了很多的新知识，也在学习的过程中解决了不少存在的问题。kerberos认证过程确实是挺繁杂的，但是安全性得到了保证。网上也特别多写kerberos认证的文章，我作为一个菜鸟在此就写一篇文章来总结归纳一下学到的知识，若有错误地方请各位前辈斧正，因为Kerberos协议基于对称密码学，我也不是专业密码学的，所以当中涉及加密的部分会略浅介绍。</p>
+<h1 id="0x01-环境">0x01 环境</h1>
+<p>建议大家都把环境搭建过一遍，可以参考<a href="https://blog.csdn.net/weixin_36711901/article/details/102995640">
+VMware中用虚拟机模拟搭建域</a></p>
+<h2 id="主机环境">主机环境</h2>
+<p>Windows Server 2019：172.16.0.106 （DC）</p>
+<p>Windows 10：172.16.0.111 （SQL Server）</p>
+<p>Windows 7：172.16.0.105 （PC）</p>
+<p>Kali Linux：172.16.0.107 （Attack）</p>
+<h2 id="工具">工具</h2>
+<p>Wireshark：<a href="https://www.wireshark.org/download.html">Download</a></p>
+<p>Setspn：Windows自带</p>
+<p>Kerberos Configuration Manager：<a href="https://www.microsoft.com/en-us/download/details.aspx?id=39046">download </a></p>
+<h2 id="域环境">域环境</h2>
+<p>域：hack.lab</p>
+<p>域管理员：testuser</p>
+<p>普通用户：lucky、testsql</p>
+<h1 id="0x02-认证过程">0x02 认证过程</h1>
+<p>我们学习kerberos的目的是要了解认证过程中出现的漏洞，但是我们有没有想过一个问题：</p>
+<p><strong>我们使用域用户登录某台内网主机的时候，认证过程是怎么样发生的呢？</strong></p>
+<p>我们在win7登录域用户会在Wireshark中抓到如下图的流量：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/4.png" alt="4"></p>
+<p>KRB5我们可以理解为kerberos v5协议，但这些AS_REQ、TGS_REQ等代表着什么呢，下面我们带着问题来了解一下这个认证过程。</p>
+<h2 id="基础认证">基础认证</h2>
+<p>我们先了解几个基础的概念：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">主题</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://docs.microsoft.com/zh-cn/windows/win32/secauthn/winlogon">Winlogon</a></td>
+<td style="text-align:left">Winlogon 为 GINA DLL 提供一组支持功能。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://docs.microsoft.com/zh-cn/windows/win32/secauthn/gina">GINA</a></td>
+<td style="text-align:left">GINA DLL 提供可自定义的用户标识和身份验证过程。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://docs.microsoft.com/zh-cn/windows/win32/secauthn/terminal-services-gina-functions">终端服务 GINA 函数</a></td>
+<td style="text-align:left">启用终端服务时，GINA 必须调用 Winlogon 支持功能才能完成多个任务。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://docs.microsoft.com/zh-cn/windows/win32/secauthn/interaction-between-winlogon-and-gina">Winlogon 与 GINA 之间的交互</a></td>
+<td style="text-align:left">Winlogon 的状态决定了调用哪个 GINA 函数来处理 (SAS) 事件的任何给定的 <a href="https://docs.microsoft.com/zh-cn/windows/win32/secgloss/s-gly"><em>安全注意顺序</em></a> 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://docs.microsoft.com/zh-cn/windows/win32/secauthn/winlogon-notification-packages">Winlogon 通知包</a></td>
+<td style="text-align:left">你可以实现通知包来监视和响应 Winlogon 事件。</td>
+</tr>
+<tr>
+<td style="text-align:left">LSA</td>
+<td style="text-align:left">本地安全机构</td>
+</tr>
+<tr>
+<td style="text-align:left">SSPI</td>
+<td style="text-align:left">安全支持提供者接口，该接口负责与Kerberos和NTLM服务沟通</td>
+</tr>
+</tbody>
+</table>
+<p>具体的内容可以阅读<a href="https://docs.microsoft.com/zh-cn/windows/win32/secauthn/interaction-between-winlogon-and-gina">
+Winlogon 与GINA 之间的交互</a></p>
+<p>可以想象一下，现在我们正使用域用户lucky登录Windows 7（已加入域）其过程如下：</p>
+<ol>
+<li>
+<p>用户首先按Ctrl+Alt+Del组合键。</p>
+</li>
+<li>
+<p>Winlogon检测到用户按下SAS键，就调用GINA，由GINA显示登录对话框，以便用户输入账号和密码。</p>
+</li>
+<li>
+<p>用户选择所要登录的域和填写账号与密码，GINA将用户输入的信息发送给LSA进行验证，如果是本地用户登录的话将会使用本地数据库进行认证，如果是域渗透的话将会丢给Kerberos SSP去认证。</p>
+</li>
+<li>
+<p>在域用户登录到本机的情况下，LSA将请求发送给Kerberos验证程序包。通过散列算法，根据用户信息生成一个密钥，并将密钥存储在证书缓存区中。</p>
+</li>
+</ol>
+<p>过程如图下：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/1.jpeg" alt="1"></p>
+<p>这里就开始到了kerberos的步骤了，要注意的就是Windows不会明文保存密钥，都是通过NTLM来进行存储的。当然整个认证过程不会很简单，我们先要了解一些基础的概念：</p>
+<ul>
+<li>
+<p>KDC（Key Distribution Center）= 密钥分发中心</p>
+</li>
+<li>
+<p>AS（Authentication Service）= 认证用户的身份，并为其发放TGT的服务</p>
+</li>
+<li>
+<p>TGT（Ticket Granting Ticket）= TGT认证票据，由AS服务发放</p>
+</li>
+<li>
+<p>TGS（Ticket Granting Service）= 票据发放服务</p>
+</li>
+<li>
+<p>ST（Service Tickets）=  ST服务票据，由TGS服务发送</p>
+</li>
+<li>
+<p>AP（Application Server）=  提供用户所需的服务</p>
+</li>
+</ul>
+<p>看着概念挺模糊的对吧，而且上面到了kerberos步骤了，怎么还不继续下去，别急，我们明白AS认证服务和TGS认证服务这两个到底是啥，跟KDC有什么关联，那KDC又是什么呢？</p>
+<p><strong>KDC</strong>（Key Distribution Center）：是默认安装在DC（域控制器）上Kerberos的主要服务，负责发行票据。</p>
+<p>我们来看下面的一张图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/2.png" alt="2"></p>
+<p>我们可以看到AS认证服务和TGS服务是被包含在KDC中的，那AS认证服务和TGS服务又是什么呢，我们来看下面一张图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/3.png" alt="3"></p>
+<p>从图中我们很清楚可以看出AS服务是用来验证用户身份的，TGS服务是用来验证用户是否可以访问Win7的，具体流程如下：</p>
+<ol>
+<li>域用户Lucky向kerberos服务请求，希望获取登录Win7的权限。 kerberos得到了这个消息，首先得判断Lucky是否是可信赖的， 也就是白名单黑名单的说法。这就是AS服务完成的工作，通过 在AD中存储黑名单和白名单来区分Lucky。成功后，返回AS返回TGT票据给Lucky。</li>
+<li>Lucky得到了TGT票据后，继续向kerberos请求，希望获取登录Win7的权限。kerberos又得到了这个消息，这时候通过Lucky消息中的TGT票据，判断出了Lucky拥有了这个权限，给了Lucky登录Win7的权限Service ticket。</li>
+<li>Lucky得到Service ticket后，终于可以成功登录Win7。</li>
+</ol>
+<p>当然，这个Service ticket只是仅仅登录Win7（Host服务）的，如果还需要访问其他的服务要再次向TGS申请，接下来我们会详细讲一下AS和TGS的认证过程。</p>
+<h2 id="as认证">AS认证</h2>
+<p>我们从上面可知，AS这一个步骤是用来识别用户信息的真实性，也是用户从KDC拿到TGT票据的过程，建议大家通过Wireshark来一起实践学习。这里我会分为两部分来讲，一个是AS_REQ（客户端请求包），一个是AS_REP（KDC响应包）。</p>
+<p>大家对照每一项进行学习的时候可以看下<a href="https://www.ietf.org/rfc/rfc4120.txt">rfc4120</a>,这是协议的详细标准，下面就举例一部分来讲。</p>
+<h3 id="as_req">AS_REQ</h3>
+<p>先来看下Wireshark抓到的kerberos的包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/5.png" alt="5"></p>
+<ul>
+<li>
+<p><strong>pvno</strong>：kerberos协议的版本号</p>
+</li>
+<li>
+<p><strong>msg-type</strong>：消息类型，AS_REQ固定为krb-as-req，具体的类型和值如下表</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  Message Type   Value  Meaning
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  KRB_AS_REQ     10      初始认证请求
+</span></span><span class="line"><span class="cl">  KRB_AS_REP     11      响应 KRB_AS_REQ 请求
+</span></span><span class="line"><span class="cl">  KRB_TGS_REQ    12      基于 TGT 的认证请求
+</span></span><span class="line"><span class="cl">  KRB_TGS_REP    13      响应 KRB_TGS_REQ 请求
+</span></span><span class="line"><span class="cl">  KRB_AP_REQ     14      对服务器的应用程序请求
+</span></span><span class="line"><span class="cl">  KRB_AP_REP     15      对 KRB_AP_REQ_MUTUAL 的响应
+</span></span><span class="line"><span class="cl">  KRB_RESERVED16 16      为用户到用户保留 krb_tgt_request
+</span></span><span class="line"><span class="cl">  KRB_RESERVED17 17      为用户对用户保留 krb_tgt_reply
+</span></span><span class="line"><span class="cl">  KRB_SAFE       20      安全（校验和）应用程序消息
+</span></span><span class="line"><span class="cl">  KRB_PRIV       21      私有（加密）应用程序消息
+</span></span><span class="line"><span class="cl">  KRB_CRED       22      要转发的私有（加密）消息证书
+</span></span><span class="line"><span class="cl">  KRB_ERROR      30      错误响应
+</span></span></code></pre></div><ul>
+<li>
+<p><strong>padata</strong>：PA_DATA主要是一些认证信息，一个列表，包含若干个认证消息用于认证，每个认证消息有padata_type和value。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">7.5.2.  PreAuthentication Data Types
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Padata and Data Type    Padata-type   Comment
+</span></span><span class="line"><span class="cl">                            Value
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   PA-TGS-REQ                  1
+</span></span><span class="line"><span class="cl">   PA-ENC-TIMESTAMP            2
+</span></span><span class="line"><span class="cl">   PA-PW-SALT                  3
+</span></span><span class="line"><span class="cl">   [reserved]                  4
+</span></span><span class="line"><span class="cl">   PA-ENC-UNIX-TIME            5        (deprecated)
+</span></span><span class="line"><span class="cl">   PA-SANDIA-SECUREID          6
+</span></span><span class="line"><span class="cl">   PA-SESAME                   7
+</span></span><span class="line"><span class="cl">   PA-OSF-DCE                  8
+</span></span><span class="line"><span class="cl">   PA-CYBERSAFE-SECUREID       9
+</span></span><span class="line"><span class="cl">   PA-AFS3-SALT                10
+</span></span><span class="line"><span class="cl">   PA-ETYPE-INFO               11
+</span></span><span class="line"><span class="cl">   PA-SAM-CHALLENGE            12       (sam/otp)
+</span></span><span class="line"><span class="cl">   PA-SAM-RESPONSE             13       (sam/otp)
+</span></span><span class="line"><span class="cl">   PA-PK-AS-REQ_OLD            14       (pkinit)
+</span></span><span class="line"><span class="cl">   PA-PK-AS-REP_OLD            15       (pkinit)
+</span></span><span class="line"><span class="cl">   PA-PK-AS-REQ                16       (pkinit)
+</span></span><span class="line"><span class="cl">   PA-PK-AS-REP                17       (pkinit)
+</span></span><span class="line"><span class="cl">   PA-ETYPE-INFO2              19       (replaces pa-etype-info)
+</span></span><span class="line"><span class="cl">   PA-USE-SPECIFIED-KVNO       20
+</span></span><span class="line"><span class="cl">   PA-SAM-REDIRECT             21       (sam/otp)
+</span></span><span class="line"><span class="cl">   PA-GET-FROM-TYPED-DATA      22       (embedded in typed data)
+</span></span><span class="line"><span class="cl">   TD-PADATA                   22       (embeds padata)
+</span></span><span class="line"><span class="cl">   PA-SAM-ETYPE-INFO           23       (sam/otp)
+</span></span><span class="line"><span class="cl">   PA-ALT-PRINC                24       (crawdad@fnal.gov)
+</span></span><span class="line"><span class="cl">   PA-SAM-CHALLENGE2           30       (kenh@pobox.com)
+</span></span><span class="line"><span class="cl">   PA-SAM-RESPONSE2            31       (kenh@pobox.com)
+</span></span><span class="line"><span class="cl">   PA-EXTRA-TGT                41       Reserved extra TGT
+</span></span><span class="line"><span class="cl">   TD-PKINIT-CMS-CERTIFICATES  101      CertificateSet from CMS
+</span></span><span class="line"><span class="cl">   TD-KRB-PRINCIPAL            102      PrincipalName
+</span></span><span class="line"><span class="cl">   TD-KRB-REALM                103      Realm
+</span></span><span class="line"><span class="cl">   TD-TRUSTED-CERTIFIERS       104      from PKINIT
+</span></span><span class="line"><span class="cl">   TD-CERTIFICATE-INDEX        105      from PKINIT
+</span></span><span class="line"><span class="cl">   TD-APP-DEFINED-ERROR        106      application specific
+</span></span><span class="line"><span class="cl">   TD-REQ-NONCE                107      INTEGER
+</span></span><span class="line"><span class="cl">   TD-REQ-SEQ                  108      INTEGER
+</span></span><span class="line"><span class="cl">   PA-PAC-REQUEST              128      (jbrezak@exchange.microsoft.com)
+</span></span></code></pre></div><p>这里表示pre-authentication data 预认证数据，有两项分别是</p>
+<ul>
+<li>
+<p>pA-ENC-TIMESTAMP：按照etype的加密类型，用用户hash加密时间戳，作为value 发送给AS服务器。然后AS服务器那边有用户hash，使用用户hash进行解密，获得时间戳，如果能解密，且时间戳在一定的范围内，则证明认证通过返回 TGT票据和enc_part（里面包含有session-key）。</p>
+</li>
+<li>
+<p>PA-DATA pA-PAC-REQUEST：这个是启用PAC支持的扩展。PAC(Privilege Attribute Certificate)并不在原生的kerberos里面，是微软引进的扩展。所以我们要清楚kerberos不是Windows上才有的，Linux也可以用这个协议做认证。PAC包含在ASREQ的响应body(ASREP)。这里的value对应的是include=true或者include=false(KDC根据include的值来判断返回的票据中是否携带PAC)。</p>
+</li>
+</ul>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/6.png" alt="6"></p>
+</li>
+<li>
+<p><strong>kdc-options</strong>：设置一些标志信息可以修改KDC的行为，在官方解释是</p>
+<blockquote>
+<p>This field appears in the KRB_AS_REQ and KRB_TGS_REQ requests to the KDC and indicates the flags that the client wants set on the tickets as well as other information that is to modify the behavior of the KDC.  Where appropriate, the name of an option may be the same as the flag that is set by that option.  Although in most cases, the bit in the options field will be the same as that in the flags field, this is not guaranteed</p>
+</blockquote>
+</li>
+<li>
+<p><strong>cname</strong>：这是用户名，采用的是PrincipalName 类型和string类型的组合。sname也是采用这种格式，主要的类型如下：</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  7.5.8.  Name Types
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">     Name Type           Value  Meaning
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">     KRB_NT_UNKNOWN        0    未知名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_PRINCIPAL      1    用户主体名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_SRV_INST       2    服务和其他唯一实例(krbtgt)的名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_SRV_HST        3    服务主机名称为实例名的名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_SRV_XHST       4    服务与主机作为剩余组件名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_UID            5    唯一ID名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_X500_PRINCIPAL 6    X.509编码的可分辨名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_SMTP_NAME      7    邮件名称类型
+</span></span><span class="line"><span class="cl">     KRB_NT_ENTERPRISE    10    企业名称类型
+</span></span></code></pre></div><p>这里存在一个用户名枚举的方法，可以看另外一篇文章<a href="https://xxe.icu/posts/kerberos_user_enumerate/">域渗透-用户名枚举</a>对照学习。</p>
+<ul>
+<li>
+<p><strong>realm</strong>：服务端域名</p>
+</li>
+<li>
+<p><strong>sname</strong>：关联的服务SPN，在ASREQ里面是krbtgt和域名，类型是KRBNTSRVINST</p>
+</li>
+<li>
+<p><strong>till</strong>：此字段包含客户端请求票证的到期时间，rubeus和kekeo都是20370913024805Z，这个可以作为<code>特征</code>来检测工具。</p>
+</li>
+<li>
+<p><strong>rtime</strong>：如果是一个可更新票据的要求，这个字段是一个绝对到期的时间</p>
+</li>
+<li>
+<p><strong>nonce</strong>：随机数，用来防止数据包重放。随机生成的一个数kekeo/mimikatz nonce是12381973，rubeus nonce是1818848256，这个也可以用来作为<code>特征</code>检测工具。</p>
+</li>
+<li>
+<p><strong>etype</strong>：加密类型,在请求报文之中每个有加密的数据都有一个etype字段对应,KDC就是从这段数据中加密方式,来从AD之中选择对应的hash来进行身份验证。</p>
+<pre><code>des_cbc_crc = 1,
+des_cbc_md4 = 2,
+des_cbc_md5 = 3,
+des3_cbc_md5 = 5,
+des3_cbc_sha1 = 7,
+dsaWithSHA1_CmsOID = 9,
+md5WithRSAEncryption_CmsOID = 10,
+sha1WithRSAEncryption_CmsOID = 11,
+rc2CBC_EnvOID = 12,
+rsaEncryption_EnvOID = 13,
+rsaES_OAEP_ENV_OID = 14,
+des_ede3_cbc_Env_OID = 15,
+des3_cbc_sha1_kd = 16,
+aes128_cts_hmac_sha1 = 17,
+aes256_cts_hmac_sha1 = 18,
+rc4_hmac = 23,
+rc4_hmac_exp = 24,
+subkey_keymaterial = 65
+</code></pre>
+</li>
+<li>
+<p><strong>addresses</strong>：客户端IP地址或者是计算机名称。我这里是WIN7，使用的类型是NetBios</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">7.5.3.  Address Types
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Address Type                   Value
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   IPv4                             2
+</span></span><span class="line"><span class="cl">   Directional                      3
+</span></span><span class="line"><span class="cl">   ChaosNet                         5
+</span></span><span class="line"><span class="cl">   XNS                              6
+</span></span><span class="line"><span class="cl">   ISO                              7
+</span></span><span class="line"><span class="cl">   DECNET Phase IV                 12
+</span></span><span class="line"><span class="cl">   AppleTalk DDP                   16
+</span></span><span class="line"><span class="cl">   NetBios                         20
+</span></span><span class="line"><span class="cl">   IPv6                            24
+</span></span></code></pre></div></li>
+</ul>
+<p>借鉴一下<a href="https://www.tarlogic.com/blog/how-kerberos-works/">Kerberos (I): How does Kerberos work? – Theory</a>的图（懒～）：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/KRB_AS_REQ.jpg" alt="KRB_AS_REQ"></p>
+<h3 id="as_rep">AS_REP</h3>
+<p>接收到请求后，KDC通过解密时间戳验证用户身份，如果信息是正确的话，那么它会响应一个AS_REP，先来看下Wireshark抓包的返回包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/as_rep.png" alt="as_rep"></p>
+<p>这里的pvno、msg-type、crealm、cname这几项跟req的一样，这里就不展开可以返回上面看一下具体作用。as_rep的包主要是ticket和enc-part这两部分。</p>
+<p>先来说这个ticket的内容，本质这个就是KDC返回来的一张TGT票据。</p>
+<ul>
+<li>
+<p>tkt-vno：这里是票据格式的版本号</p>
+</li>
+<li>
+<p>realm：派发票据的域</p>
+</li>
+<li>
+<p>sname：跟req的作用是一样的</p>
+</li>
+<li>
+<p>enc-part：这个用于TGS_REQ的认证。用户不可读取里面的内容。是使用krbtgt的hash进行加密的，因此如果我们拥有krbtgt的hash就可以自己制作一个ticket，既黄金票据。</p>
+<p>在rfc4120中也称为<code>EncTicketPart</code>，这一部分包含以下参数的内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">EncTicketPart   ::= [APPLICATION 3] SEQUENCE {
+</span></span><span class="line"><span class="cl">    flags                   [0] TicketFlags,
+</span></span><span class="line"><span class="cl">    key                     [1] EncryptionKey,
+</span></span><span class="line"><span class="cl">    crealm                  [2] Realm,
+</span></span><span class="line"><span class="cl">    cname                   [3] PrincipalName,
+</span></span><span class="line"><span class="cl">    transited               [4] TransitedEncoding,
+</span></span><span class="line"><span class="cl">    authtime                [5] KerberosTime,
+</span></span><span class="line"><span class="cl">    starttime               [6] KerberosTime 可选,
+</span></span><span class="line"><span class="cl">    endtime                 [7] KerberosTime,
+</span></span><span class="line"><span class="cl">    renew-till              [8] KerberosTime 可选,
+</span></span><span class="line"><span class="cl">    caddr                   [9] HostAddresses 可选,
+</span></span><span class="line"><span class="cl">    authorization-data      [10] AuthorizationData 可选
+</span></span><span class="line"><span class="cl">}		
+</span></span></code></pre></div><p>总的来说这块就是包含了用户名、 Login Session Key（key）、域信息、主体名称、票据的有效期、还有一项是PAC（authorization-data）</p>
+</li>
+</ul>
+<p>下面还有一项是enc-part部分，这一部分的是用用户的hash加密的，解密后可以得到 Login Session Key，主要是防止被窃取重放数据包。</p>
+<p>我们可以使用<a href="https://github.com/mubix/pykek">pykek</a>项目来模拟发包和解密：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span><span class="p">,</span> <span class="n">localtime</span><span class="p">,</span> <span class="n">strftime</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">kek.crypto</span> <span class="kn">import</span> <span class="n">generate_subkey</span><span class="p">,</span> <span class="n">ntlm_hash</span><span class="p">,</span> <span class="n">RC4_HMAC</span><span class="p">,</span> <span class="n">HMAC_MD5</span>
+</span></span><span class="line"><span class="cl"><span class="n">user_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">RC4_HMAC</span><span class="p">,</span>  <span class="n">ntlm_hash</span><span class="p">(</span><span class="s2">&#34;p@ssw0rd&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="n">as_req</span><span class="o">=</span><span class="n">build_as_req</span><span class="p">(</span><span class="s2">&#34;hack.lab&#34;</span><span class="p">,</span> <span class="s2">&#34;lucky&#34;</span><span class="p">,</span> <span class="n">user_key</span><span class="p">,</span> <span class="n">time</span><span class="p">(),</span> <span class="n">getrandbits</span><span class="p">(</span><span class="mi">31</span><span class="p">),</span> <span class="n">pac_request</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="n">as_req</span>
+</span></span><span class="line"><span class="cl"><span class="n">sock</span> <span class="o">=</span> <span class="n">send_req</span><span class="p">(</span><span class="n">as_req</span><span class="p">,</span> <span class="s2">&#34;172.16.0.106&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="n">sock</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">recv_rep</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">as_rep</span><span class="p">,</span> <span class="n">as_rep_enc</span> <span class="o">=</span> <span class="n">decrypt_as_rep</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">user_key</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="n">as_rep_enc</span>
+</span></span></code></pre></div><p>如下图，解密出来的session-key：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/7.png" alt="7"></p>
+<p>这部分的 Login Session Key和TGT票据会在下一个阶段用到。</p>
+<h2 id="tgs认证">TGS认证</h2>
+<h3 id="tgs_req">TGS_REQ</h3>
+<ol>
+<li>经过上面的步骤，客户端获得了 TGT票据 和 Login Session Key。</li>
+<li>用自己的密码NTLM Hash解密Login Session Key得到原始的Logon Session Key。</li>
+<li>它会在本地缓存此 TGT票据和 原始的Login Session Key。如果现在它需要访问某台服务器的某个服务，它就需要凭借这张TGT票据向KDC申请相应的ST服务票据（Service Ticket）。</li>
+<li>ST服务票据是通过KDC的另一个服务 TGS颁发的。</li>
+<li>在这个阶段，微软引入了两个扩展自协议 S4u2self 和 S4u2Proxy(当委派的时候，才用的到)</li>
+</ol>
+<p>下面是TGS_REQ的数据包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/tgs_req.png" alt="tgs_req"></p>
+<p>大项的主要有pvno、msg-type、req-body、padata，相信前面三项通过上面的了解已经知道了，这块我们主要是对padata里面的内容进行分析。</p>
+<p><strong>padata</strong>里面也包含了各种版本和类型，我们主要是看padata-value和ap-req这两项：</p>
+<ul>
+<li>
+<p>padata-value：这一串东西包含了使用用户名、域、当前时间、TGT票据（也就是AS_REP当中的ticket-&gt;enc-part）、authenticator，这些下面都会说到的，只要理解这一项的值就行，总的来说就是ap-req的总和，可以进行解码得到ap-req的内容。</p>
+</li>
+<li>
+<p>ap-req：这一部分包含协议版本号，主要是看ticket和authenticator的内容。</p>
+<p>ticket：这里面的cipher就是AS_REP响应过来的TGT票据，大家可以仔细观察下，两个cipher的值是一样的</p>
+<p>authenticator：这里是由AS_REP解码出来的sessions-key、msg-type、用户名、域、chksum（这个是由req_body编码而来）、时间戳</p>
+</li>
+</ul>
+<p><strong>req-body</strong>：这一项是由需要访问的服务信息组成，包括目标的服务标识、服务名称、域名，这一项通过RSA_MD5加密组成上面authenticator中的chksum。</p>
+<p>我们也可以用<code>pykek</code>工具包来模拟这一过程的发包，在<code>krb5.py</code>最下面加入下面的代码运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span><span class="p">,</span> <span class="n">localtime</span><span class="p">,</span> <span class="n">strftime</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">kek.crypto</span> <span class="kn">import</span> <span class="n">generate_subkey</span><span class="p">,</span> <span class="n">ntlm_hash</span><span class="p">,</span> <span class="n">RC4_HMAC</span><span class="p">,</span> <span class="n">HMAC_MD5</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">kek.pac</span> <span class="kn">import</span> <span class="n">build_pac</span><span class="p">,</span> <span class="n">pretty_print_pac</span>
+</span></span><span class="line"><span class="cl"><span class="n">user_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">RC4_HMAC</span><span class="p">,</span>  <span class="n">ntlm_hash</span><span class="p">(</span><span class="s2">&#34;p@ssw0rd&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="n">user_realm</span> <span class="o">=</span> <span class="s2">&#34;hack.lab&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">user_name</span> <span class="o">=</span> <span class="s2">&#34;lucky&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">target_realm</span> <span class="o">=</span> <span class="s2">&#34;dc.hack.lab&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">nonce</span> <span class="o">=</span> <span class="n">getrandbits</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">as_req</span> <span class="o">=</span> <span class="n">build_as_req</span><span class="p">(</span><span class="n">user_realm</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">user_key</span><span class="p">,</span> <span class="n">current_time</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">pac_request</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sock</span> <span class="o">=</span> <span class="n">send_req</span><span class="p">(</span><span class="n">as_req</span><span class="p">,</span> <span class="s2">&#34;172.16.0.106&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">recv_rep</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">as_rep</span><span class="p">,</span> <span class="n">as_rep_enc</span> <span class="o">=</span> <span class="n">decrypt_as_rep</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">user_key</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tgt_a</span> <span class="o">=</span> <span class="n">as_rep</span><span class="p">[</span><span class="s1">&#39;ticket&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">subkey</span> <span class="o">=</span> <span class="n">generate_subkey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">nonce</span> <span class="o">=</span> <span class="n">getrandbits</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">pac</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl"><span class="n">session_key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">as_rep_enc</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">][</span><span class="s1">&#39;keytype&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">as_rep_enc</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">][</span><span class="s1">&#39;keyvalue&#39;</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl"><span class="n">tgs_req</span> <span class="o">=</span> <span class="n">build_tgs_req</span><span class="p">(</span><span class="n">user_realm</span><span class="p">,</span> <span class="s1">&#39;MSSQLSvc&#39;</span><span class="p">,</span> <span class="s2">&#34;SQL.hack.lab&#34;</span><span class="p">,</span> <span class="n">user_realm</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">tgt_a</span><span class="p">,</span> <span class="n">session_key</span><span class="p">,</span> <span class="n">subkey</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">current_time</span><span class="p">,</span> <span class="n">pac</span><span class="p">,</span> <span class="n">pac_request</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sock1</span> <span class="o">=</span> <span class="n">send_req</span><span class="p">(</span><span class="n">tgs_req</span><span class="p">,</span> <span class="s2">&#34;172.16.0.106&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">data1</span> <span class="o">=</span> <span class="n">recv_rep</span><span class="p">(</span><span class="n">sock1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tgs_rep</span><span class="p">,</span> <span class="n">tgs_rep_enc</span> <span class="o">=</span> <span class="n">decrypt_tgs_rep</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">subkey</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="n">tgs_rep</span>
+</span></span></code></pre></div><blockquote>
+<p>建议大家也去跟一下这部分的代码，可以认识到整过数据包详细的组合流程步骤。</p>
+<p>如果MSSQLSvc和SQL.hack.lab不存在可以换成你登录的那台主机名称比如本次环境中主机名称win7.hack.lab,服务类型就换成host。</p>
+</blockquote>
+<h3 id="tgs_rep">TGS_REP</h3>
+<ol>
+<li>
+<p>TGS接收到请求之后，首先会检查自身是否存在客户端所请求的服务（就是查询SPN）。</p>
+</li>
+<li>
+<p>如果服务存在，则通过 krbtgt 用户的NTLM Hash 解密TGT并得到Login Session Key，然后通过Login Session Key解密Authenticator。</p>
+</li>
+<li>
+<p>如果解密成功，则验证了对方的真实身份，同时还会验证时间戳是否在范围内。并且还会检查TGT中的时间戳是否过期，且原始地址是否和TGT中保存的地址相同。</p>
+</li>
+<li>
+<p>在完成上述的检测后，如果验证通过，则TGS完成了对客户端的认证，会生成一个用Logon Session Key加密后的用于确保客户端-服务器之间通信安全的Service Session Key会话秘钥(也就是最外层enc-part部分)，并且会为该客户端生成ST服务票据。</p>
+<p>ST服务票据主要包含两方面的内容：客户端用户信息和原始Service Session Key，整个ST服务票据用该服务的NTLM Hash进行加密。</p>
+</li>
+<li>
+<p>最终Service Session Key 和 ST服务票据 发送给客户端。(这一步不管用户有没有访问服务的权限，只要TGT正确，就都会返回ST服务票据，这也是kerberoasting能利用的原因，任何一个用户，只要hash正确，就可以请求域内任何一个服务的ST票据)</p>
+</li>
+</ol>
+<p>下面是TGS_REP的数据包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/tgs_rep.png" alt="tgs_rep"></p>
+<p>这里主要需要了解的就是<strong>ticket</strong>和<strong>enc-part</strong></p>
+<p><strong>ticket</strong>：</p>
+<p>这里返回的ticket就是一张ST(Service Ticket)服务票据，也称作TGS票据。</p>
+<p>这张票据的ticket-&gt;enc-part部分是使用请求的服务对应的密钥(Service Session Key)进行加密的。因此如果我们拥有服务的密码Hash，那么我们就可以自己制作一个ST服务票据，这就造成了白银票据攻击。</p>
+<p><strong>enc-part:</strong></p>
+<p>经过<code>Logon Session Key</code>加密的<code>Service Session Key</code>（包含请求服务的身份信息等），用于请求服务时的会话密钥。enc-part这里也是可以解密的，解密得到<code>Service Session Key</code>,用来作为作为下阶段的认证密钥。</p>
+<p>解密可以使用上面的python代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">tgs_rep</span><span class="p">,</span> <span class="n">tgs_rep_enc</span> <span class="o">=</span> <span class="n">decrypt_tgs_rep</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">subkey</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span> <span class="n">tgs_rep_enc</span>
+</span></span></code></pre></div><blockquote>
+<p>kerberoasting和kerberoast是同一种攻击技术，只是叫法不一样</p>
+</blockquote>
+<h2 id="ap认证">AP认证</h2>
+<h3 id="ap_req">AP_REQ</h3>
+<p>上面的过程是和KDC交互的步骤，这一步是用户与AP(Application Server)之间的认证。</p>
+<ol>
+<li>我们从TGS_REP拿到了ST票据和Service Session Key,我们需要去访问ap的服务内容。</li>
+<li>使用从上面拿到的ST票据，还有用户名、时间戳、Service Session Key一起发送给AP。</li>
+<li>AP收到后会去KDC确认信息和PAC权限</li>
+</ol>
+<p>下面是AP_REQ的数据包，它不会像TGS、AS一样在Wireshark中显示，一般是通过服务的协议也就是DCERPC(Distributed Computing Environment / Remote Procedure Calls),也称作<strong>分散式运算环境/远端呼叫系统</strong>。</p>
+<p>这是另一个非常基础的Windows系统的通信协议，它比rdp协议更普遍，默认开启。它会把kerberos的认证信息封装起来一起发送，比如你用HTTP的kerberos协议认证也是封装在HTTP协议中一起发送。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/8.png" alt="8"></p>
+<p>我们来看主要部分：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/9.png" alt="9"></p>
+<p>我们可以看下rfc上面的介绍：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Neuman, et al.              Standards Track                    [Page 84]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">RFC 4120                      Kerberos V5                      July 2005
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   AP-REQ          ::= [APPLICATION 14] SEQUENCE {
+</span></span><span class="line"><span class="cl">           pvno            [0] INTEGER (5),
+</span></span><span class="line"><span class="cl">           msg-type        [1] INTEGER (14),
+</span></span><span class="line"><span class="cl">           ap-options      [2] APOptions,
+</span></span><span class="line"><span class="cl">           ticket          [3] Ticket,
+</span></span><span class="line"><span class="cl">           authenticator   [4] EncryptedData -- Authenticator
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   APOptions       ::= KerberosFlags
+</span></span><span class="line"><span class="cl">           -- reserved(0),
+</span></span><span class="line"><span class="cl">           -- use-session-key(1),
+</span></span><span class="line"><span class="cl">           -- mutual-required(2)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   pvno and msg-type
+</span></span><span class="line"><span class="cl">      These fields are described above in Section 5.4.1. msg-type is
+</span></span><span class="line"><span class="cl">      KRB_AP_REQ.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   ap-options
+</span></span><span class="line"><span class="cl">      This field appears in the application request (KRB_AP_REQ) and
+</span></span><span class="line"><span class="cl">      affects the way the request is processed.  It is a bit-field,
+</span></span><span class="line"><span class="cl">      where the selected options are indicated by the bit being set (1),
+</span></span><span class="line"><span class="cl">      and the unselected options and reserved fields by being reset (0).
+</span></span><span class="line"><span class="cl">      The encoding of the bits is specified in Section 5.2.  The
+</span></span><span class="line"><span class="cl">      meanings of the options are as follows:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Bit(s)  Name             Description
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   0       reserved         Reserved for future expansion of this field.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   1       use-session-key  The USE-SESSION-KEY option indicates that
+</span></span><span class="line"><span class="cl">                            the ticket the client is presenting to a
+</span></span><span class="line"><span class="cl">                            server is encrypted in the session key from
+</span></span><span class="line"><span class="cl">                            the server&#39;s TGT.  When this option is not
+</span></span><span class="line"><span class="cl">                            specified, the ticket is encrypted in the
+</span></span><span class="line"><span class="cl">                            server&#39;s secret key.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   2       mutual-required  The MUTUAL-REQUIRED option tells the server
+</span></span><span class="line"><span class="cl">                            that the client requires mutual
+</span></span><span class="line"><span class="cl">                            authentication, and that it must respond
+</span></span><span class="line"><span class="cl">                            with a KRB_AP_REP message.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   3-31    reserved         Reserved for future use.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   ticket
+</span></span><span class="line"><span class="cl">      This field is a ticket authenticating the client to the server.
+</span></span></code></pre></div><p>里面的ticket就是从TGS_REP获取到的ST（TGS）票据，下面还有使用Service Session Key加密的authenticator，关于authenticator的介绍：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Neuman, et al.              Standards Track                    [Page 85]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">RFC 4120                      Kerberos V5                      July 2005
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   authenticator
+</span></span><span class="line"><span class="cl">      This contains the encrypted authenticator, which includes the
+</span></span><span class="line"><span class="cl">      client&#39;s choice of a subkey.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   The encrypted authenticator is included in the AP-REQ; it certifies
+</span></span><span class="line"><span class="cl">   to a server that the sender has recent knowledge of the encryption
+</span></span><span class="line"><span class="cl">   key in the accompanying ticket, to help the server detect replays.
+</span></span><span class="line"><span class="cl">   It also assists in the selection of a &#34;true session key&#34; to use with
+</span></span><span class="line"><span class="cl">   the particular session.  The DER encoding of the following is
+</span></span><span class="line"><span class="cl">   encrypted in the ticket&#39;s session key, with a key usage value of 11
+</span></span><span class="line"><span class="cl">   in normal application exchanges, or 7 when used as the PA-TGS-REQ
+</span></span><span class="line"><span class="cl">   PA-DATA field of a TGS-REQ exchange (see Section 5.4.1):
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   -- Unencrypted authenticator
+</span></span><span class="line"><span class="cl">   Authenticator   ::= [APPLICATION 2] SEQUENCE  {
+</span></span><span class="line"><span class="cl">           authenticator-vno       [0] INTEGER (5),
+</span></span><span class="line"><span class="cl">           crealm                  [1] Realm,
+</span></span><span class="line"><span class="cl">           cname                   [2] PrincipalName,
+</span></span><span class="line"><span class="cl">           cksum                   [3] Checksum OPTIONAL,
+</span></span><span class="line"><span class="cl">           cusec                   [4] Microseconds,
+</span></span><span class="line"><span class="cl">           ctime                   [5] KerberosTime,
+</span></span><span class="line"><span class="cl">           subkey                  [6] EncryptionKey OPTIONAL,
+</span></span><span class="line"><span class="cl">           seq-number              [7] UInt32 OPTIONAL,
+</span></span><span class="line"><span class="cl">           authorization-data      [8] AuthorizationData OPTIONAL
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   authenticator-vno
+</span></span><span class="line"><span class="cl">      This field specifies the version number for the format of the
+</span></span><span class="line"><span class="cl">      authenticator.  This document specifies version 5.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   crealm and cname
+</span></span><span class="line"><span class="cl">      These fields are the same as those described for the ticket in
+</span></span><span class="line"><span class="cl">      section 5.3.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   cksum
+</span></span><span class="line"><span class="cl">      This field contains a checksum of the application data that
+</span></span><span class="line"><span class="cl">      accompanies the KRB_AP_REQ, computed using a key usage value of 10
+</span></span><span class="line"><span class="cl">      in normal application exchanges, or 6 when used in the TGS-REQ
+</span></span><span class="line"><span class="cl">      PA-TGS-REQ AP-DATA field.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   cusec
+</span></span><span class="line"><span class="cl">      This field contains the microsecond part of the client&#39;s
+</span></span><span class="line"><span class="cl">      timestamp.  Its value (before encryption) ranges from 0 to 999999.
+</span></span><span class="line"><span class="cl">      It often appears along with ctime.  The two fields are used
+</span></span><span class="line"><span class="cl">      together to specify a reasonably accurate timestamp.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   ctime
+</span></span><span class="line"><span class="cl">      This field contains the current time on the client&#39;s host.
+</span></span></code></pre></div><p>本阶段如图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/KRB_AP_REQ.png" alt="KRB_AP_REQ"></p>
+<h3 id="ap_rep">AP_REP</h3>
+<ol>
+<li>AP(Application Server)接收到请求后，用自己的密钥(Service Session Key)解密TGS中的<code>ticket-&gt;enc-part</code>获取<code>Service Session Key</code></li>
+<li>然后使用<code>Service Session Key</code>解密新的Authentication，对TGS和authenticator进行验证，验证通过则返回新的时间戳（通过Service Session Key进行加密）</li>
+<li>用户通过<code>Service Session Key</code>解密AP-REP返回的时间戳，并验证其是否正确。验证通过则证明客户端可以信赖服务器，并向服务器AP发送服务请求。</li>
+<li>服务器（AP）向客户端提供相应的服务。</li>
+</ol>
+<p>下面是AP_REP的数据包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/kerberos_authentication/10.png" alt="10"></p>
+<p>rfc的描述：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">5.5.2.  KRB_AP_REP Definition
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   The KRB_AP_REP message contains the Kerberos protocol version number,
+</span></span><span class="line"><span class="cl">   the message type, and an encrypted time-stamp.  The message is sent
+</span></span><span class="line"><span class="cl">   in response to an application request (KRB_AP_REQ) for which the
+</span></span><span class="line"><span class="cl">   mutual authentication option has been selected in the ap-options
+</span></span><span class="line"><span class="cl">   field.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   AP-REP          ::= [APPLICATION 15] SEQUENCE {
+</span></span><span class="line"><span class="cl">           pvno            [0] INTEGER (5),
+</span></span><span class="line"><span class="cl">           msg-type        [1] INTEGER (15),
+</span></span><span class="line"><span class="cl">           enc-part        [2] EncryptedData -- EncAPRepPart
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   EncAPRepPart    ::= [APPLICATION 27] SEQUENCE {
+</span></span><span class="line"><span class="cl">           ctime           [0] KerberosTime,
+</span></span><span class="line"><span class="cl">           cusec           [1] Microseconds,
+</span></span><span class="line"><span class="cl">           subkey          [2] EncryptionKey OPTIONAL,
+</span></span><span class="line"><span class="cl">           seq-number      [3] UInt32 OPTIONAL
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   The encoded EncAPRepPart is encrypted in the shared session key of
+</span></span><span class="line"><span class="cl">   the ticket.  The optional subkey field can be used in an
+</span></span><span class="line"><span class="cl">   application-arranged negotiation to choose a per association session
+</span></span><span class="line"><span class="cl">   key.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   pvno and msg-type
+</span></span><span class="line"><span class="cl">      These fields are described above in Section 5.4.1.  msg-type is
+</span></span><span class="line"><span class="cl">      KRB_AP_REP.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   enc-part
+</span></span><span class="line"><span class="cl">      This field is described above in Section 5.4.2.  It is computed
+</span></span><span class="line"><span class="cl">      with a key usage value of 12.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   ctime
+</span></span><span class="line"><span class="cl">      This field contains the current time on the client&#39;s host.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   cusec
+</span></span><span class="line"><span class="cl">      This field contains the microsecond part of the client&#39;s
+</span></span><span class="line"><span class="cl">      timestamp.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   subkey
+</span></span><span class="line"><span class="cl">      This field contains an encryption key that is to be used to
+</span></span><span class="line"><span class="cl">      protect this specific application session.  See Section 3.2.6 for
+</span></span><span class="line"><span class="cl">      specifics on how this field is used to negotiate a key.  Unless an
+</span></span><span class="line"><span class="cl">      application specifies otherwise, if this field is left out, the
+</span></span><span class="line"><span class="cl">      sub-session key from the authenticator or if the latter is also
+</span></span><span class="line"><span class="cl">      left out, the session key from the ticket will be used.
+</span></span></code></pre></div><h1 id="0x03-参考">0x03 参考</h1>
+<p><a href="https://www.t00ls.cc/viewthread.php?tid=55987">https://www.t00ls.cc/viewthread.php?tid=55987</a></p>
+<p><a href="https://buaq.net/go-87488.html">https://buaq.net/go-87488.html</a></p>
+<p><a href="https://www.tarlogic.com/blog/how-kerberos-works/">https://www.tarlogic.com/blog/how-kerberos-works/</a></p>
+<p><a href="https://xz.aliyun.com/t/8690">https://xz.aliyun.com/t/8690</a></p>
+<p><a href="https://daiker.gitbook.io/windows-protocol/kerberos/">https://daiker.gitbook.io/windows-protocol/kerberos/</a></p>
+<p><a href="https://www.modb.pro/db/167245">https://www.modb.pro/db/167245</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/kerberos_authentication.html">https://xxe.icu/kerberos_authentication.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/responder_ntlmv2.html" class="underline text-yellow-600">使用Responder进行NTLM重放攻击</a></li>
+    
+    <li><a href="/llmnr_nbt-ns.html" class="underline text-yellow-600">LLMNR/NBT-NS欺骗攻击</a></li>
+    
+    <li><a href="/ssh_tunnel.html" class="underline text-yellow-600">SSH隧道技术研究和实战</a></li>
+    
+    <li><a href="/windows_set_ip_access.html" class="underline text-yellow-600">Windows设置指定IP远程访问3389</a></li>
+    
+    <li><a href="/powershell-attack.html" class="underline text-yellow-600">Powershell在渗透测试中的利用</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-简介">0x00 简介</a></li>
+    <li><a href="#0x01-环境">0x01 环境</a>
+      <ul>
+        <li><a href="#主机环境">主机环境</a></li>
+        <li><a href="#工具">工具</a></li>
+        <li><a href="#域环境">域环境</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-认证过程">0x02 认证过程</a>
+      <ul>
+        <li><a href="#基础认证">基础认证</a></li>
+        <li><a href="#as认证">AS认证</a>
+          <ul>
+            <li><a href="#as_req">AS_REQ</a></li>
+            <li><a href="#as_rep">AS_REP</a></li>
+          </ul>
+        </li>
+        <li><a href="#tgs认证">TGS认证</a>
+          <ul>
+            <li><a href="#tgs_req">TGS_REQ</a></li>
+            <li><a href="#tgs_rep">TGS_REP</a></li>
+          </ul>
+        </li>
+        <li><a href="#ap认证">AP认证</a>
+          <ul>
+            <li><a href="#ap_req">AP_REQ</a></li>
+            <li><a href="#ap_rep">AP_REP</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x03-参考">0x03 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

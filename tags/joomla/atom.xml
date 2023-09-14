@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Joomla on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/joomla.html</link>
+    <description>Recent content in Joomla on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 07 Apr 2018 09:02:12 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/joomla/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>从用CentOS安装Docker靶场到Joomla 3.4.5 反序列化漏洞复现(每日一洞)</title>
+      <link>https://xxe.icu/install-docker-from-centos-to-build-loopholes-to-joomla-3.4.5-replay-of-deserialization-loopholes.html</link>
+      <pubDate>Sat, 07 Apr 2018 09:02:12 +0000</pubDate>
+      
+      <guid>https://xxe.icu/install-docker-from-centos-to-build-loopholes-to-joomla-3.4.5-replay-of-deserialization-loopholes.html</guid>
+      <description>0x01 前言 最近天气突然变凉，导致我直接病倒在床，今天才缓过来。 上次的用Docker来搭建各种漏洞靶场(妈妈再也不用担心我没有靶场练习了)讲的是W</description>
+    </item>
+    
+  </channel>
+</rss>

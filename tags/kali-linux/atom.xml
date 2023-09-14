@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kali Linux on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/kali-linux.html</link>
+    <description>Recent content in Kali Linux on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 25 Jul 2022 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/tags/kali-linux/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kali Linux 2022.2安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</link>
+      <pubDate>Mon, 25 Jul 2022 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</guid>
+      <description>0x00 前言 这个问题还是弄到了凌晨三点，最可恶的是还弄不好。。 早上起了个大早继续弄，在逛pd的论坛发现里面说了pd现在还不支持最新的5.18内核，</description>
+    </item>
+    
+    <item>
+      <title>Kali Linux 2020.4安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2020.4.html</link>
+      <pubDate>Wed, 30 Dec 2020 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2020.4.html</guid>
+      <description>0x00 前言 最近在vmware fusion里面用kali实在是太卡了，就想着换到pd会不会快一点呢？ 于是就开始立马动手！ 装完后，wow！很顺畅，但</description>
+    </item>
+    
+    <item>
+      <title>关于Kali2020安装Parallels Tools后Chrome显示空白</title>
+      <link>https://xxe.icu/pd-chrome-3d.html</link>
+      <pubDate>Wed, 30 Dec 2020 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/pd-chrome-3d.html</guid>
+      <description>0x00 起因 kali安装好了pdtools，突然发现chrome和edge浏览器打开都是空白 0x01 解决 逛pd的论坛发现是3D加速的问题，要么关闭3D加</description>
+    </item>
+    
+  </channel>
+</rss>

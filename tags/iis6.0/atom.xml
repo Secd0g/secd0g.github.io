@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IIS6.0 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/iis6.0.html</link>
+    <description>Recent content in IIS6.0 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 16 Jan 2018 19:10:45 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/iis6.0/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IIS6.0远程命令执行漏洞(CVE-2017-7269)</title>
+      <link>https://xxe.icu/iis6.0-remote-command-execution-vulnerability-cve-2017-7269.html</link>
+      <pubDate>Tue, 16 Jan 2018 19:10:45 +0000</pubDate>
+      
+      <guid>https://xxe.icu/iis6.0-remote-command-execution-vulnerability-cve-2017-7269.html</guid>
+      <description>漏洞信息 漏洞编号：CVE-2017-7269 发现人员：Zhiniang Peng和Chen Wu（华南理工大学信息安全实验室,计算机科学与工程学</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>远程命令执行 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C.html</link>
+    <description>Recent content in 远程命令执行 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 16 Jan 2018 19:10:45 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IIS6.0远程命令执行漏洞(CVE-2017-7269)</title>
+      <link>https://xxe.icu/iis6.0-remote-command-execution-vulnerability-cve-2017-7269.html</link>
+      <pubDate>Tue, 16 Jan 2018 19:10:45 +0000</pubDate>
+      
+      <guid>https://xxe.icu/iis6.0-remote-command-execution-vulnerability-cve-2017-7269.html</guid>
+      <description>漏洞信息 漏洞编号：CVE-2017-7269 发现人员：Zhiniang Peng和Chen Wu（华南理工大学信息安全实验室,计算机科学与工程学</description>
+    </item>
+    
+    <item>
+      <title>Struts2漏洞POC汇总</title>
+      <link>https://xxe.icu/struts2-vulnerability-poc-summary.html</link>
+      <pubDate>Wed, 30 Aug 2017 07:12:56 +0000</pubDate>
+      
+      <guid>https://xxe.icu/struts2-vulnerability-poc-summary.html</guid>
+      <description>&lt;p&gt;免责申明：文章中的工具以及POC等仅供个人测试研究，请在下载后24小时内删除，不得用于商业或非法用途，否则后果自负，如有使用于黑产者，与本文无关
+Struts2框架漏洞不断，鉴于struts2使用之广泛，本文汇总Struts2系列漏洞的Poc，给网络管理员或者站长提供查询便利，以便更好的检测自身网站存在的漏洞，也可以让安全从业者更好的了解此漏洞。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

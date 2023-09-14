@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>其他 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/categories/%E5%85%B6%E4%BB%96.html</link>
+    <description>Recent content in 其他 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 25 Jul 2022 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/categories/%E5%85%B6%E4%BB%96/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kali Linux 2022.2安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</link>
+      <pubDate>Mon, 25 Jul 2022 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</guid>
+      <description>0x00 前言 这个问题还是弄到了凌晨三点，最可恶的是还弄不好。。 早上起了个大早继续弄，在逛pd的论坛发现里面说了pd现在还不支持最新的5.18内核，</description>
+    </item>
+    
+    <item>
+      <title>Kali Linux 2020.4安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2020.4.html</link>
+      <pubDate>Wed, 30 Dec 2020 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2020.4.html</guid>
+      <description>0x00 前言 最近在vmware fusion里面用kali实在是太卡了，就想着换到pd会不会快一点呢？ 于是就开始立马动手！ 装完后，wow！很顺畅，但</description>
+    </item>
+    
+    <item>
+      <title>关于Kali2020安装Parallels Tools后Chrome显示空白</title>
+      <link>https://xxe.icu/pd-chrome-3d.html</link>
+      <pubDate>Wed, 30 Dec 2020 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/pd-chrome-3d.html</guid>
+      <description>0x00 起因 kali安装好了pdtools，突然发现chrome和edge浏览器打开都是空白 0x01 解决 逛pd的论坛发现是3D加速的问题，要么关闭3D加</description>
+    </item>
+    
+    <item>
+      <title>Python Web学习方法</title>
+      <link>https://xxe.icu/python-web-guide.html</link>
+      <pubDate>Mon, 01 Oct 2018 08:49:25 +0000</pubDate>
+      
+      <guid>https://xxe.icu/python-web-guide.html</guid>
+      <description>0x01 前言 学习Python Web的时候找到的一篇挺好的文章，里面写的也很实在，所有分享出来。 0x02 学习路线 看了这么多是不是还有点懵，笔者当时自学的时</description>
+    </item>
+    
+    <item>
+      <title>CentOS 5.x 安装Python3和yum源配置</title>
+      <link>https://xxe.icu/centos-5.x-yum-source-configuration.html</link>
+      <pubDate>Mon, 07 May 2018 16:15:13 +0000</pubDate>
+      
+      <guid>https://xxe.icu/centos-5.x-yum-source-configuration.html</guid>
+      <description>0x01 前言 技能大赛的题目里面用的是CentOS的系统，本来觉得没什么，居然要装上Python3的版本，尝试了各种办法去下载python. 中间用了</description>
+    </item>
+    
+    <item>
+      <title>用Vulnhub来练习漏洞靶场(爸爸再也不用担心我没有靶场练习了)</title>
+      <link>https://xxe.icu/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range.html</link>
+      <pubDate>Thu, 03 May 2018 17:04:29 +0000</pubDate>
+      
+      <guid>https://xxe.icu/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range.html</guid>
+      <description>0x01 前言 Vulnhub它是一个提供各种漏洞环境的平台，里面大部分的环境是要用VMware或者VirtualBox打开运行的。 如果只是练习一些常</description>
+    </item>
+    
+    <item>
+      <title>利用phpstorm&#43;xdebug进行断点调试</title>
+      <link>https://xxe.icu/breakpoint-debugging-with-phpstorm-xdebug.html</link>
+      <pubDate>Tue, 10 Apr 2018 10:17:16 +0000</pubDate>
+      
+      <guid>https://xxe.icu/breakpoint-debugging-with-phpstorm-xdebug.html</guid>
+      <description>0x01 前言 在代码审计中，有些程序用到框架之类的要想去分析一个一个看和输出调试比较麻烦，如今有了xdebug神器，就比较方便了。 0x02 配置过程 php的</description>
+    </item>
+    
+  </channel>
+</rss>

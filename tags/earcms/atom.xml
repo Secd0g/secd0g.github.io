@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>earcms on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/earcms.html</link>
+    <description>Recent content in earcms on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 06 Sep 2019 10:47:03 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/earcms/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>某云分发APP上传漏洞</title>
+      <link>https://xxe.icu/an-app-distribution-system-upload-vulnerability.html</link>
+      <pubDate>Fri, 06 Sep 2019 10:47:03 +0000</pubDate>
+      
+      <guid>https://xxe.icu/an-app-distribution-system-upload-vulnerability.html</guid>
+      <description>0x01 前言 大概有几个月没写文章了，最近都在忙(咸鱼),在某此渗透行动中发现的一个洞，感觉是开发留的一个后门。 0x02 漏洞复现 Payload： POST /source/pack/upload/index-uplog.php HTTP/1.1 Host: 127.0.0.1</description>
+    </item>
+    
+  </channel>
+</rss>

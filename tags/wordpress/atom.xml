@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>WordPress on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/wordpress.html</link>
+    <description>Recent content in WordPress on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 01 Jul 2018 10:07:19 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/wordpress/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Wordpress 4.9.6 Arbitrary File-Removal Vulnerability</title>
+      <link>https://xxe.icu/wordpress--4.9.6-arbitrary-file-removal-vulnerability.html</link>
+      <pubDate>Sun, 01 Jul 2018 10:07:19 +0000</pubDate>
+      
+      <guid>https://xxe.icu/wordpress--4.9.6-arbitrary-file-removal-vulnerability.html</guid>
+      <description>0x01 前言 和预期超了几天，毕业了挺多聚会的，在学校的日子总是过得那么快，一转眼就毕业了。好些东西都没去好好珍惜，大学也不要求有多大的成就，就希望</description>
+    </item>
+    
+    <item>
+      <title>WordPress 4.6 Command Execution Vulnerability(CVE-2016-10033) Analysis</title>
+      <link>https://xxe.icu/analysis-of-wordpress4.6-command-execution-vulnerability.html</link>
+      <pubDate>Mon, 18 Jun 2018 12:47:35 +0000</pubDate>
+      
+      <guid>https://xxe.icu/analysis-of-wordpress4.6-command-execution-vulnerability.html</guid>
+      <description>0x01 前言 因为去参加比赛，已经有一个月没有写文章了，中间玩了段时间，现在把心收回来了，坚持每周一洞的习惯。废话不多说，下面是复现PHPMaile</description>
+    </item>
+    
+    <item>
+      <title>Wordpress Plugin Site Editor 1.1.1 - 本地文件包含漏洞分析(每日一洞)</title>
+      <link>https://xxe.icu/wordpress-plugin-site-editor-1.1.1-local-file-inclusion-analysis.html</link>
+      <pubDate>Sun, 25 Mar 2018 13:45:14 +0000</pubDate>
+      
+      <guid>https://xxe.icu/wordpress-plugin-site-editor-1.1.1-local-file-inclusion-analysis.html</guid>
+      <description>0x01 前言 大概有一周没有写文章了，比赛完嗨皮了两天，喝酒喝到半夜回来继续看文章，看到了exploit的关于wordpress一个漏洞信息CVE-</description>
+    </item>
+    
+  </channel>
+</rss>

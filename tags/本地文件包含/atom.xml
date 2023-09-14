@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>本地文件包含 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.html</link>
+    <description>Recent content in 本地文件包含 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 25 Mar 2018 13:45:14 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Wordpress Plugin Site Editor 1.1.1 - 本地文件包含漏洞分析(每日一洞)</title>
+      <link>https://xxe.icu/wordpress-plugin-site-editor-1.1.1-local-file-inclusion-analysis.html</link>
+      <pubDate>Sun, 25 Mar 2018 13:45:14 +0000</pubDate>
+      
+      <guid>https://xxe.icu/wordpress-plugin-site-editor-1.1.1-local-file-inclusion-analysis.html</guid>
+      <description>0x01 前言 大概有一周没有写文章了，比赛完嗨皮了两天，喝酒喝到半夜回来继续看文章，看到了exploit的关于wordpress一个漏洞信息CVE-</description>
+    </item>
+    
+  </channel>
+</rss>

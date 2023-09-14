@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Metasploit on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/metasploit.html</link>
+    <description>Recent content in Metasploit on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 24 Mar 2018 12:46:22 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/metasploit/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deepin Linux install Metasploit</title>
+      <link>https://xxe.icu/deepin-linux-install-metasploit.html</link>
+      <pubDate>Sat, 24 Mar 2018 12:46:22 +0000</pubDate>
+      
+      <guid>https://xxe.icu/deepin-linux-install-metasploit.html</guid>
+      <description>前言 最近换了个系统，觉得国内的Deepin Linux还是比较符合日常适合和编程的。之前用ThinkPad装Ubuntu都崩好几次了，比较笔记</description>
+    </item>
+    
+  </channel>
+</rss>

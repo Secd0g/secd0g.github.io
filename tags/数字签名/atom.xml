@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数字签名 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D.html</link>
+    <description>Recent content in 数字签名 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 09 Apr 2018 21:00:52 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>由kali执行apt-get update 报错-GPG error引起数字签名的问题</title>
+      <link>https://xxe.icu/kali-implementation-of-update-source-error-gpg-error-caused-deep-understanding-of-digital-signature.html</link>
+      <pubDate>Mon, 09 Apr 2018 21:00:52 +0000</pubDate>
+      
+      <guid>https://xxe.icu/kali-implementation-of-update-source-error-gpg-error-caused-deep-understanding-of-digital-signature.html</guid>
+      <description>0x01 前言 今天想去更新一下Kali，怎么换源都是会报错，换官方源都不行。 然后去百度了一下，参考了大神给出的方案，重新添加kali的数字签名： https://blog.csdn.net/hardhard123/article/details/79598132 wget</description>
+    </item>
+    
+  </channel>
+</rss>

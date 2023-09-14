@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>动态调试 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95.html</link>
+    <description>Recent content in 动态调试 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 26 Aug 2018 15:49:02 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>动态调试|Maccms SQL 注入分析(附注入盲注脚本)</title>
+      <link>https://xxe.icu/maccms-sql-injection-analysis.html</link>
+      <pubDate>Sun, 26 Aug 2018 15:49:02 +0000</pubDate>
+      
+      <guid>https://xxe.icu/maccms-sql-injection-analysis.html</guid>
+      <description>0x01 前言 已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。 0x02 环境 Web： phpstudy Sys</description>
+    </item>
+    
+  </channel>
+</rss>

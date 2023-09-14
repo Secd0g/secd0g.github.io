@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>复现 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/%E5%A4%8D%E7%8E%B0.html</link>
+    <description>Recent content in 复现 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 03 May 2018 17:04:29 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E5%A4%8D%E7%8E%B0/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>用Vulnhub来练习漏洞靶场(爸爸再也不用担心我没有靶场练习了)</title>
+      <link>https://xxe.icu/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range.html</link>
+      <pubDate>Thu, 03 May 2018 17:04:29 +0000</pubDate>
+      
+      <guid>https://xxe.icu/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range.html</guid>
+      <description>0x01 前言 Vulnhub它是一个提供各种漏洞环境的平台，里面大部分的环境是要用VMware或者VirtualBox打开运行的。 如果只是练习一些常</description>
+    </item>
+    
+    <item>
+      <title>用Docker来搭建各种漏洞靶场(妈妈再也不用担心我没有靶场练习了)</title>
+      <link>https://xxe.icu/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range.html</link>
+      <pubDate>Wed, 14 Mar 2018 16:49:17 +0000</pubDate>
+      
+      <guid>https://xxe.icu/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range.html</guid>
+      <description>1. 前言 最近练习也在搭建这个漏洞环境，但是很费时间，然后就想到用Docker搭建比较快，又方便。不多废话，直接开始吧！ 2. 下载Docker 我本次</description>
+    </item>
+    
+    <item>
+      <title>Flash 0day漏洞(CVE-2018-4878)复现(每日一洞)</title>
+      <link>https://xxe.icu/recurrence-of-flash-0day-vulnerability-cve-2018-4878.html</link>
+      <pubDate>Tue, 13 Mar 2018 10:16:27 +0000</pubDate>
+      
+      <guid>https://xxe.icu/recurrence-of-flash-0day-vulnerability-cve-2018-4878.html</guid>
+      <description>前言 这几天很忙，已经有两天没有更新文章了，最近CVE-2018-4878挺火的，还有群里的人也问这个怎么复现。今天就献丑复现一下，大表哥别喷</description>
+    </item>
+    
+  </channel>
+</rss>

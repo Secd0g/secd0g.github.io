@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/upload-labs.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="upload-labs 通关笔记 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="upload-labs 通关笔记 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="upload-labs 通关笔记 - F0rmat&#39;s Blog">
+    <meta name="description" content="upload-labs 通关笔记 前言 把上传的所有类型的漏洞都过一遍，然后做一个笔记，方便以后查看，在此也很感谢c0ny1大佬的平台。 运行环境 php版本：推荐5.2">
+    <meta property="og:description" content="upload-labs 通关笔记 前言 把上传的所有类型的漏洞都过一遍，然后做一个笔记，方便以后查看，在此也很感谢c0ny1大佬的平台。 运行环境 php版本：推荐5.2">
+    <meta property="twitter:description" content="upload-labs 通关笔记 前言 把上传的所有类型的漏洞都过一遍，然后做一个笔记，方便以后查看，在此也很感谢c0ny1大佬的平台。 运行环境 php版本：推荐5.2">
+    <meta property="og:type" content="article">
+    <title>upload-labs 通关笔记 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/upload-labs.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/upload-labs.html" title="upload-labs 通关笔记">upload-labs 通关笔记</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2018-11-24 15:41:37 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 24 Nov 2018
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            7707 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            16 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#upload-labs-通关笔记">upload-labs 通关笔记</a>
+      <ul>
+        <li><a href="#前言">前言</a></li>
+        <li><a href="#运行环境">运行环境</a></li>
+        <li><a href="#pass-01">Pass-01</a>
+          <ul>
+            <li><a href="#1修改js脚本">1.修改JS脚本</a></li>
+            <li><a href="#2禁止浏览器运行js">2.禁止浏览器运行JS</a></li>
+            <li><a href="#3burp抓包改包">3.burp抓包改包</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-02">Pass-02</a></li>
+        <li><a href="#pass-03">Pass-03</a>
+          <ul>
+            <li><a href="#apache解析漏洞">Apache解析漏洞</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-04">Pass-04</a>
+          <ul>
+            <li><a href="#htaccess分布式配置文件">.htaccess（分布式配置文件）</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-05">Pass-05</a></li>
+        <li><a href="#pass-06">Pass-06</a></li>
+        <li><a href="#pass-07">Pass-07</a></li>
+        <li><a href="#pass-08">Pass-08</a></li>
+        <li><a href="#pass-09">Pass-09</a></li>
+        <li><a href="#pass-10">Pass-10</a></li>
+        <li><a href="#pass-11">Pass-11</a>
+          <ul>
+            <li><a href="#00截断">%00截断</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-12">Pass-12</a></li>
+        <li><a href="#pass-13">Pass-13</a></li>
+        <li><a href="#pass-14">Pass-14</a></li>
+        <li><a href="#pass-15">Pass-15</a></li>
+        <li><a href="#pass-16">Pass-16</a></li>
+        <li><a href="#pass-17">Pass-17</a></li>
+        <li><a href="#pass-18">Pass-18</a></li>
+        <li><a href="#pass-19">Pass-19</a></li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="upload-labs-通关笔记">upload-labs 通关笔记</h1>
+<h2 id="前言">前言</h2>
+<p>把上传的所有类型的漏洞都过一遍，然后做一个笔记，方便以后查看，在此也很感谢<a href="https://github.com/c0ny1">c0ny1</a>大佬的平台。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/mind-map.png" alt=""></p>
+<h2 id="运行环境">运行环境</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php版本：推荐5.2.17(其他版本可能会导致部分Pass无法突破)
+</span></span><span class="line"><span class="cl">php组件：php_gd2,php_exif（部分Pass需要开启这两个组件）
+</span></span><span class="line"><span class="cl">apache：以moudel方式连接
+</span></span></code></pre></div><p>PS：为了节省时间，可下载<a href="https://github.com/c0ny1/upload-labs/releases">Windows下集成环境</a>，解压即可运行靶机环境。</p>
+<!-- raw HTML omitted -->
+<h2 id="pass-01">Pass-01</h2>
+<p>我比较喜欢去看代码分析问题，所以仔细分析了程序的构造。</p>
+<p>表单上传文件变量是<code>upload_file</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;input class=&#34;input_file&#34; type=&#34;file&#34; name=&#34;upload_file&#34;/&gt;
+</span></span></code></pre></div><p>再来看下PHP代码,<code>UPLOAD_PATH</code>是在<code>config.php</code>文件里面的常量<code>define(&quot;UPLOAD_PATH&quot;, &quot;../upload/&quot;);</code>,PHP的代码没有什么过滤的，直接就可以上传了。</p>
+<p>但是在这个上传这里我弄了很久，因为Linux的一些机制接触比较少，用的环境是CentOS 7，PHP版本是5.4。</p>
+<p>上传的时候一直失败，测试了<code>$_FILES</code>里面的参数都没什么问题，<code>upload</code>目录的权限也测试了，临时文件<code>tmp</code>也测试了，还是不行。</p>
+<p>一直到下面的<code>move_uploaded_file</code>函数这里，百度了下已有人遇到同样的问题，解决的办法就关掉<code>selinux</code>输入：</p>
+<p><code>setenforce 0 </code></p>
+<p>就OK了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">include</span> <span class="s1">&#39;../config.php&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">include</span> <span class="s1">&#39;../head.php&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">include</span> <span class="s1">&#39;../menu.php&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$msg</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nx">UPLOAD_PATH</span><span class="p">))</span> <span class="p">{</span><span class="c1">//判断UPLOAD_PATH上传目录是否存在
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span><span class="c1">//获取临时文件名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">];</span><span class="c1">//上传目录+上传时的文件名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span> <span class="nv">$img_path</span><span class="p">)){</span><span class="c1">//把临时文件移到UPLOAD_PATH目录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;文件夹不存在,请手工创建！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>再往下看<code>&lt;form enctype=&quot;multipart/form-data&quot; method=&quot;post&quot; onsubmit=&quot;return checkFile()&quot;&gt;</code></p>
+<p>Get到javascript的知识点：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">onsubmit</span><span class="o">=</span><span class="s2">&#34;return false;&#34;</span> <span class="nx">将无论何时都阻止表单的提交</span>
+</span></span><span class="line"><span class="cl"><span class="nx">onsubmit</span><span class="o">=</span><span class="s2">&#34;return check();&#34;</span> <span class="nx">是否提交表单取决于check</span><span class="p">()</span><span class="nx">的返回值</span>
+</span></span><span class="line"><span class="cl"><span class="nx">onsubmit</span><span class="o">=</span><span class="s2">&#34;check();&#34;</span> <span class="nx">check</span><span class="p">()</span><span class="nx">的返回值无影响</span>
+</span></span></code></pre></div><p>再往下看js的代码段,<code>getElementsByName</code>取<code>name</code>的值，<code>getElementsById</code>取的是<code>id</code>，取到的值如图所示</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/1.png" alt=""></p>
+<p><code> if (file == null || file == &quot;&quot;)</code>这段引来了一个思考，两个都是表示0为什么还有重复去判断呢？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">null：代表声明了一个空对象，不是一个字符串，可以赋给任何对象，是没有地址。
+</span></span><span class="line"><span class="cl">&#34;&#34;：代表声明了一个对象实例，这个对象实例的值是一个长度为0的空字符串，是有地址但是里面的内容是空的。
+</span></span></code></pre></div><p>下面的判断文件上传的函数</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text/javascript&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">checkFile</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">var</span> <span class="nx">file</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByName</span><span class="p">(</span><span class="s1">&#39;upload_file&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">file</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">file</span> <span class="o">==</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;请选择要上传的文件!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//定义允许上传的文件类型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kd">var</span> <span class="nx">allow_ext</span> <span class="o">=</span> <span class="s2">&#34;.jpg|.png|.gif&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//提取上传文件的类型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kd">var</span> <span class="nx">ext_name</span> <span class="o">=</span> <span class="nx">file</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="s2">&#34;.&#34;</span><span class="p">));</span><span class="c1">//eg. shell.php   ext_name=&#39;php&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//判断上传文件类型是否允许上传
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="nx">allow_ext</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">ext_name</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span><span class="c1">//如果ext_name不在allow_ext里面
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kd">var</span> <span class="nx">errMsg</span> <span class="o">=</span> <span class="s2">&#34;该文件不允许上传，请上传&#34;</span> <span class="o">+</span> <span class="nx">allow_ext</span> <span class="o">+</span> <span class="s2">&#34;类型的文件,当前文件类型为：&#34;</span> <span class="o">+</span> <span class="nx">ext_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">alert</span><span class="p">(</span><span class="nx">errMsg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span></code></pre></div><p>由于是前端限制文件的后缀，可以有以下几种方法：</p>
+<h3 id="1修改js脚本">1.修改JS脚本</h3>
+<p>网上的方法是通过修改js的<code>allow_txt</code>的内容或者删掉<code>onsubmit=&quot;return checkFile()</code>禁止触发js函数</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/2.png" alt=""></p>
+<p>但是这个方法我今天测试不成功，删掉<code>onsubmit=&quot;return checkFile()</code>在火狐浏览器就能成功上传，所以在做渗透的时候，一个浏览器不行换一个浏览器试试，总会有新突破。</p>
+<p>我本地写了一个上传的页面，测试成功!</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">form</span> <span class="na">enctype</span><span class="o">=</span><span class="s">&#34;multipart/form-data&#34;</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span>  <span class="na">action</span><span class="o">=</span><span class="s">&#34;http://192.168.1.103/upload-labs/Pass-01/index.php&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;input_file&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;file&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;upload_file&#34;</span><span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;button&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">value</span><span class="o">=</span><span class="s">&#34;上传&#34;</span><span class="p">/&gt;</span>
+</span></span></code></pre></div><h3 id="2禁止浏览器运行js">2.禁止浏览器运行JS</h3>
+<p>以Chomre为例子，进入设置-&gt;内容，把js禁止,然后去上传php成功！</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/3.png" alt=""></p>
+<h3 id="3burp抓包改包">3.burp抓包改包</h3>
+<p>先上传一个PHP图片马，然后抓包修改后缀就行了</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/4.png" alt=""></p>
+<h2 id="pass-02">Pass-02</h2>
+<p>第二关代码是判断MIME类型的,关于Content-Type的内容可以看https://www.cnblogs.com/52fhy/p/5436673.html</p>
+<p>修改text/php 改成<code>image/gif</code>、<code>image/png</code>、<code>image/jpeg</code>其中一个就行了</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/5.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$msg</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nx">UPLOAD_PATH</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">((</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;image/jpeg&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;image/png&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;image/gif&#39;</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>            
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span> <span class="nv">$img_path</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;文件类型不正确，请重新上传！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;文件夹不存在,请手工创建！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="pass-03">Pass-03</h2>
+<p>这一关我参考了<code>s1ye</code>的文章http://www.evi1.cn/2018/08/18/upload-labs%E9%80%9A%E5%85%B3%E6%8C%87%E5%8D%97/</p>
+<p>他说的</p>
+<blockquote>
+<p>PS:上传test.php. .适用于pass01-pass09。</p>
+</blockquote>
+<p>实验中是不行的，因为<code>common.php</code>代码里面都把后面的<code>.</code>过滤了但是代码里面<code>$file_ext</code>取得文件后缀就不成立了，而且他发文章是2018年08月18日，但是GitHub上的是距今2018年11月，6个月前，那么就在5月份之后更新就没做修改了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">#common.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">deldot</span><span class="p">(</span><span class="nv">$s</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span><span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="nv">$i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">;</span><span class="nv">$i</span><span class="o">--</span><span class="p">){</span><span class="o">/</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$c</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$s</span><span class="p">,</span><span class="nv">$i</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span><span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="k">and</span> <span class="nv">$c</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nv">$s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="nv">$c</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$s</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nv">$i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>看下代码，过滤文件后面的<code>.</code>和<code>.asp,.aspx,.php,.jsp</code>这几个文件后缀。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$msg</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nx">UPLOAD_PATH</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$deny_ext</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;.asp&#39;</span><span class="p">,</span><span class="s1">&#39;.aspx&#39;</span><span class="p">,</span><span class="s1">&#39;.php&#39;</span><span class="p">,</span><span class="s1">&#39;.jsp&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">deldot</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">);</span><span class="c1">//删除文件名末尾的点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strrchr</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">);</span><span class="c1">//取文件后缀名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//转换为小写
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">str_ireplace</span><span class="p">(</span><span class="s1">&#39;::$DATA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$file_ext</span><span class="p">);</span><span class="c1">//去除字符串::$DATA
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//收尾去空
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">,</span> <span class="nv">$deny_ext</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s2">&#34;YmdHis&#34;</span><span class="p">)</span><span class="o">.</span><span class="nx">rand</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">9999</span><span class="p">)</span><span class="o">.</span><span class="nv">$file_ext</span><span class="p">;</span>            
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span><span class="nv">$img_path</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;不允许上传.asp,.aspx,.php,.jsp后缀文件！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;文件夹不存在,请手工创建！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="apache解析漏洞">Apache解析漏洞</h3>
+<p>但是我们晓得Apache有解析漏洞，文件在<code>/etc/mime.types</code>。我在CetnOS上面安装的默认没有解析这几行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">application/x-httpd-php          phtml pht php
+</span></span><span class="line"><span class="cl">application/x-httpd-php-source           phps
+</span></span><span class="line"><span class="cl">application/x-httpd-php3         php3
+</span></span><span class="line"><span class="cl">application/x-httpd-php3-preprocessed        php3p
+</span></span><span class="line"><span class="cl">application/x-httpd-php4         php4
+</span></span><span class="line"><span class="cl">application/x-httpd-php5         php5
+</span></span></code></pre></div><p>我添加一行<code>phtml</code>作为测试，修改后记得<code>service httpd restart</code>或者<code>systemctl restart httpd.service</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/6.png" alt=""></p>
+<p>上传的时候把后缀改为<code>phtml</code>或者<code>pht</code>，</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/7.png" alt=""></p>
+<p>成功解析</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/8.png" alt=""></p>
+<h2 id="pass-04">Pass-04</h2>
+<p>第四关代码显示有一个错误，运行的代码是没有改上传文件名的，但是显示的代码是用时间日期作为文件的命名的。用黑名单过滤了大部分的问题后缀，但是有一个Apache的<code>.htaccess</code>没有过滤。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$msg</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nx">UPLOAD_PATH</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$deny_ext</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&#34;.php&#34;</span><span class="p">,</span><span class="s2">&#34;.php5&#34;</span><span class="p">,</span><span class="s2">&#34;.php4&#34;</span><span class="p">,</span><span class="s2">&#34;.php3&#34;</span><span class="p">,</span><span class="s2">&#34;.php2&#34;</span><span class="p">,</span><span class="s2">&#34;php1&#34;</span><span class="p">,</span><span class="s2">&#34;.html&#34;</span><span class="p">,</span><span class="s2">&#34;.htm&#34;</span><span class="p">,</span><span class="s2">&#34;.phtml&#34;</span><span class="p">,</span><span class="s2">&#34;.pht&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp5&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp4&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp3&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp2&#34;</span><span class="p">,</span><span class="s2">&#34;pHp1&#34;</span><span class="p">,</span><span class="s2">&#34;.Html&#34;</span><span class="p">,</span><span class="s2">&#34;.Htm&#34;</span><span class="p">,</span><span class="s2">&#34;.pHtml&#34;</span><span class="p">,</span><span class="s2">&#34;.jsp&#34;</span><span class="p">,</span><span class="s2">&#34;.jspa&#34;</span><span class="p">,</span><span class="s2">&#34;.jspx&#34;</span><span class="p">,</span><span class="s2">&#34;.jsw&#34;</span><span class="p">,</span><span class="s2">&#34;.jsv&#34;</span><span class="p">,</span><span class="s2">&#34;.jspf&#34;</span><span class="p">,</span><span class="s2">&#34;.jtml&#34;</span><span class="p">,</span><span class="s2">&#34;.jSp&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpx&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpa&#34;</span><span class="p">,</span><span class="s2">&#34;.jSw&#34;</span><span class="p">,</span><span class="s2">&#34;.jSv&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpf&#34;</span><span class="p">,</span><span class="s2">&#34;.jHtml&#34;</span><span class="p">,</span><span class="s2">&#34;.asp&#34;</span><span class="p">,</span><span class="s2">&#34;.aspx&#34;</span><span class="p">,</span><span class="s2">&#34;.asa&#34;</span><span class="p">,</span><span class="s2">&#34;.asax&#34;</span><span class="p">,</span><span class="s2">&#34;.ascx&#34;</span><span class="p">,</span><span class="s2">&#34;.ashx&#34;</span><span class="p">,</span><span class="s2">&#34;.asmx&#34;</span><span class="p">,</span><span class="s2">&#34;.cer&#34;</span><span class="p">,</span><span class="s2">&#34;.aSp&#34;</span><span class="p">,</span><span class="s2">&#34;.aSpx&#34;</span><span class="p">,</span><span class="s2">&#34;.aSa&#34;</span><span class="p">,</span><span class="s2">&#34;.aSax&#34;</span><span class="p">,</span><span class="s2">&#34;.aScx&#34;</span><span class="p">,</span><span class="s2">&#34;.aShx&#34;</span><span class="p">,</span><span class="s2">&#34;.aSmx&#34;</span><span class="p">,</span><span class="s2">&#34;.cEr&#34;</span><span class="p">,</span><span class="s2">&#34;.sWf&#34;</span><span class="p">,</span><span class="s2">&#34;.swf&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">deldot</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">);</span><span class="c1">//删除文件名末尾的点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strrchr</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//转换为小写
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">str_ireplace</span><span class="p">(</span><span class="s1">&#39;::$DATA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$file_ext</span><span class="p">);</span><span class="c1">//去除字符串::$DATA
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//收尾去空
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">,</span> <span class="nv">$deny_ext</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//$img_path = UPLOAD_PATH.&#39;/&#39;.date(&#34;YmdHis&#34;).rand(1000,9999).$file_ext;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nv">$file_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span> <span class="nv">$img_path</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;此文件不允许上传!&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;文件夹不存在,请手工创建！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="htaccess分布式配置文件">.htaccess（分布式配置文件）</h3>
+<p><code>.htaccess</code>是Apache的又一特色。一般来说，配置文件的作用范围都是全局的，但Apache提供了一种很方便的、可作用于当前目录及其子目录的配置文件。</p>
+<p>Apache的配置文件在<code>/etc/httpd/conf</code>下面的<code>httpd.conf</code></p>
+<p>要想使.htaccess文件生效，需要两个条件，一是在Apache的配置文件中写上：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AllowOverride
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/9.png" alt=""></p>
+<p>二是Apache要加载mod_Rewrite模块。加载该模块，需要在Apache的配置文件中写上：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-v" data-lang="v"><span class="line"><span class="cl"><span class="nc">LoadModule</span> <span class="nv">rewrite_module</span> <span class="o">/</span><span class="nv">usr</span><span class="o">/</span><span class="nv">lib</span><span class="o">/</span><span class="nv">apache2</span><span class="o">/</span><span class="nv">modules</span><span class="o">/</span><span class="nv">mod_rewrite</span><span class="p">.</span><span class="nv">so</span>
+</span></span></code></pre></div><p>新版的Apache配置文件包含在<code>/etc/httpd/conf.modules.d</code>里面</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/10.png" alt="">我们只需打开里面的<code>00-base.conf</code>修改就行了</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/11.png" alt=""></p>
+<p>重启服务器<code>service httpd restart</code>或者<code>systemctl restart httpd.service</code></p>
+<p>如果是<code>Ubuntu</code>则需要</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo a2enmod rewrite
+</span></span></code></pre></div><p><code>.htaccess</code>文件可以配置很多事情，如是否开启站点的图片缓存、自定义错误页面、自定义默认文档、设置WWW域名重定向、设置网页重定向、设置图片防盗链和访问权限控制。但我们这里只关心<code>.htaccess</code>文件的一个作用——MIME类型修改。</p>
+<p>有两种写法：</p>
+<p><strong>第一种</strong></p>
+<p>先上传<code>.htaccess</code>内容为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AddType application/x-httpd-php jpg
+</span></span></code></pre></div><p>意思是：网站的<code>jpg</code>后缀都作为php文件来执行</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/12.png" alt=""></p>
+<p>我们上传一个测试图片看看效果</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/13.png" alt=""></p>
+<p><strong>第二种</strong></p>
+<p>可以把<code>.htaccess</code>的内容修改为</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;FilesMatch &#34;test&#34;&gt;
+</span></span><span class="line"><span class="cl">    SetHandler application/x-httpd-php
+</span></span><span class="line"><span class="cl">&lt;/FilesMatch&gt;
+</span></span></code></pre></div><p>或者</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;FilesMatch &#34;test.jpg&#34;&gt;
+</span></span><span class="line"><span class="cl">    SetHandler application/x-httpd-php
+</span></span><span class="line"><span class="cl">&lt;/FilesMatch&gt;
+</span></span></code></pre></div><p>第一个会把test.xxx的文件解析为php文件，第二个只会把文件名为test.jpg的文件解析为php</p>
+<p>我们尝试第二个看看效果</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/14.png" alt=""></p>
+<p>也是能成功解析的</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/13.png" alt=""></p>
+<h2 id="pass-05">Pass-05</h2>
+<p>这一关我又看到http://www.evi1.cn/2018/08/18/upload-labs%E9%80%9A%E5%85%B3%E6%8C%87%E5%8D%97/</p>
+<p>的作者用<code>.php. . </code>的用法了，我仔细看了几遍<code>common.php</code>的代码，感觉没错啊，对不起我确实是一个杠精，我用Windows搭建了测试,测试还是失败的,问题出现在<code>$img_path</code>的变量</p>
+<p><strong>Linux</strong></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/15.png" alt=""></p>
+<p><strong>Windows</strong></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/16.png" alt=""></p>
+<blockquote>
+<p>该函数简单明了，就是消掉末尾的点。也就是说只要构造”.php. .”即可绕过检测，当<code>deldot</code>函数检测到末尾的第一个点时将继续从后向前检测，当检测到空格时return xxx.php. (这里结尾时空格),接下来执行trim函数将去掉末尾的空格，最终文件名为 test.php. 由于windows特性，最后将变为test.php。</p>
+</blockquote>
+<p>我们仔细分析下这段代码的作用吧，这里确实会返回<code>xx.php.</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">deldot</span><span class="p">(</span><span class="nv">$s</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span><span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="nv">$i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">;</span><span class="nv">$i</span><span class="o">--</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$c</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$s</span><span class="p">,</span><span class="nv">$i</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="nv">$i</span> <span class="o">==</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="k">and</span> <span class="nv">$c</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nv">$s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="nv">$c</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$s</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nv">$i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>但是到这里就不一样了，取后缀为空,作者估计<code>strrchr</code>有理解错误，误以为是取第一个<code>.</code>然后取后面的字符,</p>
+<p><code>$file_ext = strrchr($file_name, '.');</code></p>
+<p>测试语句返回来的值是<code>.</code></p>
+<p><code> echo strrchr('1.php.','.');</code></p>
+<p>官方的解释：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/17.png" alt=""></p>
+<p>然后组成后缀</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$img_path = UPLOAD_PATH.&#39;/&#39;.date(&#34;YmdHis&#34;).rand(1000,9999).$file_ext;
+</span></span></code></pre></div><p>那么我们上传后就会变成<code>2018xxxx.</code></p>
+<p>第五关的代码分析，没有用<code>strtolower</code>来转化大小写，所以用大小写来突破<code>pHp</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$msg</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nx">UPLOAD_PATH</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$deny_ext</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&#34;.php&#34;</span><span class="p">,</span><span class="s2">&#34;.php5&#34;</span><span class="p">,</span><span class="s2">&#34;.php4&#34;</span><span class="p">,</span><span class="s2">&#34;.php3&#34;</span><span class="p">,</span><span class="s2">&#34;.php2&#34;</span><span class="p">,</span><span class="s2">&#34;.html&#34;</span><span class="p">,</span><span class="s2">&#34;.htm&#34;</span><span class="p">,</span><span class="s2">&#34;.phtml&#34;</span><span class="p">,</span><span class="s2">&#34;.pht&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp5&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp4&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp3&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp2&#34;</span><span class="p">,</span><span class="s2">&#34;.Html&#34;</span><span class="p">,</span><span class="s2">&#34;.Htm&#34;</span><span class="p">,</span><span class="s2">&#34;.pHtml&#34;</span><span class="p">,</span><span class="s2">&#34;.jsp&#34;</span><span class="p">,</span><span class="s2">&#34;.jspa&#34;</span><span class="p">,</span><span class="s2">&#34;.jspx&#34;</span><span class="p">,</span><span class="s2">&#34;.jsw&#34;</span><span class="p">,</span><span class="s2">&#34;.jsv&#34;</span><span class="p">,</span><span class="s2">&#34;.jspf&#34;</span><span class="p">,</span><span class="s2">&#34;.jtml&#34;</span><span class="p">,</span><span class="s2">&#34;.jSp&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpx&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpa&#34;</span><span class="p">,</span><span class="s2">&#34;.jSw&#34;</span><span class="p">,</span><span class="s2">&#34;.jSv&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpf&#34;</span><span class="p">,</span><span class="s2">&#34;.jHtml&#34;</span><span class="p">,</span><span class="s2">&#34;.asp&#34;</span><span class="p">,</span><span class="s2">&#34;.aspx&#34;</span><span class="p">,</span><span class="s2">&#34;.asa&#34;</span><span class="p">,</span><span class="s2">&#34;.asax&#34;</span><span class="p">,</span><span class="s2">&#34;.ascx&#34;</span><span class="p">,</span><span class="s2">&#34;.ashx&#34;</span><span class="p">,</span><span class="s2">&#34;.asmx&#34;</span><span class="p">,</span><span class="s2">&#34;.cer&#34;</span><span class="p">,</span><span class="s2">&#34;.aSp&#34;</span><span class="p">,</span><span class="s2">&#34;.aSpx&#34;</span><span class="p">,</span><span class="s2">&#34;.aSa&#34;</span><span class="p">,</span><span class="s2">&#34;.aSax&#34;</span><span class="p">,</span><span class="s2">&#34;.aScx&#34;</span><span class="p">,</span><span class="s2">&#34;.aShx&#34;</span><span class="p">,</span><span class="s2">&#34;.aSmx&#34;</span><span class="p">,</span><span class="s2">&#34;.cEr&#34;</span><span class="p">,</span><span class="s2">&#34;.sWf&#34;</span><span class="p">,</span><span class="s2">&#34;.swf&#34;</span><span class="p">,</span><span class="s2">&#34;.htaccess&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">deldot</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">);</span><span class="c1">//删除文件名末尾的点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strrchr</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">str_ireplace</span><span class="p">(</span><span class="s1">&#39;::$DATA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$file_ext</span><span class="p">);</span><span class="c1">//去除字符串::$DATA
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//首尾去空
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">,</span> <span class="nv">$deny_ext</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s2">&#34;YmdHis&#34;</span><span class="p">)</span><span class="o">.</span><span class="nx">rand</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">9999</span><span class="p">)</span><span class="o">.</span><span class="nv">$file_ext</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span> <span class="nv">$img_path</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;此文件类型不允许上传！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;文件夹不存在,请手工创建！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>在Windows上面可以正常解析，Linux严格大小写所以看环境，下面是Windows的解析结果</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/18.png" alt=""></p>
+<h2 id="pass-06">Pass-06</h2>
+<p>第六关少了</p>
+<p><code>$file_ext = trim($file_ext); //首尾去空</code></p>
+<p>所以在<code>1.php </code>这里后面加一个空格可以绕过</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$msg</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nx">UPLOAD_PATH</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$deny_ext</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&#34;.php&#34;</span><span class="p">,</span><span class="s2">&#34;.php5&#34;</span><span class="p">,</span><span class="s2">&#34;.php4&#34;</span><span class="p">,</span><span class="s2">&#34;.php3&#34;</span><span class="p">,</span><span class="s2">&#34;.php2&#34;</span><span class="p">,</span><span class="s2">&#34;.html&#34;</span><span class="p">,</span><span class="s2">&#34;.htm&#34;</span><span class="p">,</span><span class="s2">&#34;.phtml&#34;</span><span class="p">,</span><span class="s2">&#34;.pht&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp5&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp4&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp3&#34;</span><span class="p">,</span><span class="s2">&#34;.pHp2&#34;</span><span class="p">,</span><span class="s2">&#34;.Html&#34;</span><span class="p">,</span><span class="s2">&#34;.Htm&#34;</span><span class="p">,</span><span class="s2">&#34;.pHtml&#34;</span><span class="p">,</span><span class="s2">&#34;.jsp&#34;</span><span class="p">,</span><span class="s2">&#34;.jspa&#34;</span><span class="p">,</span><span class="s2">&#34;.jspx&#34;</span><span class="p">,</span><span class="s2">&#34;.jsw&#34;</span><span class="p">,</span><span class="s2">&#34;.jsv&#34;</span><span class="p">,</span><span class="s2">&#34;.jspf&#34;</span><span class="p">,</span><span class="s2">&#34;.jtml&#34;</span><span class="p">,</span><span class="s2">&#34;.jSp&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpx&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpa&#34;</span><span class="p">,</span><span class="s2">&#34;.jSw&#34;</span><span class="p">,</span><span class="s2">&#34;.jSv&#34;</span><span class="p">,</span><span class="s2">&#34;.jSpf&#34;</span><span class="p">,</span><span class="s2">&#34;.jHtml&#34;</span><span class="p">,</span><span class="s2">&#34;.asp&#34;</span><span class="p">,</span><span class="s2">&#34;.aspx&#34;</span><span class="p">,</span><span class="s2">&#34;.asa&#34;</span><span class="p">,</span><span class="s2">&#34;.asax&#34;</span><span class="p">,</span><span class="s2">&#34;.ascx&#34;</span><span class="p">,</span><span class="s2">&#34;.ashx&#34;</span><span class="p">,</span><span class="s2">&#34;.asmx&#34;</span><span class="p">,</span><span class="s2">&#34;.cer&#34;</span><span class="p">,</span><span class="s2">&#34;.aSp&#34;</span><span class="p">,</span><span class="s2">&#34;.aSpx&#34;</span><span class="p">,</span><span class="s2">&#34;.aSa&#34;</span><span class="p">,</span><span class="s2">&#34;.aSax&#34;</span><span class="p">,</span><span class="s2">&#34;.aScx&#34;</span><span class="p">,</span><span class="s2">&#34;.aShx&#34;</span><span class="p">,</span><span class="s2">&#34;.aSmx&#34;</span><span class="p">,</span><span class="s2">&#34;.cEr&#34;</span><span class="p">,</span><span class="s2">&#34;.sWf&#34;</span><span class="p">,</span><span class="s2">&#34;.swf&#34;</span><span class="p">,</span><span class="s2">&#34;.htaccess&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">deldot</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">);</span><span class="c1">//删除文件名末尾的点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strrchr</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//转换为小写
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">str_ireplace</span><span class="p">(</span><span class="s1">&#39;::$DATA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$file_ext</span><span class="p">);</span><span class="c1">//去除字符串::$DATA
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">,</span> <span class="nv">$deny_ext</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s2">&#34;YmdHis&#34;</span><span class="p">)</span><span class="o">.</span><span class="nx">rand</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">9999</span><span class="p">)</span><span class="o">.</span><span class="nv">$file_ext</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span><span class="nv">$img_path</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;此文件不允许上传&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;文件夹不存在,请手工创建！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>在Linux上面测试失败，Linux的机制很严格;在Windows上面测试成功！</p>
+<h2 id="pass-07">Pass-07</h2>
+<p>第七关还是黑名单，没有用<code>deldot</code>函数，就没有把<code>.</code>去掉</p>
+<p>这一句取的是取两边空格的<code>$file_name</code>变量</p>
+<p><code> $img_path = UPLOAD_PATH.'/'.$file_name;</code></p>
+<p>利用windows特性，会自动去掉后缀名中最后的<code>.</code>，可在后缀名中加<code>.</code>绕过,Linux测试失败。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/19.png" alt=""></p>
+<h2 id="pass-08">Pass-08</h2>
+<p>代码就不贴了，直接看重要的部分，和上面的区别就是少了一句替换和代码换成了取到后缀名最终的后缀名</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">str_ireplace</span><span class="p">(</span><span class="s1">&#39;::$DATA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$file_ext</span><span class="p">);</span><span class="c1">//去除字符串::$DATA
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s2">&#34;YmdHis&#34;</span><span class="p">)</span><span class="o">.</span><span class="nx">rand</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">9999</span><span class="p">)</span><span class="o">.</span><span class="nv">$file_ext</span><span class="p">;</span>
+</span></span></code></pre></div><p>这样一看，<code>::$DATA'</code>是Windows的特性，具体可以看文章https://www.waitalone.cn/php-windows-upload.html</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/20.png" alt=""></p>
+<h2 id="pass-09">Pass-09</h2>
+<p>这关用了<code>deldot</code>上面有说这个函数的执行，如果上传的文件名为<code>1.php.（这里是一个空格）.</code>那么得到文件名为<code>$file_ext=.</code>，</p>
+<p>但是这里改成</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nv">$file_name</span><span class="p">;</span>
+</span></span></code></pre></div><p>那么上传后的文件名就应该是<code>1.php.</code></p>
+<p>Linux是不能解析了，但Windows会自动把后面的<code>.</code>去掉</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/21.png" alt=""></p>
+<h2 id="pass-10">Pass-10</h2>
+<p>第十关突破点在这里</p>
+<p><code> $file_name = str_ireplace($deny_ext,&quot;&quot;, $file_name);</code></p>
+<p><code>$img_path = UPLOAD_PATH.'/'.$file_name;     </code></p>
+<p>str_ireplace可以去官网看说明http://php.net/manual/zh/function.str-ireplace.php</p>
+<p>搜索有对应的关键词都会替换掉，但只搜索一次，替换没有限制。</p>
+<p>可以利用双写绕过</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/22.png" alt=""></p>
+<h2 id="pass-11">Pass-11</h2>
+<h3 id="00截断">%00截断</h3>
+<p>看代码已经用了白名单了，但是这里有一个<code>$_GET['save_path']</code>用<code>get</code>来传递参数后面再加上后缀名</p>
+<p>我们可以用%00截断来绕过</p>
+<p>在url中%00表示ascll码中的0 ，而ascii中0作为特殊字符保留，表示字符串结束，所以当url中出现%00时就会认为读取已结束。</p>
+<p>但是有环境限制：</p>
+<blockquote>
+<p>php版本要小于5.3.4，5.3.4及以上已经修复该问题</p>
+<p>magic_quotes_gpc需要为OFF状态</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$ext_arr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;jpg&#39;</span><span class="p">,</span><span class="s1">&#39;png&#39;</span><span class="p">,</span><span class="s1">&#39;gif&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="nx">strrpos</span><span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="s2">&#34;.&#34;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">,</span><span class="nv">$ext_arr</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$img_path</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;save_path&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&#34;/&#34;</span><span class="o">.</span><span class="nx">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s2">&#34;YmdHis&#34;</span><span class="p">)</span><span class="o">.</span><span class="s2">&#34;.&#34;</span><span class="o">.</span><span class="nv">$file_ext</span><span class="p">;</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/23.png" alt=""></p>
+<h2 id="pass-12">Pass-12</h2>
+<p>和11关区别就在于<code>GET</code>和<code>POST</code>,<code>GET</code>是可以把url自动转码的，但是<code>POST</code>不会，所以我们要做一些改动。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/24.png" alt=""></p>
+<h2 id="pass-13">Pass-13</h2>
+<p>这关主要是利用了一个判断文件的函数</p>
+<ol>
+<li><code>fopen</code>打开文件数据流</li>
+<li><code>fread</code>读取2个字节</li>
+<li>用<code>unpack</code>对二进制数据进行解包，<code>C</code>代表无符号字节型，后面的<code>2</code>代表个数，也可以用<code>*</code>代替</li>
+<li>把两个<code>chars</code>连接起来再用<code>intval</code>转换为整数型</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">getReailFileType</span><span class="p">(</span><span class="nv">$filename</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$file</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="s2">&#34;rb&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$bin</span> <span class="o">=</span> <span class="nx">fread</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">//只读2字节
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">fclose</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$strInfo</span> <span class="o">=</span> <span class="o">@</span><span class="nx">unpack</span><span class="p">(</span><span class="s2">&#34;C2chars&#34;</span><span class="p">,</span> <span class="nv">$bin</span><span class="p">);</span>    
+</span></span><span class="line"><span class="cl">    <span class="nv">$typeCode</span> <span class="o">=</span> <span class="nx">intval</span><span class="p">(</span><span class="nv">$strInfo</span><span class="p">[</span><span class="s1">&#39;chars1&#39;</span><span class="p">]</span><span class="o">.</span><span class="nv">$strInfo</span><span class="p">[</span><span class="s1">&#39;chars2&#39;</span><span class="p">]);</span>    
+</span></span><span class="line"><span class="cl">    <span class="nv">$fileType</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl">    <span class="k">switch</span><span class="p">(</span><span class="nv">$typeCode</span><span class="p">){</span>      
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="mi">255216</span><span class="o">:</span>            
+</span></span><span class="line"><span class="cl">            <span class="nv">$fileType</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="mi">13780</span><span class="o">:</span>            
+</span></span><span class="line"><span class="cl">            <span class="nv">$fileType</span> <span class="o">=</span> <span class="s1">&#39;png&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>        
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="mi">7173</span><span class="o">:</span>            
+</span></span><span class="line"><span class="cl">            <span class="nv">$fileType</span> <span class="o">=</span> <span class="s1">&#39;gif&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">default</span><span class="o">:</span>            
+</span></span><span class="line"><span class="cl">            <span class="nv">$fileType</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>    
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$fileType</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>绕过也比较简单，做一个图片马就行了，这关不要求解析成PHP</p>
+<p>具体操作可以参考http://gv7.me/articles/2017/picture-trojan-horse-making-method/</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/25.png" alt=""></p>
+<p>上传后</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/26.png" alt=""></p>
+<h2 id="pass-14">Pass-14</h2>
+<p><code>getimagesize</code>判断图片内置函数可以参考官方文档http://php.net/manual/zh/function.getimagesize.php</p>
+<p><code>image_type_to_extension</code>取文件后缀的内置函数http://php.net/manual/zh/function.image-type-to-extension.php</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">isImage</span><span class="p">(</span><span class="nv">$filename</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$types</span> <span class="o">=</span> <span class="s1">&#39;.jpeg|.png|.gif&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nv">$filename</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$info</span> <span class="o">=</span> <span class="nx">getimagesize</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$ext</span> <span class="o">=</span> <span class="nx">image_type_to_extension</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nx">stripos</span><span class="p">(</span><span class="nv">$types</span><span class="p">,</span><span class="nv">$ext</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nv">$ext</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>绕过方法可以用13关的图片马</p>
+<h2 id="pass-15">Pass-15</h2>
+<p>这关需要开启<code>php_exif</code>模块</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/27.png" alt=""></p>
+<p><code>exif_imagetype</code> 也是判断图片的类型的，具体可以看官方文档http://php.net/manual/zh/function.exif-imagetype.php</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">isImage</span><span class="p">(</span><span class="nv">$filename</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//需要开启php_exif模块
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nv">$image_type</span> <span class="o">=</span> <span class="nx">exif_imagetype</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">switch</span> <span class="p">(</span><span class="nv">$image_type</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">IMAGETYPE_GIF</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s2">&#34;gif&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">IMAGETYPE_JPEG</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s2">&#34;jpg&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">IMAGETYPE_PNG</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s2">&#34;png&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl">        <span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="pass-16">Pass-16</h2>
+<p>这关也是上传图片的，三段代差不多，取其中的一段来分析<code> $target_path</code>已经用了<code>basename</code>来限制你修改目录绕过的方法了。</p>
+<p><code>$fileext</code>以点为界，取点后面的字符作为后缀名。</p>
+<p>变量<code>$filetype</code>获取的值取判断<code>content-type</code>是否符合条件</p>
+<p><code>imagecreatefromjpeg</code>判断是否为图片资源，具体可以看官方文档http://php.net/manual/zh/function.imagecreatefromjpeg.php</p>
+<p><code> srand(time())</code>看官方文档http://php.net/manual/zh/function.srand.php，和下面的<a href="http://www.php.net/manual/zh/function.strval.php">strval</a><code>(rand())</code> 相结合，随机数发生器的初始化，为了让上传的随机文件名不重复。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">])){</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 获得上传文件的基本信息，文件名，类型，大小，临时文件路径
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nv">$filename</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$filetype</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$tmpname</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$target_path</span><span class="o">=</span><span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="nx">basename</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 获得上传文件的扩展名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nv">$fileext</span><span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">strrchr</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span><span class="s2">&#34;.&#34;</span><span class="p">),</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">//判断文件后缀与类型，合法才进行上传操作
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span><span class="p">((</span><span class="nv">$fileext</span> <span class="o">==</span> <span class="s2">&#34;jpg&#34;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$filetype</span><span class="o">==</span><span class="s2">&#34;image/jpeg&#34;</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$tmpname</span><span class="p">,</span><span class="nv">$target_path</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//使用上传的图片生成新的图片
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nv">$im</span> <span class="o">=</span> <span class="nx">imagecreatefromjpeg</span><span class="p">(</span><span class="nv">$target_path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="nv">$im</span> <span class="o">==</span> <span class="k">false</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$msg</span> <span class="o">=</span> <span class="s2">&#34;该文件不是jpg格式的图片！&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">@</span><span class="nx">unlink</span><span class="p">(</span><span class="nv">$target_path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//给新图片指定文件名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="nx">srand</span><span class="p">(</span><span class="nx">time</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$newfilename</span> <span class="o">=</span> <span class="nx">strval</span><span class="p">(</span><span class="nx">rand</span><span class="p">())</span><span class="o">.</span><span class="s2">&#34;.jpg&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$newimagepath</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="nv">$newfilename</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">imagejpeg</span><span class="p">(</span><span class="nv">$im</span><span class="p">,</span><span class="nv">$newimagepath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//显示二次渲染后的图片（使用用户上传图片生成的新图片）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span><span class="o">.</span><span class="nv">$newfilename</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">@</span><span class="nx">unlink</span><span class="p">(</span><span class="nv">$target_path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s2">&#34;上传出错！&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span></code></pre></div><p>imagecreatefromjpeg二次渲染它相当于是把原本属于图像数据的部分抓了出来，再用自己的API 或函数进行重新渲染在这个过程中非图像数据的部分直接就隔离开了。</p>
+<p>绕过方法https://secgeek.net/bookfresh-vulnerability/ ，可以用里面的图片，具体怎么写exp在这里留个坑，改天再写个文章单独研究</p>
+<h2 id="pass-17">Pass-17</h2>
+<p>这关是无论是什么文件先上传了再说，然后通过白名单检测后缀名，符合就<code>rename</code>改名，不符合就<code>unlink</code>删除文件。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$msg</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">])){</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$ext_arr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;jpg&#39;</span><span class="p">,</span><span class="s1">&#39;png&#39;</span><span class="p">,</span><span class="s1">&#39;gif&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$file_name</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">,</span><span class="nx">strrpos</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">,</span><span class="s2">&#34;.&#34;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$upload_file</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$file_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span> <span class="nv">$upload_file</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">,</span><span class="nv">$ext_arr</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">             <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span> <span class="nx">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span><span class="o">.</span><span class="nx">date</span><span class="p">(</span><span class="s2">&#34;YmdHis&#34;</span><span class="p">)</span><span class="o">.</span><span class="s2">&#34;.&#34;</span><span class="o">.</span><span class="nv">$file_ext</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">             <span class="nx">rename</span><span class="p">(</span><span class="nv">$upload_file</span><span class="p">,</span> <span class="nv">$img_path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">             <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s2">&#34;只允许上传.jpg|.png|.gif类型文件！&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">unlink</span><span class="p">(</span><span class="nv">$upload_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>但存在竞争条件，具体可以看文章http://homakov.blogspot.com/2014/11/hacking-file-uploaders-with-race.html</p>
+<p>可以用burp来发包不断访问，先写一个php写入文件的<code>test.php</code>然后在访问这文件就可以生成另外一个shell了</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/28.png" alt=""></p>
+<h2 id="pass-18">Pass-18</h2>
+<p>这关还是同样的竞争条件，<code>index.php</code>调用了<code>MyUpload</code>这关上传类，使用了<code>upload</code>方法，执行的顺序是先上传然后再改名，但如何快速的多线程上传那就会出现bug，</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"> <span class="k">function</span> <span class="nf">upload</span><span class="p">(</span> <span class="nv">$dir</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">isUploadedFile</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="nv">$ret</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="nv">$ret</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setDir</span><span class="p">(</span> <span class="nv">$dir</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="nv">$ret</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="nv">$ret</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">checkExtension</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="nv">$ret</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="nv">$ret</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">checkSize</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="nv">$ret</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="nv">$ret</span> <span class="p">);</span>    
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// if flag to check if the file exists is set to 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cls_file_exists</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">checkFileExists</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span><span class="p">(</span> <span class="nv">$ret</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="nv">$ret</span> <span class="p">);</span>    
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// if we are here, we are ready to move the file to destination
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">move</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="nv">$ret</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="nv">$ret</span> <span class="p">);</span>    
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// check if we need to rename the file
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cls_rename_file</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">      <span class="nv">$ret</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">renameFile</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span><span class="p">(</span> <span class="nv">$ret</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="nv">$ret</span> <span class="p">);</span>    
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// if we are here, everything worked as planned :)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">resultUpload</span><span class="p">(</span> <span class="s2">&#34;SUCCESS&#34;</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span></code></pre></div><p>绕过方法和上一关的一样，但是这关在上传之前用了白名单来检测，所以只能上传图片马，用Apache解析漏洞或者是文件包含漏洞。</p>
+<h2 id="pass-19">Pass-19</h2>
+<p>这关<code> $file_name = trim($_POST['save_name']);</code>这里是决定上传后的文件名，有黑名单，而且这关要我们上传的是webshell</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;submit&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">file_exists</span><span class="p">(</span><span class="nx">UPLOAD_PATH</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$deny_ext</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&#34;php&#34;</span><span class="p">,</span><span class="s2">&#34;php5&#34;</span><span class="p">,</span><span class="s2">&#34;php4&#34;</span><span class="p">,</span><span class="s2">&#34;php3&#34;</span><span class="p">,</span><span class="s2">&#34;php2&#34;</span><span class="p">,</span><span class="s2">&#34;html&#34;</span><span class="p">,</span><span class="s2">&#34;htm&#34;</span><span class="p">,</span><span class="s2">&#34;phtml&#34;</span><span class="p">,</span><span class="s2">&#34;pht&#34;</span><span class="p">,</span><span class="s2">&#34;jsp&#34;</span><span class="p">,</span><span class="s2">&#34;jspa&#34;</span><span class="p">,</span><span class="s2">&#34;jspx&#34;</span><span class="p">,</span><span class="s2">&#34;jsw&#34;</span><span class="p">,</span><span class="s2">&#34;jsv&#34;</span><span class="p">,</span><span class="s2">&#34;jspf&#34;</span><span class="p">,</span><span class="s2">&#34;jtml&#34;</span><span class="p">,</span><span class="s2">&#34;asp&#34;</span><span class="p">,</span><span class="s2">&#34;aspx&#34;</span><span class="p">,</span><span class="s2">&#34;asa&#34;</span><span class="p">,</span><span class="s2">&#34;asax&#34;</span><span class="p">,</span><span class="s2">&#34;ascx&#34;</span><span class="p">,</span><span class="s2">&#34;ashx&#34;</span><span class="p">,</span><span class="s2">&#34;asmx&#34;</span><span class="p">,</span><span class="s2">&#34;cer&#34;</span><span class="p">,</span><span class="s2">&#34;swf&#34;</span><span class="p">,</span><span class="s2">&#34;htaccess&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;save_name&#39;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_name</span> <span class="o">=</span> <span class="nx">deldot</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">);</span><span class="c1">//删除文件名末尾的点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">pathinfo</span><span class="p">(</span><span class="nv">$file_name</span><span class="p">,</span><span class="nx">PATHINFO_EXTENSION</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//转换为小写
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">str_ireplace</span><span class="p">(</span><span class="s1">&#39;::$DATA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$file_ext</span><span class="p">);</span><span class="c1">//去除字符串::$DATA
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$file_ext</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">);</span> <span class="c1">//首尾去空
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$file_ext</span><span class="p">,</span><span class="nv">$deny_ext</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$temp_file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">&#39;upload_file&#39;</span><span class="p">][</span><span class="s1">&#39;tmp_name&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$img_path</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span><span class="nv">$file_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">move_uploaded_file</span><span class="p">(</span><span class="nv">$temp_file</span><span class="p">,</span> <span class="nv">$img_path</span><span class="p">))</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">                <span class="nv">$is_upload</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;上传出错！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$msg</span> <span class="o">=</span> <span class="s1">&#39;禁止保存为该类型文件！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$msg</span> <span class="o">=</span> <span class="nx">UPLOAD_PATH</span> <span class="o">.</span> <span class="s1">&#39;文件夹不存在,请手工创建！&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>我们可以用<code>CVE-2015-2348</code><a href="https://www.cnblogs.com/cyjaysun/p/4390930.html">https://www.cnblogs.com/cyjaysun/p/4390930.html</a>  漏洞绕过</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/upload-labs/29.png" alt=""></p>
+<h2 id="总结">总结</h2>
+<p>用两周才写完这个笔记，主要是懒，不过加深了上传方面的知识还是收获到很多。</p>
+<p>上面有什么错漏的欢迎留言。</p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/upload-labs.html">https://xxe.icu/upload-labs.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/upload-labs.html">
+                    #upload-labs
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/finecms-5.0.10-multiple-vulnerabilities.html" class="underline text-yellow-600">Finecms 5.0.10 Multiple vulnerability analysis</a></li>
+    
+    <li><a href="/python-web-guide.html" class="underline text-yellow-600">Python Web学习方法</a></li>
+    
+    <li><a href="/yxcms-1.4.7-latest-version-of-vulnerability-analysis.html" class="underline text-yellow-600">yxcms 1.4.7 最新版漏洞分析</a></li>
+    
+    <li><a href="/maccms-sql-injection-analysis.html" class="underline text-yellow-600">动态调试|Maccms SQL 注入分析(附注入盲注脚本)</a></li>
+    
+    <li><a href="/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html" class="underline text-yellow-600">禅知Pro 1.6 前台任意文件读取分析</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#upload-labs-通关笔记">upload-labs 通关笔记</a>
+      <ul>
+        <li><a href="#前言">前言</a></li>
+        <li><a href="#运行环境">运行环境</a></li>
+        <li><a href="#pass-01">Pass-01</a>
+          <ul>
+            <li><a href="#1修改js脚本">1.修改JS脚本</a></li>
+            <li><a href="#2禁止浏览器运行js">2.禁止浏览器运行JS</a></li>
+            <li><a href="#3burp抓包改包">3.burp抓包改包</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-02">Pass-02</a></li>
+        <li><a href="#pass-03">Pass-03</a>
+          <ul>
+            <li><a href="#apache解析漏洞">Apache解析漏洞</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-04">Pass-04</a>
+          <ul>
+            <li><a href="#htaccess分布式配置文件">.htaccess（分布式配置文件）</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-05">Pass-05</a></li>
+        <li><a href="#pass-06">Pass-06</a></li>
+        <li><a href="#pass-07">Pass-07</a></li>
+        <li><a href="#pass-08">Pass-08</a></li>
+        <li><a href="#pass-09">Pass-09</a></li>
+        <li><a href="#pass-10">Pass-10</a></li>
+        <li><a href="#pass-11">Pass-11</a>
+          <ul>
+            <li><a href="#00截断">%00截断</a></li>
+          </ul>
+        </li>
+        <li><a href="#pass-12">Pass-12</a></li>
+        <li><a href="#pass-13">Pass-13</a></li>
+        <li><a href="#pass-14">Pass-14</a></li>
+        <li><a href="#pass-15">Pass-15</a></li>
+        <li><a href="#pass-16">Pass-16</a></li>
+        <li><a href="#pass-17">Pass-17</a></li>
+        <li><a href="#pass-18">Pass-18</a></li>
+        <li><a href="#pass-19">Pass-19</a></li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

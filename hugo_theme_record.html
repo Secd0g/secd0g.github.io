@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/hugo_theme_record.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Hyde-Hugo主题修改记录(搜索、分页、TOC、归档) - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Hyde-Hugo主题修改记录(搜索、分页、TOC、归档) - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Hyde-Hugo主题修改记录(搜索、分页、TOC、归档) - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo.">
+    <meta property="og:description" content="0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo.">
+    <meta property="twitter:description" content="0x00 基础知识 弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo.">
+    <meta property="og:type" content="article">
+    <title>Hyde-Hugo主题修改记录(搜索、分页、TOC、归档) - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/hugo_theme_record.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/hugo_theme_record.html" title="Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)">Hyde-Hugo主题修改记录(搜索、分页、TOC、归档)</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-01-07 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 07 Jan 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            1935 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            4 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-基础知识">0x00 基础知识</a>
+      <ul>
+        <li><a href="#文件结构">文件结构：</a></li>
+        <li><a href="#文件分析">文件分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-添加搜索页面">0x01 添加搜索页面</a></li>
+    <li><a href="#0x02-添加分页页面">0x02 添加分页页面</a></li>
+    <li><a href="#0x03-添加目录toc">0x03 添加目录(TOC)</a></li>
+    <li><a href="#0x04-添加归档功能archives">0x04 添加归档功能(Archives)</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-基础知识">0x00 基础知识</h1>
+<p>弄了一天的主题，本身好久都没碰前端的东西，有点生疏，弄完之后感觉还不错，本文主要参考官方的函数文档：https://gohugo.io/functions/</p>
+<h2 id="文件结构">文件结构：</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">├── 404.html
+</span></span><span class="line"><span class="cl">├── _default
+</span></span><span class="line"><span class="cl">│   ├── archives.html
+</span></span><span class="line"><span class="cl">│   ├── baseof.html #这个就是Hugo定义的mian文件
+</span></span><span class="line"><span class="cl">│   ├── index.json
+</span></span><span class="line"><span class="cl">│   ├── list.html
+</span></span><span class="line"><span class="cl">│   ├── search.html
+</span></span><span class="line"><span class="cl">│   └── single.html
+</span></span><span class="line"><span class="cl">├── index.html
+</span></span><span class="line"><span class="cl">└── partials
+</span></span><span class="line"><span class="cl">    ├── head.html
+</span></span><span class="line"><span class="cl">    ├── head_fonts.html
+</span></span><span class="line"><span class="cl">    ├── hook_head_end.html
+</span></span><span class="line"><span class="cl">    ├── pagination.html
+</span></span><span class="line"><span class="cl">    └── sidebar.html
+</span></span></code></pre></div><h2 id="文件分析">文件分析</h2>
+<p>这个mian就是<code>baseof.html</code>,里面包含了<code>head.html</code>和 <code>sidebar.html</code>两个文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ partial &#34;head.html&#34; . }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;{{ .Site.Params.themeColor }} {{if .Site.Params.layoutReverse}}layout-reverse{{end}}&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ partial &#34;sidebar.html&#34; . }}
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">main</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;content container&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ block &#34;main&#34; . -}}{{- end }}
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    {{ if not .Site.IsServer }}
+</span></span><span class="line"><span class="cl">      {{ template &#34;_internal/google_analytics.html&#34; . }}
+</span></span><span class="line"><span class="cl">    {{ end }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></div><p><code>head.html</code>文件里面一般是加入各种基础的css文件和js文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">xmlns</span><span class="o">=</span><span class="s">&#34;http://www.w3.org/1999/xhtml&#34;</span><span class="err">{{</span><span class="na">with</span> <span class="err">.</span><span class="na">Site</span><span class="err">.</span><span class="na">LanguageCode</span><span class="err">}}</span> <span class="na">xml:lang</span><span class="o">=</span><span class="s">&#34;{{.}}&#34;</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;{{.}}&#34;</span><span class="err">{{</span><span class="na">end</span><span class="err">}}</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;https://gmpg.org/xfn/11&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;profile&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">&#34;content-type&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;text/html; charset=utf-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ hugo.Generator }}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c">&lt;!-- Enable responsiveness on mobile devices--&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  {{ if .IsHome -}}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>{{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{- else -}}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>{{ .Title }} <span class="ni">&amp;middot;</span> {{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{- end }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;description&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;{{if .IsHome}}{{ $.Site.Params.description }}{{else}}{{.Description}}{{end}}&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c">&lt;!-- CSS --&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/print.css&#34;</span> <span class="na">media</span><span class="o">=</span><span class="s">&#34;print&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/poole.css&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/syntax.css&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/css/hyde.css&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ partial &#34;head_fonts.html&#34; . }}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c">&lt;!-- Icons --&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;apple-touch-icon-precomposed&#34;</span> <span class="na">sizes</span><span class="o">=</span><span class="s">&#34;144x144&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/apple-touch-icon-144-precomposed.png&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;shortcut icon&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/favicon.png&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c">&lt;!-- RSS etc --&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ range .AlternativeOutputFormats -}}
+</span></span><span class="line"><span class="cl">    {{ printf `<span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="na">title</span><span class="o">=</span><span class="s">&#34;%s&#34;</span> <span class="p">/&gt;</span>` .Permalink .Rel .MediaType.Type $.Site.Title | safeHTML }}
+</span></span><span class="line"><span class="cl">  {{ end -}}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  {{ partial &#34;hook_head_end.html&#34; . }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span></code></pre></div><p>主要文件的渲染是在<code>index.html</code>开始，开头的时候包含了<code>main</code>，也就是包含了<code>baseof.html</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ define &#34;main&#34; -}}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;posts&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ $paginator := .Paginate (where .Site.RegularPages &#34;Type&#34; .Site.Params.PostDir) }}
+</span></span><span class="line"><span class="cl">  {{ range $paginator.Pages }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">article</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-title&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .Permalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">time</span> <span class="na">datetime</span><span class="o">=</span><span class="s">&#34;{{ .Date.Format &#34;</span><span class="na">2006-01-02T15:04:05Z0700</span><span class="err">&#34;</span> <span class="err">}}&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-date&#34;</span><span class="p">&gt;</span>{{ .Date.Format &#34;Mon, Jan 2, 2006&#34; }}<span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">article</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ end }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{- partial &#34;pagination.html&#34; . -}}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{{- end }}
+</span></span></code></pre></div><h1 id="0x01-添加搜索页面">0x01 添加搜索页面</h1>
+<p>首先这个主题是没有搜索功能的，为了平时搜索文章的时候方便，就添加了一个搜索的功能，</p>
+<p>在<code>_default</code>目录下添加<code>search.html</code> 文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://code.jquery.com/jquery-3.3.1.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;/js/search.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{{ partial &#34;head.html&#34; . }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">input</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kp">-webkit-</span><span class="k">appearance</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">display</span><span class="p">:</span> <span class="kc">block</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">width</span><span class="p">:</span> <span class="mi">80</span><span class="kt">%</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">padding</span><span class="p">:</span> <span class="mi">8</span><span class="kt">px</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">margin-bottom</span><span class="p">:</span> <span class="mi">10</span><span class="kt">px</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">font-size</span><span class="p">:</span> <span class="mi">1</span><span class="kt">rem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">line-height</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">border</span><span class="p">:</span> <span class="mi">1</span><span class="kt">px</span> <span class="kc">solid</span> <span class="mh">#ced4da</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">border-radius</span><span class="p">:</span> <span class="mf">.25</span><span class="kt">rem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">body</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;{{ .Site.Params.themeColor }} {{if .Site.Params.layoutReverse}}layout-reverse{{end}}&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{ partial &#34;sidebar.html&#34; . }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">main</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;content container&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ block &#34;main&#34; . -}}
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">section</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;resume-section p-3 p-lg-5 d-flex flex-column&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;my-auto&#34;</span> <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;{{ &#34;</span><span class="na">search</span><span class="err">&#34;</span> <span class="err">|</span> <span class="na">absURL</span> <span class="err">}}&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;search-query&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;s&#34;</span> <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;输入关键词...&#34;</span><span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;search-results&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="c">&lt;!-- this template is sucked in by search.js and appended to the search-results div above. So editing here will adjust style --&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;search-result-template&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/x-js-template&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;summary-${key}&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;${link}&#34;</span><span class="o">&gt;</span><span class="nx">$</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/h2&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{- end }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{{ if not .Site.IsServer }}
+</span></span><span class="line"><span class="cl">{{ template &#34;_internal/google_analytics.html&#34; . }}
+</span></span><span class="line"><span class="cl">{{ end }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></div><p>在<code>_default</code>目录下添加<code>index.json</code> 文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="err">{-</span> <span class="err">$.Scratch.Add</span> <span class="nt">&#34;index&#34;</span> <span class="err">slice</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">{-</span> <span class="err">range</span> <span class="err">.Site.RegularPages</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">{-</span> <span class="err">$.Scratch.Add</span> <span class="nt">&#34;index&#34;</span> <span class="err">(dict</span> <span class="s2">&#34;title&#34;</span> <span class="err">.Title</span> <span class="s2">&#34;tags&#34;</span> <span class="err">.Params.tags</span> <span class="s2">&#34;categories&#34;</span> <span class="err">.Params.categories</span> <span class="s2">&#34;contents&#34;</span> <span class="err">.Plain</span> <span class="s2">&#34;permalink&#34;</span> <span class="err">.Permalink)</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">{-</span> <span class="err">end</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">{-</span> <span class="err">$.Scratch.Get</span> <span class="nt">&#34;index&#34;</span> <span class="err">|</span> <span class="err">jsonify</span> <span class="err">-</span><span class="p">}</span><span class="err">}</span>
+</span></span></code></pre></div><p>在<code>config.toml</code>文件下添加以下内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">outputs</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">home</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;HTML&#34;</span><span class="p">,</span> <span class="s2">&#34;RSS&#34;</span><span class="p">,</span> <span class="s2">&#34;JSON&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">outputFormats</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">outputFormats</span><span class="p">.</span><span class="nx">HTML</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">mediaType</span> <span class="p">=</span> <span class="s2">&#34;text/html&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">Menus</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">main</span> <span class="p">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">Name</span> <span class="p">=</span> <span class="s2">&#34;Search&#34;</span><span class="p">,</span><span class="nx">weight</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">URL</span> <span class="p">=</span> <span class="s2">&#34;search&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></div><p>在博客主目录的<code>content</code>目录下新建文件<code>search.md</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">title: &#34;Search Result&#34;
+</span></span><span class="line"><span class="cl">date: 2019-05-28
+</span></span><span class="line"><span class="cl">layout: &#34;search&#34;
+</span></span><span class="line"><span class="cl">---
+</span></span></code></pre></div><h1 id="0x02-添加分页页面">0x02 添加分页页面</h1>
+<p>太多文章了，需要一个分页功能会比较方便。添加以下代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="p">{{</span> <span class="err">$</span><span class="nx">paginator</span> <span class="o">:=</span> <span class="p">.</span><span class="nf">Paginate</span> <span class="p">(</span><span class="nx">where</span> <span class="p">.</span><span class="nx">Site</span><span class="p">.</span><span class="nx">RegularPages</span> <span class="s">&#34;Type&#34;</span> <span class="p">.</span><span class="nx">Site</span><span class="p">.</span><span class="nx">Params</span><span class="p">.</span><span class="nx">PostDir</span><span class="p">)</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{{</span> <span class="k">range</span> <span class="err">$</span><span class="nx">paginator</span><span class="p">.</span><span class="nx">Pages</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">......</span>
+</span></span><span class="line"><span class="cl"><span class="p">{{</span> <span class="nx">end</span> <span class="p">}}</span>
+</span></span></code></pre></div><p>在<code>index.html</code>做修改,在后面包含<code>pagination.html</code>文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="p">{{</span><span class="o">-</span> <span class="nx">partial</span> <span class="s">&#34;pagination.html&#34;</span> <span class="p">.</span> <span class="o">-</span><span class="p">}}</span>
+</span></span></code></pre></div><p>修改完后的<code>index.html</code>文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ define &#34;main&#34; -}}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;posts&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ $paginator := .Paginate (where .Site.RegularPages &#34;Type&#34; .Site.Params.PostDir) }}
+</span></span><span class="line"><span class="cl">  {{ range $paginator.Pages }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">article</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-title&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .Permalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">time</span> <span class="na">datetime</span><span class="o">=</span><span class="s">&#34;{{ .Date.Format &#34;</span><span class="na">2006-01-02T15:04:05Z0700</span><span class="err">&#34;</span> <span class="err">}}&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-date&#34;</span><span class="p">&gt;</span>{{ .Date.Format &#34;Mon, Jan 2, 2006&#34; }}<span class="p">&lt;/</span><span class="nt">time</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">article</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ end }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{- partial &#34;pagination.html&#34; . -}}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{{- end }}
+</span></span></code></pre></div><p>在<code>partials</code>目录下添加<code>pagination.html</code>文件，内容如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ if gt .Paginator.TotalPages 1 }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">nav</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination&#39;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ $.Scratch.Set &#34;hasPrevDots&#34; false }}
+</span></span><span class="line"><span class="cl">  {{ $.Scratch.Set &#34;hasNextDots&#34; false }}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  {{ range .Paginator.Pagers }}
+</span></span><span class="line"><span class="cl">  {{ if eq . $.Paginator }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item current&#39;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    {{- .PageNumber -}}
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ else if or (or (eq . $.Paginator.First) (eq . $.Paginator.Prev)) (or  (eq . $.Paginator.Next) (eq . $.Paginator.Last )) }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item&#39;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#39;{{ .URL }}&#39;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{- .PageNumber -}}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ else }}
+</span></span><span class="line"><span class="cl">  {{ if and (not ($.Scratch.Get &#34;hasPrevDots&#34;)) (lt .PageNumber $.Paginator.PageNumber)  }}
+</span></span><span class="line"><span class="cl">  {{ $.Scratch.Set &#34;hasPrevDots&#34; true }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item dots&#39;</span><span class="p">&gt;</span><span class="ni">&amp;hellip;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ else if and (not ($.Scratch.Get &#34;hasNextDots&#34;)) (gt .PageNumber $.Paginator.PageNumber) }}
+</span></span><span class="line"><span class="cl">  {{ $.Scratch.Set &#34;hasNextDots&#34; true }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&#39;pagination-item dots&#39;</span><span class="p">&gt;</span><span class="ni">&amp;hellip;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ end }}
+</span></span><span class="line"><span class="cl">  {{ end }}
+</span></span><span class="line"><span class="cl">  {{ end }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{ end }}
+</span></span></code></pre></div><p>分页的数量可以在<code>congfig.tml</code>文件上添加参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Paginate = 4  #4代表每页4篇文章
+</span></span></code></pre></div><h1 id="0x03-添加目录toc">0x03 添加目录(TOC)</h1>
+<p>这个功能我是在大佬博客https://ichochy.com/上面看到不错的滑动效果，然后借鉴进行修改：</p>
+<p>在js目录下添加<code>toc.js</code>文件，加入以下内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//文档加载后执行 fn
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">function</span> <span class="nx">ready</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">        <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//注销时间，避免重复触发
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">fn</span><span class="p">();</span> <span class="c1">//运行函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//IE浏览器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nb">document</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="s1">&#39;onreadystatechange&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="s1">&#39;complete&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">document</span><span class="p">.</span><span class="nx">detachEvent</span><span class="p">(</span><span class="s1">&#39;onreadystatechange&#39;</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">fn</span><span class="p">();</span> <span class="c1">//函数运行
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">toc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;toc&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">title</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;title&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">style</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">getComputedStyle</span><span class="p">(</span><span class="nx">toc</span><span class="p">)[</span><span class="s2">&#34;display&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">toc</span> <span class="o">||</span> <span class="nx">style</span> <span class="o">==</span> <span class="s2">&#34;none&#34;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">window</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;scroll&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">let</span> <span class="nx">scroll_height</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">scrollY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">scroll_height</span> <span class="o">&gt;</span> <span class="mi">200</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">window</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">title</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">bottom</span> <span class="o">=</span> <span class="s1">&#39;100%&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">toc</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="s2">&#34;1rem&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">scroll_height</span> <span class="o">&lt;=</span> <span class="mi">200</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">window</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">window</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">title</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s2">&#34;style&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">toc</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s2">&#34;style&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></div><p>中间遇到<code>absURL</code>这个函数，功能作用如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{{ &#34;mystyle.css&#34; | absURL }} → &#34;https://example.com/hugo/mystyle.css&#34;
+</span></span><span class="line"><span class="cl">{{ &#34;mystyle.css&#34; | relURL }} → &#34;/hugo/mystyle.css&#34;
+</span></span><span class="line"><span class="cl">{{ &#34;http://gohugo.io/&#34; | relURL }} →  &#34;http://gohugo.io/&#34;
+</span></span><span class="line"><span class="cl">{{ &#34;http://gohugo.io/&#34; | absURL }} →  &#34;http://gohugo.io/&#34;
+</span></span></code></pre></div><p>在<code>sidebar.html</code>文件做修改，<code>TableOfContents</code>就是toc的内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">aside</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;sidebar&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id </span><span class="o">=</span> <span class="s">&#34;title&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;container sidebar-sticky&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;sidebar-about&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        {{if not .IsPage}}
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;title&#34;</span><span class="p">&gt;</span>{{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        {{else}}
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;title&#34;</span><span class="p">&gt;</span>{{ .Site.Title }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        {{end}}
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;lead&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        {{ with .Site.Params.description }}
+</span></span><span class="line"><span class="cl">        {{.}}
+</span></span><span class="line"><span class="cl">        {{end}}
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">nav</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;sidebar-nav&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/&#34;</span><span class="p">&gt;</span>Home<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        {{ range .Site.Menus.main -}}
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{.URL | absURL }}&#34;</span><span class="p">&gt;</span> {{ .Name }} <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        {{- end }}
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ni">&amp;copy;</span> 2017 - {{ now.Format &#34;2006&#34;}} {{.Site.Params.copyright}}. <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{if eq .Section .Site.Params.PostDir}}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer </span><span class="o">=</span> <span class="s">&#34;defer&#34;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;/js/toc.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id </span><span class="o">=</span> <span class="s">&#34;toc&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;container sidebar-toc&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ .TableOfContents }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{end}}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">aside</span><span class="p">&gt;</span>
+</span></span></code></pre></div><p>改变标题级数可以在<code>congfig.tml</code>文件上做修改：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">markup</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">markup</span><span class="p">.</span><span class="nx">tableOfContents</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">endLevel</span> <span class="p">=</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">startLevel</span> <span class="p">=</span> <span class="mi">1</span> <span class="c">#表示从一级目录开始</span>
+</span></span></code></pre></div><h1 id="0x04-添加归档功能archives">0x04 添加归档功能(Archives)</h1>
+<p>在<code>_default</code>目录下添加<code>archives.html</code> 文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ define &#34;main&#34; -}}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ range (.Site.RegularPages.GroupByDate &#34;2006&#34;) }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;</span>{{ .Key }}<span class="p">&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;archive-list&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ range (where .Pages &#34;Type&#34; &#34;posts&#34;) }}
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      {{ .PublishDate.Format &#34;2006-01-02&#34; }}
+</span></span><span class="line"><span class="cl">      -&gt;
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .RelPermalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{ end }}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  {{ end }}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{{ end }}
+</span></span></code></pre></div><p>在<code>config.toml</code>文件下添加以下内容,<code>weight</code>代表权重，越小越靠前：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">Menus</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">main</span> <span class="p">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">Name</span> <span class="p">=</span> <span class="s2">&#34;Archives&#34;</span><span class="p">,</span><span class="nx">weight</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">URL</span> <span class="p">=</span> <span class="s2">&#34;archives&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></div><p>在博客主目录的<code>content</code>目录下新建文件``archives.md`:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">title: &#34;Archives&#34;
+</span></span><span class="line"><span class="cl">date: 2019-05-28
+</span></span><span class="line"><span class="cl">layout: &#34;archives&#34;
+</span></span><span class="line"><span class="cl">---
+</span></span></code></pre></div>
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/hugo_theme_record.html">https://xxe.icu/hugo_theme_record.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/hugo_github.html" class="underline text-yellow-600">如何使用Hugo&#43;Github搭建一个博客</a></li>
+    
+    <li><a href="/install-parallels-tools-on-kali-linux-2020.4.html" class="underline text-yellow-600">Kali Linux 2020.4安装Parallels Tools</a></li>
+    
+    <li><a href="/pd-chrome-3d.html" class="underline text-yellow-600">关于Kali2020安装Parallels Tools后Chrome显示空白</a></li>
+    
+    <li><a href="/pathfinder.html" class="underline text-yellow-600">Hackthebox-Pathfinder</a></li>
+    
+    <li><a href="/domain-security.html" class="underline text-yellow-600">Windows认证与域渗透</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-基础知识">0x00 基础知识</a>
+      <ul>
+        <li><a href="#文件结构">文件结构：</a></li>
+        <li><a href="#文件分析">文件分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-添加搜索页面">0x01 添加搜索页面</a></li>
+    <li><a href="#0x02-添加分页页面">0x02 添加分页页面</a></li>
+    <li><a href="#0x03-添加目录toc">0x03 添加目录(TOC)</a></li>
+    <li><a href="#0x04-添加归档功能archives">0x04 添加归档功能(Archives)</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

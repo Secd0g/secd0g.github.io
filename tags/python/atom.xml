@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/python.html</link>
+    <description>Recent content in Python on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 01 Oct 2018 08:49:25 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/python/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python Web学习方法</title>
+      <link>https://xxe.icu/python-web-guide.html</link>
+      <pubDate>Mon, 01 Oct 2018 08:49:25 +0000</pubDate>
+      
+      <guid>https://xxe.icu/python-web-guide.html</guid>
+      <description>0x01 前言 学习Python Web的时候找到的一篇挺好的文章，里面写的也很实在，所有分享出来。 0x02 学习路线 看了这么多是不是还有点懵，笔者当时自学的时</description>
+    </item>
+    
+    <item>
+      <title>osCommerce 2.3.4.1 - 远程代码执行漏洞（每日一洞）</title>
+      <link>https://xxe.icu/oscommerce-2.3.4.1-remote-code-execution-vulnerability.html</link>
+      <pubDate>Mon, 02 Apr 2018 11:18:58 +0000</pubDate>
+      
+      <guid>https://xxe.icu/oscommerce-2.3.4.1-remote-code-execution-vulnerability.html</guid>
+      <description>0x01 前言 好几天没有写了，前两天又去Boom了，差点没缓过来。今天在exploit-db逛看到一个洞，也是install的地方，想去利用上次那个</description>
+    </item>
+    
+  </channel>
+</rss>

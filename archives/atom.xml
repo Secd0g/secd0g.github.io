@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/archives.html</link>
+    <description>Recent content on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 26 Jul 2022 21:46:25 +0800</lastBuildDate><atom:link href="https://xxe.icu/archives/atom.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

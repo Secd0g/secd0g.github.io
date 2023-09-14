@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SQL注入 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/sql%E6%B3%A8%E5%85%A5.html</link>
+    <description>Recent content in SQL注入 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 26 Aug 2018 15:49:02 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/sql%E6%B3%A8%E5%85%A5/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>动态调试|Maccms SQL 注入分析(附注入盲注脚本)</title>
+      <link>https://xxe.icu/maccms-sql-injection-analysis.html</link>
+      <pubDate>Sun, 26 Aug 2018 15:49:02 +0000</pubDate>
+      
+      <guid>https://xxe.icu/maccms-sql-injection-analysis.html</guid>
+      <description>0x01 前言 已经有一周没发表文章了，一个朋友叫我研究maccms的代码审计，碰到这个注入的漏洞挺有趣的，就在此写一篇分析文。 0x02 环境 Web： phpstudy Sys</description>
+    </item>
+    
+    <item>
+      <title>HDWiki v6.0最新版referer注入漏洞(每周一洞)</title>
+      <link>https://xxe.icu/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability.html</link>
+      <pubDate>Sun, 22 Jul 2018 17:13:30 +0000</pubDate>
+      
+      <guid>https://xxe.icu/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability.html</guid>
+      <description>0x01 前言 经拖稿一个月了，差了四篇文章没补回来， 现在都补上，虽然说这样没有坚持的按时写下去，但是只要记得要做这个事情就行了，不能中途而废。这个漏</description>
+    </item>
+    
+    <item>
+      <title>Thinkphp框架 3.2.x sql注入漏洞分析(每周一洞)</title>
+      <link>https://xxe.icu/thinkphp-framework-3.2.x-sql-injection-vulnerability-analysis.html</link>
+      <pubDate>Wed, 18 Apr 2018 15:20:50 +0000</pubDate>
+      
+      <guid>https://xxe.icu/thinkphp-framework-3.2.x-sql-injection-vulnerability-analysis.html</guid>
+      <description>0x01 前言 Thinkphp 3.2.x用的也挺多的，以前的程序大部分都是用这边版本的，如果移动到2版本又挺麻烦，而且小程序不说，大程序就复杂很多了。 这次的漏洞是</description>
+    </item>
+    
+    <item>
+      <title>Thinkphp框架 &lt; 5.0.16 sql注入漏洞分析(每日一洞)</title>
+      <link>https://xxe.icu/thinkphp-framework-_-5.0.16-sql-injection-vulnerability-analysis.html</link>
+      <pubDate>Wed, 11 Apr 2018 09:34:29 +0000</pubDate>
+      
+      <guid>https://xxe.icu/thinkphp-framework-_-5.0.16-sql-injection-vulnerability-analysis.html</guid>
+      <description>0x01 前言 前天在公众号看到石大神发的一篇审计thinkphp的文章,就想写一个分析流程，delay到了今天。昨天在先知也看到了chybeta发的</description>
+    </item>
+    
+  </channel>
+</rss>

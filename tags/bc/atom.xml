@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bc on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/bc.html</link>
+    <description>Recent content in bc on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 13 Jun 2020 00:24:46 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/bc/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>bc站渗透日记</title>
+      <link>https://xxe.icu/bc-penetration-diary.html</link>
+      <pubDate>Sat, 13 Jun 2020 00:24:46 +0000</pubDate>
+      
+      <guid>https://xxe.icu/bc-penetration-diary.html</guid>
+      <description>0x01前言 不废话了，反正就是遇到这个网站了哈哈哈 0x02 过程 看了是do结尾的，以为是struts2，随便输点字符发现是thinkphp的： 直接上</description>
+    </item>
+    
+  </channel>
+</rss>

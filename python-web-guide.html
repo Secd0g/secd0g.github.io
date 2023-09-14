@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/python-web-guide.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Python Web学习方法 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Python Web学习方法 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Python Web学习方法 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x01 前言 学习Python Web的时候找到的一篇挺好的文章，里面写的也很实在，所有分享出来。 0x02 学习路线 看了这么多是不是还有点懵，笔者当时自学的时">
+    <meta property="og:description" content="0x01 前言 学习Python Web的时候找到的一篇挺好的文章，里面写的也很实在，所有分享出来。 0x02 学习路线 看了这么多是不是还有点懵，笔者当时自学的时">
+    <meta property="twitter:description" content="0x01 前言 学习Python Web的时候找到的一篇挺好的文章，里面写的也很实在，所有分享出来。 0x02 学习路线 看了这么多是不是还有点懵，笔者当时自学的时">
+    <meta property="og:type" content="article">
+    <title>Python Web学习方法 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/python-web-guide.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/python-web-guide.html" title="Python Web学习方法">Python Web学习方法</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2018-10-01 08:49:25 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 01 Oct 2018
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            2621 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            6 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-学习路线">0x02 学习路线</a>
+      <ul>
+        <li><a href="#求职与面试">求职与面试</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-参考">0X03 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x01-前言">0x01 前言</h1>
+<p>学习Python Web的时候找到的一篇挺好的文章，里面写的也很实在，所有分享出来。</p>
+<h1 id="0x02-学习路线">0x02 学习路线</h1>
+<p>看了这么多是不是还有点懵，笔者当时自学的时候也没人带，没什么方向，走了很多弯路，找工作也不是一帆风顺。如果不是科班出身受过系统的计算机科学理论的训练，是比较吃亏的，只能通过大量针对性学习和练习来弥补。 大概整理下自己学习 python web 的路线，方便大家做个参考(一个合格的工程师不是短时间能练成的)。其实这基本上也是后端工程师的学习路线，换一个编程语言或者框架都差不多。技术更新迭代非常快，后端技术还算比较稳定的，但是知识点很多很杂，有针对性学习比较好。 如果你觉得这个教程列出的东西太多，建议就找最重要的知识点，每个知识点挑一本最合适的书学习，我列举的很多资料对于初学者来说可能短时间内难以消化，会有畏难心理和学习焦虑，建议多加练习通过正反馈提升自己学习的乐趣。（如果你还是个学生那很好，有大把的时间准备）</p>
+<!-- raw HTML omitted -->
+<ul>
+<li>学习并熟练掌握一门编程语言(学好英语)。这里笔者选择的是最近特别火的 python，它能干很多事。挑一本好的入门教材，通读并实践书中所有代码示例和练习题（练手感，坚持敲，大量敲）。了解该语言如何操作文本、进程、网络编程等，最后达到能熟练运用编程语言表达逻辑的能力。</li>
+<li>搭建好开发环境。初学者个人比较推荐 Ubuntu 系统 + Pycharm 社区版，都是可以免费获取的，我经常安利用 linux 或者 mac，和桌面端不同，企业大部分用的都是 linux server 部署 web 应用的(包括 docker 容器技术等都是基于 linux)，熟悉 linux 命令行、文件、进程操作等会给你找工作和日常工作带来便利。</li>
+<li>熟悉算法和数据结构。对于编程语言内置的数据结构、算法等要数量掌握和使用，常用数据结构和算法了解其原理，会计算时间空间复杂度，会自己实现(常见算法面试笔试常考)。</li>
+<li>熟悉网络协议 TCP/IP，HTTP，了解互联网是怎么运作的。既然是做网站，需要对网络运行原理比较了解。</li>
+<li>学习 web 框架和 python 库。做东西我们需要大量现成的轮子帮助我们，看下 django、flask 等流行的 tutorial，然后做个简单的网站出来（比如博客网站，一般按照教程撸一遍就入门了，python web 框架的文档非常完善）。最好能深入一个框架了解原理，比如看看 flask 和 Werkzeug 源码。</li>
+<li>了解前端知识。如果能独立做一个博客出来，大概对 html、css、js 就有所了解了。虽然是做后端，但是基本的前端知识也是必不可少的。</li>
+<li>学习业务常用数据库 mysql 和 redis，业界用得比较多的数据库。了解关系型数据库 mysql 基础概念、语句、索引优化等，了解内存型数据库 redis 的常用数据结构，使用场景、结构设计等。</li>
+<li>学习 git 版本控制。公司项目协作的时候都是有版本控制的，方便我们协作、记录、回滚代码等。学习编码规范，培养良好的编程习惯。我建议一开始就遵守 pep8，用好 autopep8，pylint 等工具，写出格式规范的代码，不要走野路子。（学习下文档和规范很棒的 python 开源代码）</li>
+<li>在 linux server 部署你的 python web 服务。你需要学习 linux 常用命令，web 服务器 nginx 等。最好能独立部署一个网站出来。(笔者经常安利 linux 或者 mac，即使不用来作为开发环境，也要熟悉 linux 命令，能帮助你在服务器上快速修改和调试代码)</li>
+<li>对照招聘网站中意的公司的招聘需求查漏补缺。初期就是要多学多练多 google，不是做项目就是在刷题。可以做一些博客、论坛、管理后台等小网站练手。</li>
+<li>老实说相比 java 和 php，python 后端岗位是比较少的，如果你学完了还没找到工作然后来臭骂我一顿我会感觉委屈的。我个人倾向于 python 是因为真爱，并且学习python 性价比很高，可以做很多事。如果你觉得不好找工作或者只是把 python 当玩具玩(比如用 pandas 分析自己的投资收益，回测等)，换个语言和技术栈后端路线图基本上还是这些，不会白学的。</li>
+<li>建议坚持写技术博客，学习笔记等。你可以使用 hexo 之类的静态博客，或者知乎专栏等现成的服务，或者 readthedoc、gitbook 之类的文档工具。好的技术博客是找工作的一大加分项，笔者工作以后依然坚持写博客记录日常所学，可以是读书笔记、学习心得、对某个技术的理解和实践、甚至是备忘录等。</li>
+<li>进阶建议：看《Fluent Python》 之类的进阶书籍；看优秀的源码，比如 python 一些内置库，flask 等优秀的框架源码(可以用 gitx 之类的工具从代码的最初提交开始看起)，能学到很多惯用法和稍微底层一些的东西。尝试仿写，比如实现个简单的 web 小框架，大概就了解框架的运行原理了。</li>
+</ul>
+<h2 id="求职与面试">求职与面试</h2>
+<p>最近笔者也开始当面试官了，之前求职的时候每次面试都会充分准备（当然也挂过很多次），提前一个月左右开始回顾重点理论知识(看面试相关的书)，刷常用算法，练习手写代码，看相对岗位的招聘需求等。最近面试就发现很多面试者无论是否是有经验都准备不足，忽略了基础知识。 如果没有知名公司或者项目相关背景，很多招聘要求比较高的公司都会比较看重理论基础和学习能力。公司最好能有一份针对初级、中级、高级岗位的题目，尽量覆盖面广泛、难度适中，防止因为面试官的个人喜好影响面试结果。</p>
+<ul>
+<li>电子简历尽量用 pdf 格式，方便跨平台打开。doc 等格式在不同的电脑上打开会有排版问题，很多后端技术面试官可能使用的是 mac 或者 linux。</li>
+<li>提前复习回顾重点知识，防止卡在基础上。比如 mac 下著名的 brew 工具作者面试 google 就因为没写出来反转二叉树被拒，后来去了苹果😂.(这就只能看人品和运气和眼缘了，如果没见到二面面试官或者 hr，大概率是挂了)。（树、链表、哈希表、二分、快排、TCP/UDP、HTTP、数据库ACID、索引优化等常考点）。</li>
+<li>白板编程，练习在纸上手写代码。虽然很多求职者都很抵触手写代码，但是白板编程确实是一种比较好的区分方式。你的思考过程、编码习惯、编码规范等都能看出来。</li>
+<li>如果被问到工程里不会使用但是比较刁钻的算法题，建议你和面试官沟通的时候问问这个算法或者题目在开发中有哪些实际使用场景，看看对方怎么说😎。</li>
+<li>面试的时候准备充分，简历要与招聘方需求对等。笔者每次面试都会带上白纸、笔、简历、电脑等，即使面试没过，至少也让面试官感觉我是有诚意的，给对方留下好印象。</li>
+<li>加分项：github、个人技术博客、开源项目、技术论坛帐号等，让面试官有更多渠道了解你，有时候仅仅根据几十分钟的面试来评判面试者是有失偏颇的。（比如面试者临场发挥不好；面试官个人偏好；会的都不问，问的都不会等）</li>
+<li>《interview_python》 python 面试题</li>
+<li>《程序员面试金典》 程序员面试，很多公司会比较重视基础知识</li>
+<li>《Python后端工程师必备技能》</li>
+</ul>
+<h1 id="0x03-参考">0X03 参考</h1>
+<p><a href="https://python-web-guide.readthedocs.io/zh/latest/base/basics.html">https://python-web-guide.readthedocs.io/zh/latest/base/basics.html</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/python-web-guide.html">https://xxe.icu/python-web-guide.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/python.html">
+                    #Python
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/oscommerce-2.3.4.1-remote-code-execution-vulnerability.html" class="underline text-yellow-600">osCommerce 2.3.4.1 - 远程代码执行漏洞（每日一洞）</a></li>
+    
+    <li><a href="/yxcms-1.4.7-latest-version-of-vulnerability-analysis.html" class="underline text-yellow-600">yxcms 1.4.7 最新版漏洞分析</a></li>
+    
+    <li><a href="/maccms-sql-injection-analysis.html" class="underline text-yellow-600">动态调试|Maccms SQL 注入分析(附注入盲注脚本)</a></li>
+    
+    <li><a href="/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html" class="underline text-yellow-600">禅知Pro 1.6 前台任意文件读取分析</a></li>
+    
+    <li><a href="/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html" class="underline text-yellow-600">CVE-2018-1000094-CMSMS 2.2.5代码执行漏洞(每周一洞)</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-学习路线">0x02 学习路线</a>
+      <ul>
+        <li><a href="#求职与面试">求职与面试</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-参考">0X03 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

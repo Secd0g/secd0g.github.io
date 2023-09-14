@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/domain-security.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Windows认证与域渗透 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Windows认证与域渗透 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Windows认证与域渗透 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 Windows系统中的工作组、域、域控、活动目录 1、工作组 工作组是局域网中的一个概念，由许多在同一物理地点，而且被相同的局域网连接起来的用">
+    <meta property="og:description" content="0x00 Windows系统中的工作组、域、域控、活动目录 1、工作组 工作组是局域网中的一个概念，由许多在同一物理地点，而且被相同的局域网连接起来的用">
+    <meta property="twitter:description" content="0x00 Windows系统中的工作组、域、域控、活动目录 1、工作组 工作组是局域网中的一个概念，由许多在同一物理地点，而且被相同的局域网连接起来的用">
+    <meta property="og:type" content="article">
+    <title>Windows认证与域渗透 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/domain-security.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/domain-security.html" title="Windows认证与域渗透">Windows认证与域渗透</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2020-12-16 01:00:00 &#43;0200">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 16 Dec 2020
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            5732 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            12 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-windows系统中的工作组域域控活动目录">0x00 Windows系统中的工作组、域、域控、活动目录</a>
+      <ul>
+        <li><a href="#1工作组">1、工作组</a></li>
+        <li><a href="#2域domain">2、域（Domain）</a></li>
+        <li><a href="#3域控域控制器-domain-controller简写为dc">3、域控（域控制器 ，Domain Controller，简写为DC）</a></li>
+        <li><a href="#4活动目录active-directory-简称-ad">4、活动目录（Active Directory 简称 AD）</a></li>
+        <li><a href="#5域域树林和组织单元">5、域、域树、林和组织单元</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-windows认证">0x01 Windows认证</a>
+      <ul>
+        <li><a href="#1ntlm">1、NTLM</a>
+          <ul>
+            <li><a href="#简介">简介</a></li>
+            <li><a href="#认证过程">认证过程</a></li>
+            <li><a href="#hash传递攻击">hash传递攻击</a></li>
+          </ul>
+        </li>
+        <li><a href="#2kerberos">2、Kerberos</a>
+          <ul>
+            <li><a href="#简介-1">简介</a></li>
+            <li><a href="#认证过程-1">认证过程</a></li>
+            <li><a href="#hash传递攻击-1">hash传递攻击</a></li>
+            <li><a href="#域用户名枚举">域用户名枚举</a></li>
+            <li><a href="#密码喷洒攻击password-spraying">密码喷洒攻击（Password Spraying）</a></li>
+            <li><a href="#as-reproasting">AS-REPRoasting</a></li>
+            <li><a href="#黄金票据">黄金票据</a></li>
+            <li><a href="#pass-the-ticket">Pass-the-Ticket</a></li>
+            <li><a href="#kerberosting">kerberosting</a></li>
+            <li><a href="#白银票据">白银票据</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x03-结尾">0x03 结尾</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-windows系统中的工作组域域控活动目录">0x00 Windows系统中的工作组、域、域控、活动目录</h1>
+<h2 id="1工作组">1、工作组</h2>
+<p>工作组是局域网中的一个概念，由许多在同一物理地点，而且被相同的局域网连接起来的用户组成的小组，也可以是遍布一个机构的，但却被同一网络连接的用户构成的逻辑小组。工作组是最常见最简单最普通的资源管理模式，就是将不同的电脑按功能分别列入不同的组中，加入工作组是为了区分用户计算机在网络中的类别，如果用户有工作组的话，在管理上会方便很多，可以共享/使用打印机和协和工作，很多小企业都是用这种方法来管理电脑，共享文件。</p>
+<p>工作组环境中的登录验证过程：工作组网络也称为“对等式”的网络，因为网络中每台计算机的地位都是平等的，它们的资源以及管理是分散在每台计算机之上，所以工作组环境的特点就是分散管理，工作组环境中的每台计算机都有自己的“本机安全账户数据库”，称为SAM数据库。这个SAM数据库是干什么用的呢？其实就是平时我们登录电脑时，当我们输入账户和密码后，此时就会去这个SAM数据库验证，如果我们输入的账户存在SAM数据库中，同时密码也正确，SAM数据库就会通知系统让我们登录。而这个SAM数据库默认就存储在<strong>C:\WINDOWS\system32\config</strong>文件夹中。</p>
+<!-- raw HTML omitted -->
+<h2 id="2域domain">2、域（Domain）</h2>
+<p>域英文叫DOMAIN——域(Domain)是Windows网络中独立运行的单位，域之间相互访问则需要建立信任关系(即Trust Relation)。信任关系是连接在域与域之间的桥梁。当一个域与其他域建立了信任关系后，2个域之间不但可以按需要相互进行管理，还可以跨网分配文件和打印机等设备资源，使不同的域之间实现网络资源的共享与管理，以及相互通信和数据传输。</p>
+<p>域既是 Windows 网络操作系统的逻辑组织单元，也是Internet的逻辑组织单元，在 Windows 网络操作系统中，域是安全边界。域管理员只能管理域的内部，除非其他的域显式地赋予他管理权限，他才能够访问或者管理其他的域，每个域都有自己的安全策略，以及它与其他域的安全信任关系。</p>
+<p>可以把域和工作组联系起来理解，在工作组上你一切的设置在本机上进行包括各种策略，用户登录也是登录在本机的，密码是放在本机的数据库来验证的。而如果你的计算机加入域的话，各种策略是域控制器统一设定，用户名和密码也是放到域控制器去验证，也就是说你的账号密码可以在同一域的任何一台计算机登录。登陆到域中的时候，身份验证是采用Kerberos协议在域控制器上进行的，登陆到此计算机则是通过SAM来进行NTLM验证的。</p>
+<h2 id="3域控域控制器-domain-controller简写为dc">3、域控（域控制器 ，Domain Controller，简写为DC）</h2>
+<p>在“域”模式下，至少有一台服务器负责每一台联入网络的电脑和用户的验证工作，相当于一个单位的门卫一样，称为“域控制器（Domain Controller，简写为DC）”。 域控制器中包含了由这个域的账户、密码、属于这个域的计算机等信息构成的数据库。当电脑联入网络时，域控制器首先要鉴别这台电脑是否是属于这个域的，用户使用的登录账号是否存在、密码是否正确。如果以上信息有一样不正确，那么域控制器就会拒绝这个用户从这台电脑登录。不能登录，用户就不能访问服务器上有权限保护的资源，他只能以对等网用户的方式访问Windows共享出来的资源，这样就在一定程度上保护了网络上的资源。</p>
+<p>域控是活动目录的存储地方，也就是说活动目录存储在域控制器内。安装了活动目录的计算机就称为域控制器，其实在你第一次安装活动目录的时候，你安装活动目录的那台计算机就成为了域控制器。一个域可以有一台或多台域控制器。最经典的做法是做一个主辅域控。</p>
+<h2 id="4活动目录active-directory-简称-ad">4、活动目录（Active Directory 简称 AD）</h2>
+<p>活动目录是微软Windows Server中，负责架构中大型网路环境的集中式目录管理服务（Directory Services）。目录服务在微软平台上从Windows Server 2000开始引入，所以我们可以理解为活动目录是目录服务在微软平台的一种实现方式。当然目录服务在非微软平台上都有相应的实现。</p>
+<p>Windows Server 2003的域环境与工作组环境最大的不同是，域内所有的计算机共享一个集中式的目录数据库（又称为活动目录数据库），它包含着整个域内的对象（用户账户、计算机账户、打印机、共享文件等）和安全信息等等，而活动目录负责目录数据库的添加，修改，更新和删除。所以我们要在Windows Server 2003上实现域环境，其实就是要安装活动目录。活动目录为我们实现了目录服务，提供对企业网络环境的集中式管理。比如在域环境中，只需要在活动目录中创建一次Bob账户，那么就可以在任意200台电脑中的一台上登录Bob，如果要为Bob账户更改密码，只需要在活动目录中更改一次就可以了，也就是说域用户信息保存在活动目录中。</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/1.jpg" alt="1"></p>
+<h2 id="5域域树林和组织单元">5、域、域树、林和组织单元</h2>
+<p>活动目录的逻辑结构包裹：域（Domain）、域树(Domain Tree)、林（Forest）和组织单元（Organization Unit）。如下图<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/2.jpg" alt="2"></p>
+<p>域是一种逻辑分组，准确的说是一种环境，域是安全的最小边界。域环境能对网络中的资源集中统一的管理，要想实现域环境，你必须要计算机中安装活动目录。 域树是由一组具有连续命名空间的域组成的。如下图</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/3.jpg" alt="3"></p>
+<p>其中最上层的域名为contoso.com，这个域是这棵域树的根域(root domain)，此根域下面
+有2个子域，分别是gsd.contoso.com和ged.contoso.com。从图中我们可以看出他们的命名空间具有连续性。例如，域gsd.contoso.com的后缀名包含着上一层父域的域名contoso.com。其实子域gsd.contoso.com和ged.contoso.com还都可以有自己的子域，图中我没有给出而已。
+域树内的所有域共享一个Active Directory(活动目录)，这个活动目录内的数据分散地存储在各个域内，且每一个域只存储该域内的数据，如该域内的用户账户，计算机账户等，Windows Server 2003将存储在各个域内的对象总称为Active Directory。
+林（Forest）是有一棵或多棵域树组成的，每棵域树独享连续的命名空间，不同域树之间没有命名空间的连续性。林中第一棵域树的根域也整个林的根域，同时也是林的名称。
+组织单元（OU）是一种容器，它里面可以包含对象（用户账户，计算机账户等），也可以包含其他的组织单元（OU）。</p>
+<h1 id="0x01-windows认证">0x01 Windows认证</h1>
+<h2 id="1ntlm">1、NTLM</h2>
+<h3 id="简介">简介</h3>
+<p>在NTLM协议问世之前，它对前身就是LM（LAN Manager）协议，其中NTLM协议全称是：“NT LAN Manager”。</p>
+<p>LM与NTLM协议的认证机制相同，但是加密算法不同。</p>
+<p>目前大多数的Windows都采用NTLM协议认证，LM协议已经基本淘汰了。</p>
+<p>这个NTLM是一种网络认证协议，与NTLM Hash的关系就是：NTLM网络认证协议是以NTLM Hash作为根本凭证进行认证的协议。</p>
+<p>也就是说，NTLM与NTLM Hash相互对应。</p>
+<h3 id="认证过程">认证过程</h3>
+<p>NTLM验证是一种Challenge/Response 验证机制，由三种消息组成:通常称为type 1(协商)，类型type 2(质询)和type 3(身份验证)。</p>
+<p>它基本上是这样工作的:</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/4.png" alt="4"></p>
+<ol>
+<li>用户登录客户端电脑</li>
+<li>(type 1)客户端向服务器发送type 1(协商)消息,它主要包含客户端支持和服务器请求的功能列表。</li>
+<li>(type 2)服务器用type 2消息(质询)进行响应，这包含服务器支持和同意的功能列表。但是，最重要的是，它包含服务器产生的Challenge。</li>
+<li>(type 3)客户端用type 3消息(身份验证)回复质询。用户接收到步骤3中的challenge之后，使用用户hash与challenge进行加密运算得到response，将response,username,challeng发给服务器。消息中的response是最关键的部分，因为它们向服务器证明客户端用户已经知道帐户密码。</li>
+<li>服务器拿到type 3之后，使用challenge和用户hash进行加密得到response2与type 3发来的response进行比较。如果用户hash是存储在域控里面的话，那么没有用户hash，也就没办法计算response2。也就没法验证。这个时候用户服务器就会通过netlogon协议联系域控，建立一个安全通道,然后将type 1,type 2，type3 全部发给域控(这个过程也叫作Pass Through Authentication认证流程)</li>
+<li>域控使用challenge和用户hash进行加密得到response2，与type 3的response进行比较</li>
+</ol>
+<h3 id="hash传递攻击">hash传递攻击</h3>
+<p>hash传递攻击也叫pass the hash,简称PTH。</p>
+<p>在type3计算response的时候，客户端是使用用户的hash进行计算的，而不是用户密码进行计算的。因此在模拟用户登录的时候。是不需要用户明文密码的，只需要用户hash。微软在2014年5月13日发布了针对Pass The Hash的更新补丁kb2871997，标题为<code>&quot;Update to fix the Pass-The-Hash Vulnerability&quot;</code>,而在一周后却把标题改成了<code>&quot;Update to improve credentials protection and management&quot;</code>。(事实上，这个补丁不仅能够缓解PTH,还能阻止mimikatz 抓取明文密码，本系列文章侧重于协议认证的问题，因此不在这里扩展介绍其他内容)。</p>
+<ul>
+<li>
+<p>mimikatz</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">privilege：：debug
+</span></span><span class="line"><span class="cl">sekurlsa::pth /user:win10 /domain:test.local /ntlm:6a6293bc0c56d7b9731e2d5506065e4a
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/5.png" alt="5"></p>
+</li>
+<li>
+<p>impacket</p>
+<p>impacket底下执行远程命令执行的脚本有5个</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">psexec.py
+</span></span><span class="line"><span class="cl">smbexec.py
+</span></span><span class="line"><span class="cl">atexec.py
+</span></span><span class="line"><span class="cl">wmiexec.py
+</span></span><span class="line"><span class="cl">dcomexec.py
+</span></span></code></pre></div><p>都支持使用hash进行远程命令执行，通过&ndash;hashes指定hash,以psexec.py为例</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/6.png" alt="6"></p>
+</li>
+<li>
+<p>cobalstrike</p>
+<p>cobalstrike支持批量得进行pth，在横向移动中撞密码hash中特别有效</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/7.png" alt="7"></p>
+</li>
+<li>
+<p>Msf</p>
+<p>msf的<code>exploit/windows/smb/psexec_psh</code>模块是支持对一个网段进行pth的，在横向移动中撞密码hash中特别有效</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/8.png" alt="8"></p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/9.png" alt="9"></p>
+</li>
+</ul>
+<h2 id="2kerberos">2、Kerberos</h2>
+<h3 id="简介-1">简介</h3>
+<p>Kerberos协议是一种网络认证协议，其设计目标是通过密钥系统为客户/服务器应用程序提供强大的认证服务。在令牌窃取攻击中，该攻击的核心就是Kerberos协议。Kerberos协议要解决的实际上就是一个身份认证的问题，顾名思义，<strong>当一个客户机去访问一个服务器的某服务时，服务器如何判断该客户机是否有权限来访问本服务器上的服务，同时保证在该过程中的通讯内容即便被拦截或者被篡改也不影响整个通讯的安全性</strong>。</p>
+<h3 id="认证过程-1">认证过程</h3>
+<p>我觉得下面几位大佬讲得很详细了，可以仔细阅读一下：</p>
+<p><a href="https://daiker.gitbook.io/windows-protocol/kerberos">https://daiker.gitbook.io/windows-protocol/kerberos</a> Kerberos 篇</p>
+<p><a href="https://xz.aliyun.com/t/8187">https://xz.aliyun.com/t/8187</a> 内网渗透之kerberos协议分析</p>
+<p><a href="https://payloads.online/archivers/2018-11-30/1#0x02-kerberos%E5%9F%9F%E8%AE%A4%E8%AF%81">https://payloads.online/archivers/2018-11-30/1#0x02-kerberos%E5%9F%9F%E8%AE%A4%E8%AF%81</a>  Kerberos域认证</p>
+<h3 id="hash传递攻击-1">hash传递攻击</h3>
+<p>这里不是只有在使用NTLM认证时候才会存在这个问题，在kerberos请求认证的时候允许使用hash进行认证，而不是只有账号密码才能认证。</p>
+<p>就是由于在进行认证的时候，是用用户hash加密时间戳，即使在使用密码进行登录的情况下，也是先把密码加密成hash，再进行认证。因此在只有用户hash，没有明文密码的情况下也是可以进行认证的。不管是rubeus还是impacket里面的相关脚本都是支持直接使用hash进行认证。其中，如果hash的ntlm hash，然后加密方式是rc4，这种就算做是<code>pass the hash</code>，如果是hash是aes key(使用<code>sekurlsa::ekeys</code>导出来)，就算是<code>pass the key</code>。在很多地方，不支持rc4加密方式的时候，使用pass the key不失为一种好方法。</p>
+<p>这里有一篇比较详细的过程文章：https://www.freebuf.com/articles/245872.html</p>
+<h3 id="域用户名枚举">域用户名枚举</h3>
+<p>这里比较多文章可以参考：</p>
+<p><a href="https://cloud.tencent.com/developer/article/1180848">https://cloud.tencent.com/developer/article/1180848</a> 从暴力枚举用户到获取域所有信息</p>
+<p><a href="http://hackergu.com/kerberos-sec-list-brute-user/">http://hackergu.com/kerberos-sec-list-brute-user/</a>  域安全-域用户的枚举与爆破</p>
+<p><a href="https://www.secpulse.com/archives/68628.html">https://www.secpulse.com/archives/68628.html</a> Kerberos域用户名枚举</p>
+<h3 id="密码喷洒攻击password-spraying">密码喷洒攻击（Password Spraying）</h3>
+<p>这个可以看倾旋大佬的啦：https://payloads.online/archivers/2018-05-02/1 Windows域渗透 - 用户密码枚举</p>
+<h3 id="as-reproasting">AS-REPRoasting</h3>
+<p>看<a href="https://www.harmj0y.net/blog">harmj0y</a>大佬的分析文章：https://www.harmj0y.net/blog/activedirectory/roasting-as-reps/</p>
+<p>主要是因为域账号开启了下面这个选项：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/Domain-security/10.png" alt="10"></p>
+<p>它的验证方式变的不一样了，不再需要用户的hash去请求就能返回TGT票据和用户session部分的内容。</p>
+<p>攻击方法参考：https://blog.csdn.net/shuteer_xu/article/details/106066628</p>
+<h3 id="黄金票据">黄金票据</h3>
+<p>在Windows的kerberos认证过程中，Client将自己的信息发送给KDC，然后KDC使用krbtgt用户的Hash作为密钥进行加密，生成TGT。那么如果获取到了krbtgt的Hash值，不就可以伪造任意的tgt了吗。<strong>因为krbtgt只有域控制器上面才有,所以使用黄金凭据意味着你之前拿到过域控制器的权限,黄金凭据可以理解为一个后门</strong></p>
+<p>具体攻击可以参考：https://blog.csdn.net/qq_41874930/article/details/108266378</p>
+<h3 id="pass-the-ticket">Pass-the-Ticket</h3>
+<p>跟pth不同的是ptt是基于Kerberos协议进行攻击的，可以使用MS14-068进行攻击</p>
+<p>攻击方法可以参考：https://www.freebuf.com/articles/245872.html</p>
+<h3 id="kerberosting">kerberosting</h3>
+<p>这个有点类似上面的AS-REPRoasting，但这个是出现在TGS_REP中的。</p>
+<p>攻击方法可以参考：https://3gstudent.github.io/域渗透-Kerberoasting/</p>
+<h3 id="白银票据">白银票据</h3>
+<p>白银票据特点:</p>
+<ul>
+<li>1.不需要与KDC进行交互</li>
+<li>2.需要目标服务的NTLM Hash</li>
+</ul>
+<p>说白了，这个漏洞要在有目标服务器的NTLM Hash，至于说怎么拿到目标服务器是个问题。如果将目标主机配置为验证KDC PAC签名，则银票将不起作用。</p>
+<p>可以参考大佬的文章：https://payloads.online/archivers/2018-11-30/1#白银票据silver-tickets</p>
+<h1 id="0x03-结尾">0x03 结尾</h1>
+<p>最近因为要考OSCP，粗略的复习了一下windows的认证，以后有空还是把里面的每一个漏洞形成的原理以及过程复现一遍。</p>
+<h1 id="0x04-参考">0x04 参考</h1>
+<p><a href="https://blog.csdn.net/qq_34801745/article/details/108136791">https://blog.csdn.net/qq_34801745/article/details/108136791</a></p>
+<p><a href="https://www.harmj0y.net/blog/activedirectory/roasting-as-reps/">https://www.harmj0y.net/blog/activedirectory/roasting-as-reps/</a></p>
+<p><a href="https://eviladan0s.github.io/2020/06/04/bloodhound-learn/#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8">https://eviladan0s.github.io/2020/06/04/bloodhound-learn/#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8</a></p>
+<p><a href="https://xz.aliyun.com/t/7311#toc-6">https://xz.aliyun.com/t/7311#toc-6</a></p>
+<p><a href="https://www.freebuf.com/articles/245872.html">https://www.freebuf.com/articles/245872.html</a></p>
+<p><a href="https://xz.aliyun.com/t/8187#toc-0">https://xz.aliyun.com/t/8187#toc-0</a></p>
+<p><a href="https://loong716.top/posts/Kerberos/#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83">https://loong716.top/posts/Kerberos/#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83</a></p>
+<p><a href="https://daiker.gitbook.io/windows-protocol/">https://daiker.gitbook.io/windows-protocol/</a></p>
+<p><a href="https://www.cnblogs.com/-mo-/p/11890232.html">https://www.cnblogs.com/-mo-/p/11890232.html</a></p>
+<p><a href="https://payloads.online/archivers/2018-11-30/1">https://payloads.online/archivers/2018-11-30/1</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/domain-security.html">https://xxe.icu/domain-security.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E5%9F%9F%E6%B8%97%E9%80%8F.html">
+                    #域渗透
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/shield.html" class="underline text-yellow-600">Hackthebox-Shield</a></li>
+    
+    <li><a href="/archetype.html" class="underline text-yellow-600">Hackthebox-Archetype</a></li>
+    
+    <li><a href="/oopsie.html" class="underline text-yellow-600">Hackthebox-Oopsie</a></li>
+    
+    <li><a href="/vaccine.html" class="underline text-yellow-600">Hackthebox-Vaccine</a></li>
+    
+    <li><a href="/bc-penetration-diary.html" class="underline text-yellow-600">bc站渗透日记</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-windows系统中的工作组域域控活动目录">0x00 Windows系统中的工作组、域、域控、活动目录</a>
+      <ul>
+        <li><a href="#1工作组">1、工作组</a></li>
+        <li><a href="#2域domain">2、域（Domain）</a></li>
+        <li><a href="#3域控域控制器-domain-controller简写为dc">3、域控（域控制器 ，Domain Controller，简写为DC）</a></li>
+        <li><a href="#4活动目录active-directory-简称-ad">4、活动目录（Active Directory 简称 AD）</a></li>
+        <li><a href="#5域域树林和组织单元">5、域、域树、林和组织单元</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-windows认证">0x01 Windows认证</a>
+      <ul>
+        <li><a href="#1ntlm">1、NTLM</a>
+          <ul>
+            <li><a href="#简介">简介</a></li>
+            <li><a href="#认证过程">认证过程</a></li>
+            <li><a href="#hash传递攻击">hash传递攻击</a></li>
+          </ul>
+        </li>
+        <li><a href="#2kerberos">2、Kerberos</a>
+          <ul>
+            <li><a href="#简介-1">简介</a></li>
+            <li><a href="#认证过程-1">认证过程</a></li>
+            <li><a href="#hash传递攻击-1">hash传递攻击</a></li>
+            <li><a href="#域用户名枚举">域用户名枚举</a></li>
+            <li><a href="#密码喷洒攻击password-spraying">密码喷洒攻击（Password Spraying）</a></li>
+            <li><a href="#as-reproasting">AS-REPRoasting</a></li>
+            <li><a href="#黄金票据">黄金票据</a></li>
+            <li><a href="#pass-the-ticket">Pass-the-Ticket</a></li>
+            <li><a href="#kerberosting">kerberosting</a></li>
+            <li><a href="#白银票据">白银票据</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x03-结尾">0x03 结尾</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

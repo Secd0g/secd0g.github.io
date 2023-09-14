@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/posts.html</link>
+    <description>Recent content in Posts on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 28 May 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用dompdf漏洞从XSS到RCE</title>
+      <link>https://xxe.icu/using_dompdf_vulnerability_from_xss_to_rce.html</link>
+      <pubDate>Sun, 28 May 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/using_dompdf_vulnerability_from_xss_to_rce.html</guid>
+      <description>0x00 前言 这个漏洞是在去年的三月份爆出来的，今天刚好遇到这个漏洞的环境，遂写一文记录。 0x01 漏洞详情 漏洞描述 dompdf是一个用于将HTML转换为P</description>
+    </item>
+    
+    <item>
+      <title>Java代码审计-CommonsCollections1链分析</title>
+      <link>https://xxe.icu/commonscollections1_chain_analysis.html</link>
+      <pubDate>Tue, 22 Nov 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonscollections1_chain_analysis.html</guid>
+      <description>0x00 前言 本文所讲述的CommonsCollections1链也被称为CC1链，它是属于Apache Commons Collections是Java中应用广泛</description>
+    </item>
+    
+    <item>
+      <title>Kali Linux 2022.2安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</link>
+      <pubDate>Mon, 25 Jul 2022 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</guid>
+      <description>0x00 前言 这个问题还是弄到了凌晨三点，最可恶的是还弄不好。。 早上起了个大早继续弄，在逛pd的论坛发现里面说了pd现在还不支持最新的5.18内核，</description>
+    </item>
+    
+    <item>
+      <title>Java代码审计-URLDNS链分析</title>
+      <link>https://xxe.icu/urldns_chain_analysis.html</link>
+      <pubDate>Wed, 01 Jun 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/urldns_chain_analysis.html</guid>
+      <description>0x00 前言 本文所述的是URLDNS利用链分析，在此之前还要先介绍一下一个⾥程碑碑式的工具：ysoserial 引用官网的一句描述： ysoserial is a collection of utilities and property-oriented</description>
+    </item>
+    
+    <item>
+      <title>免杀技术- Python分离免杀</title>
+      <link>https://xxe.icu/python_separation_to_antivirus.html</link>
+      <pubDate>Fri, 01 Apr 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/python_separation_to_antivirus.html</guid>
+      <description>0x00 前言 最新复习了一下鱼叉攻击的内容，发现在制作木马这一块过不去了，各种被查杀，于是又重新复习了一下免杀这块的内容。 网上也有很多教程文章，还是</description>
+    </item>
+    
+    <item>
+      <title>SDL(安全开发生命周期)</title>
+      <link>https://xxe.icu/sdl.html</link>
+      <pubDate>Tue, 22 Mar 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/sdl.html</guid>
+      <description>0x0 前言 最近在读《互联网企业安全高级指南》里面的一章SDL有感，结合工作经验之谈，遂写此文。 0x01 SDL概念 当我们谈到SDL（Security Development L</description>
+    </item>
+    
+    <item>
+      <title>域渗透-MacOS下的BloodHound攻击</title>
+      <link>https://xxe.icu/using_bloodhound_under_macos.html</link>
+      <pubDate>Thu, 17 Mar 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/using_bloodhound_under_macos.html</guid>
+      <description>前言 BloodHound以用图与线的形式，将域内用户、计算机、组、Sessions、ACLs以及域内所有相关用户、组、计算机、登陆信息、访问</description>
+    </item>
+    
+    <item>
+      <title>域渗透-委派攻击原理与实战</title>
+      <link>https://xxe.icu/ad_delegation.html</link>
+      <pubDate>Thu, 03 Mar 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/ad_delegation.html</guid>
+      <description>0x00 前言 在Windows 2000 Server首次发布Active Directory时，Microsoft必须提供一种简单的机制来支持用户通过Kerb</description>
+    </item>
+    
+    <item>
+      <title>域渗透-票据传递攻击（Pass the Ticket）</title>
+      <link>https://xxe.icu/ad_ptt.html</link>
+      <pubDate>Mon, 28 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/ad_ptt.html</guid>
+      <description>0x00 前言 票据传递（Pass the Ticket，PTT），使用 Kerberos票据进行内网横向，不需要管理员权限。比如之前一篇文章： 域渗透-哈希传递</description>
+    </item>
+    
+    <item>
+      <title>域渗透-SPN</title>
+      <link>https://xxe.icu/ad_spn.html</link>
+      <pubDate>Sun, 27 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/ad_spn.html</guid>
+      <description>0x00 前言 SPN是服务器上所运行服务的唯一标示，每个使用Kerberos的服务都需要一个SPN，这样客户端才可以辨认这个服务。 在之前写的一篇关于</description>
+    </item>
+    
+    <item>
+      <title>域渗透-Kerberoasting</title>
+      <link>https://xxe.icu/ad_kerberoasting.html</link>
+      <pubDate>Sat, 26 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/ad_kerberoasting.html</guid>
+      <description>0x00 前言 Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后</description>
+    </item>
+    
+    <item>
+      <title>域渗透-AS_REPRoasting</title>
+      <link>https://xxe.icu/ad_as_reproasting.html</link>
+      <pubDate>Tue, 22 Feb 2022 00:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/ad_as_reproasting.html</guid>
+      <description>0x00 前言 这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第</description>
+    </item>
+    
+    <item>
+      <title>域渗透-哈希传递攻击(Pass The Hash/Key)</title>
+      <link>https://xxe.icu/ad_pass_key.html</link>
+      <pubDate>Tue, 22 Feb 2022 00:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/ad_pass_key.html</guid>
+      <description>0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的</description>
+    </item>
+    
+    <item>
+      <title>域渗透-用户名枚举</title>
+      <link>https://xxe.icu/kerberos_user_enumerate.html</link>
+      <pubDate>Mon, 21 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/kerberos_user_enumerate.html</guid>
+      <description>0x00 简介 在之前的一编域渗透-Kerberos认证文章中已经写过kerberos的认证过程，这次写的是如何去枚举域中的用户名，得到用户名后我们才</description>
+    </item>
+    
+    <item>
+      <title>域渗透-Kerberos认证</title>
+      <link>https://xxe.icu/kerberos_authentication.html</link>
+      <pubDate>Sun, 20 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/kerberos_authentication.html</guid>
+      <description>0x00 简介 Kerberos是一种计算机网络授权协议,由MIT(麻省理工学院)开放的一套计算机软件。软件设计上采用客户端/服务器结构，并且能够进行</description>
+    </item>
+    
+    <item>
+      <title>使用Responder进行NTLM重放攻击</title>
+      <link>https://xxe.icu/responder_ntlmv2.html</link>
+      <pubDate>Mon, 14 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/responder_ntlmv2.html</guid>
+      <description>0x00 简介 在之前有写过关于LLMNR/NBT-NS欺骗攻击的文章，本文再从中做一个扩展延伸，里面用到的技术叫做NTLM重放攻击。当然，这种攻击利</description>
+    </item>
+    
+    <item>
+      <title>LLMNR/NBT-NS欺骗攻击</title>
+      <link>https://xxe.icu/llmnr_nbt-ns.html</link>
+      <pubDate>Sat, 12 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/llmnr_nbt-ns.html</guid>
+      <description>0x00 基本概念 LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻</description>
+    </item>
+    
+    <item>
+      <title>SSH隧道技术研究和实战</title>
+      <link>https://xxe.icu/ssh_tunnel.html</link>
+      <pubDate>Thu, 10 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/ssh_tunnel.html</guid>
+      <description>0x00 简介 在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH</description>
+    </item>
+    
+    <item>
+      <title>Windows设置指定IP远程访问3389</title>
+      <link>https://xxe.icu/windows_set_ip_access.html</link>
+      <pubDate>Wed, 09 Feb 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/windows_set_ip_access.html</guid>
+      <description>0x00 简介 因为要做协议隧道的测试，所以限制一下本地环境的访问权限，去网上一搜都是千遍一律的文章，全是旧系统的各种转载，所以写此一文记录，本文是在</description>
+    </item>
+    
+    <item>
+      <title>Powershell在渗透测试中的利用</title>
+      <link>https://xxe.icu/powershell-attack.html</link>
+      <pubDate>Sun, 16 Jan 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/powershell-attack.html</guid>
+      <description>简介 在渗透测试过程中，Powershell越来越成为必不可少的利用工具。 Windows的渗透过程中，以前我们在2003的服务器中渗透都是用v</description>
+    </item>
+    
+  </channel>
+</rss>

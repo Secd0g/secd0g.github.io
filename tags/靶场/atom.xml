@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>靶场 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/%E9%9D%B6%E5%9C%BA.html</link>
+    <description>Recent content in 靶场 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 03 May 2018 17:04:29 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/%E9%9D%B6%E5%9C%BA/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>用Vulnhub来练习漏洞靶场(爸爸再也不用担心我没有靶场练习了)</title>
+      <link>https://xxe.icu/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range.html</link>
+      <pubDate>Thu, 03 May 2018 17:04:29 +0000</pubDate>
+      
+      <guid>https://xxe.icu/use-vulnhub-to-build-a-variety-of-hole-shooting-range-father-no-longer-have-to-worry-about-i-have-no-practice-range.html</guid>
+      <description>0x01 前言 Vulnhub它是一个提供各种漏洞环境的平台，里面大部分的环境是要用VMware或者VirtualBox打开运行的。 如果只是练习一些常</description>
+    </item>
+    
+    <item>
+      <title>用Docker来搭建各种漏洞靶场(妈妈再也不用担心我没有靶场练习了)</title>
+      <link>https://xxe.icu/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range.html</link>
+      <pubDate>Wed, 14 Mar 2018 16:49:17 +0000</pubDate>
+      
+      <guid>https://xxe.icu/use-docker-to-build-a-variety-of-loopholes-my-mother-no-longer-has-to-worry-about-not-having-practiced-in-the-shooting-range.html</guid>
+      <description>1. 前言 最近练习也在搭建这个漏洞环境，但是很费时间，然后就想到用Docker搭建比较快，又方便。不多废话，直接开始吧！ 2. 下载Docker 我本次</description>
+    </item>
+    
+    <item>
+      <title>DVWA之Brute Force更新</title>
+      <link>https://xxe.icu/dvwa-brute-force-update.html</link>
+      <pubDate>Wed, 28 Feb 2018 00:18:00 +0000</pubDate>
+      
+      <guid>https://xxe.icu/dvwa-brute-force-update.html</guid>
+      <description>前言 今天又练习了一遍DVWA，发现了一些小问题。 问题一 在原文http://www.freebuf.com/articles/web/1164</description>
+    </item>
+    
+  </channel>
+</rss>

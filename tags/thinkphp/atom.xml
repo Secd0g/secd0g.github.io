@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Thinkphp on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/thinkphp.html</link>
+    <description>Recent content in Thinkphp on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 18 Apr 2018 15:20:50 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/thinkphp/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Thinkphp框架 3.2.x sql注入漏洞分析(每周一洞)</title>
+      <link>https://xxe.icu/thinkphp-framework-3.2.x-sql-injection-vulnerability-analysis.html</link>
+      <pubDate>Wed, 18 Apr 2018 15:20:50 +0000</pubDate>
+      
+      <guid>https://xxe.icu/thinkphp-framework-3.2.x-sql-injection-vulnerability-analysis.html</guid>
+      <description>0x01 前言 Thinkphp 3.2.x用的也挺多的，以前的程序大部分都是用这边版本的，如果移动到2版本又挺麻烦，而且小程序不说，大程序就复杂很多了。 这次的漏洞是</description>
+    </item>
+    
+    <item>
+      <title>Thinkphp框架 &lt; 5.0.16 sql注入漏洞分析(每日一洞)</title>
+      <link>https://xxe.icu/thinkphp-framework-_-5.0.16-sql-injection-vulnerability-analysis.html</link>
+      <pubDate>Wed, 11 Apr 2018 09:34:29 +0000</pubDate>
+      
+      <guid>https://xxe.icu/thinkphp-framework-_-5.0.16-sql-injection-vulnerability-analysis.html</guid>
+      <description>0x01 前言 前天在公众号看到石大神发的一篇审计thinkphp的文章,就想写一个分析流程，delay到了今天。昨天在先知也看到了chybeta发的</description>
+    </item>
+    
+  </channel>
+</rss>

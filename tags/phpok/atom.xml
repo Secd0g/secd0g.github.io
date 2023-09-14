@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>phpok on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/phpok.html</link>
+    <description>Recent content in phpok on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 06 Aug 2018 08:19:40 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/phpok/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>phpok4.9后台getshell(每周一洞)</title>
+      <link>https://xxe.icu/phpok4.9-background-getshell.html</link>
+      <pubDate>Mon, 06 Aug 2018 08:19:40 +0000</pubDate>
+      
+      <guid>https://xxe.icu/phpok4.9-background-getshell.html</guid>
+      <description>0x01 前言 昨天看到phpok可以申请cve就去审计了一下，存在漏洞的地方还是挺多的，时间不多找了个简单的任意文件上传漏洞。 0x02 环境 程序下载：htt</description>
+    </item>
+    
+    <item>
+      <title>phpok 4.9代码审计(每周一洞)</title>
+      <link>https://xxe.icu/phpok-4.9-code-audit.html</link>
+      <pubDate>Sun, 05 Aug 2018 14:54:07 +0000</pubDate>
+      
+      <guid>https://xxe.icu/phpok-4.9-code-audit.html</guid>
+      <description>0x01 前言 一放暑假就特别多事情，很多事情都耽误了，看吐司文章看到一篇不错的审计文章，就学习下。 0x02 环境搭建 环境没什么要求PHPstudy就能搞定，</description>
+    </item>
+    
+  </channel>
+</rss>

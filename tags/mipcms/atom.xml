@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MIPCMS on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/tags/mipcms.html</link>
+    <description>Recent content in MIPCMS on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 26 Mar 2018 01:09:26 +0000</lastBuildDate><atom:link href="https://xxe.icu/tags/mipcms/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MIPCMS V3.1.0 远程写入配置文件Getshell(每日一洞)</title>
+      <link>https://xxe.icu/mipcms-v3.1.0-remotely-writing-the-configuration-file-getshell.html</link>
+      <pubDate>Mon, 26 Mar 2018 01:09:26 +0000</pubDate>
+      
+      <guid>https://xxe.icu/mipcms-v3.1.0-remotely-writing-the-configuration-file-getshell.html</guid>
+      <description>0x01 前言 今天翻了下CNVD，看到了一个MIPCMS的远程代码执行漏洞，然后就去官网下载了这个版本的源码研究了下。 看下整体的结构，用的是thin</description>
+    </item>
+    
+  </channel>
+</rss>

