@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>安全开发 on F0rmat&#39;s Blog</title>
+    <link>https://xxe.icu/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91.html</link>
+    <description>Recent content in 安全开发 on F0rmat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 22 Sep 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用GO语言开发AWVS API工具</title>
+      <link>https://xxe.icu/develop_awvs_api_tools_using_go_language.html</link>
+      <pubDate>Fri, 22 Sep 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/develop_awvs_api_tools_using_go_language.html</guid>
+      <description>0x01 前言 在使用大佬的项目https://github.com/test502git/awvs14-scan/ 感觉还不错，但是python始终还</description>
+    </item>
+    
+  </channel>
+</rss>

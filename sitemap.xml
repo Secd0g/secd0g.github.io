@@ -3,13 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://xxe.icu/categories.html</loc>
-    <lastmod>2023-09-20T11:04:34+08:00</lastmod>
+    <lastmod>2023-09-22T11:04:34+08:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/</loc>
-    <lastmod>2023-09-20T11:04:34+08:00</lastmod>
+    <lastmod>2023-09-22T11:04:34+08:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/posts.html</loc>
-    <lastmod>2023-09-20T11:04:34+08:00</lastmod>
+    <lastmod>2023-09-22T11:04:34+08:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/develop_awvs_api_tools_using_go_language.html</loc>
+    <lastmod>2023-09-22T11:04:34+08:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91.html</loc>
+    <lastmod>2023-09-22T11:04:34+08:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/sqlmap_writes_shell_file_content_is_empty.html</loc>
     <lastmod>2023-09-20T11:04:34+08:00</lastmod>
