@@ -6,7 +6,16 @@
     <description>Recent content in Posts on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Sep 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Oct 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>当CVE-2022-35914漏洞遇到disable function</title>
+      <link>https://xxe.icu/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html</link>
+      <pubDate>Fri, 13 Oct 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html</guid>
+      <description>0x01 前言 在练习Proving Grounds的时候遇到一个靶机名为GLPI，里面利用到一个漏洞CVE-2022-35914，该漏洞是htmlaw</description>
+    </item>
+    
     <item>
       <title>使用GO语言开发AWVS API工具</title>
       <link>https://xxe.icu/develop_awvs_api_tools_using_go_language.html</link>
@@ -176,15 +185,6 @@
       
       <guid>https://xxe.icu/llmnr_nbt-ns.html</guid>
       <description>0x00 基本概念 LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻</description>
-    </item>
-    
-    <item>
-      <title>SSH隧道技术研究和实战</title>
-      <link>https://xxe.icu/ssh_tunnel.html</link>
-      <pubDate>Thu, 10 Feb 2022 11:04:34 +0800</pubDate>
-      
-      <guid>https://xxe.icu/ssh_tunnel.html</guid>
-      <description>0x00 简介 在内网中，几乎所有的Linux服务器都 支持SSH协议，一般情况下SSH的端口协议是允许通过防火墙的，所以会经常被攻击利用。而且，SSH</description>
     </item>
     
   </channel>

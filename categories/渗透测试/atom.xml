@@ -6,7 +6,16 @@
     <description>Recent content in 渗透测试 on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 20 Sep 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Oct 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>当CVE-2022-35914漏洞遇到disable function</title>
+      <link>https://xxe.icu/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html</link>
+      <pubDate>Fri, 13 Oct 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html</guid>
+      <description>0x01 前言 在练习Proving Grounds的时候遇到一个靶机名为GLPI，里面利用到一个漏洞CVE-2022-35914，该漏洞是htmlaw</description>
+    </item>
+    
     <item>
       <title>Sqlmap写shell文件内容为空</title>
       <link>https://xxe.icu/sqlmap_writes_shell_file_content_is_empty.html</link>
