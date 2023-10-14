@@ -6,7 +6,16 @@
     <description>Recent content in Kali Linux on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 25 Jul 2022 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/tags/kali-linux/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 14 Oct 2023 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/tags/kali-linux/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kali Linux 2023.3安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</link>
+      <pubDate>Sat, 14 Oct 2023 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</guid>
+      <description>0x00 前言 一年一度的Parallels Tools适配Kali Linux的问题又来了，这次也是因为内核更新然后pd没跟上导致的。 不过论坛也给出了解</description>
+    </item>
+    
     <item>
       <title>Kali Linux 2022.2安装Parallels Tools</title>
       <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</link>

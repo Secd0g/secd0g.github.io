@@ -3,13 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://xxe.icu/categories.html</loc>
-    <lastmod>2023-10-13T21:04:34+08:00</lastmod>
+    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/</loc>
-    <lastmod>2023-10-13T21:04:34+08:00</lastmod>
+    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/tags/kali-linux.html</loc>
+    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</loc>
+    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/posts.html</loc>
-    <lastmod>2023-10-13T21:04:34+08:00</lastmod>
+    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/tags.html</loc>
+    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/categories/%E5%85%B6%E4%BB%96.html</loc>
+    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html</loc>
     <lastmod>2023-10-13T21:04:34+08:00</lastmod>
@@ -38,16 +50,7 @@
     <loc>https://xxe.icu/archives.html</loc>
     <lastmod>2022-07-26T21:46:25+08:00</lastmod>
   </url><url>
-    <loc>https://xxe.icu/tags/kali-linux.html</loc>
-    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
-  </url><url>
     <loc>https://xxe.icu/install-parallels-tools-on-kali-linux-2022.2.html</loc>
-    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://xxe.icu/tags.html</loc>
-    <lastmod>2022-07-25T01:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://xxe.icu/categories/%E5%85%B6%E4%BB%96.html</loc>
     <lastmod>2022-07-25T01:00:00+02:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/about.html</loc>

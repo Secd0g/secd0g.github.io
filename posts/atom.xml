@@ -6,7 +6,16 @@
     <description>Recent content in Posts on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 13 Oct 2023 21:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 14 Oct 2023 01:00:00 +0200</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kali Linux 2023.3安装Parallels Tools</title>
+      <link>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</link>
+      <pubDate>Sat, 14 Oct 2023 01:00:00 +0200</pubDate>
+      
+      <guid>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</guid>
+      <description>0x00 前言 一年一度的Parallels Tools适配Kali Linux的问题又来了，这次也是因为内核更新然后pd没跟上导致的。 不过论坛也给出了解</description>
+    </item>
+    
     <item>
       <title>当CVE-2022-35914漏洞遇到disable function</title>
       <link>https://xxe.icu/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html</link>
@@ -176,15 +185,6 @@
       
       <guid>https://xxe.icu/responder_ntlmv2.html</guid>
       <description>0x00 简介 在之前有写过关于LLMNR/NBT-NS欺骗攻击的文章，本文再从中做一个扩展延伸，里面用到的技术叫做NTLM重放攻击。当然，这种攻击利</description>
-    </item>
-    
-    <item>
-      <title>LLMNR/NBT-NS欺骗攻击</title>
-      <link>https://xxe.icu/llmnr_nbt-ns.html</link>
-      <pubDate>Sat, 12 Feb 2022 11:04:34 +0800</pubDate>
-      
-      <guid>https://xxe.icu/llmnr_nbt-ns.html</guid>
-      <description>0x00 基本概念 LLMNR＆NBT-NS欺骗攻击可以作为我们内网渗透中的一种手法，主要是利用LLMNR、NetBIOS和WPAD机制进行的中间人攻</description>
     </item>
     
   </channel>
