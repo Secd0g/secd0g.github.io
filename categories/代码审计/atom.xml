@@ -6,7 +6,16 @@
     <description>Recent content in 代码审计 on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 May 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 25 Nov 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java代码审计-CommonsCollections6链分析</title>
+      <link>https://xxe.icu/commonscollections6_chain_analysis.html</link>
+      <pubDate>Sat, 25 Nov 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonscollections6_chain_analysis.html</guid>
+      <description>0x00 前言 接着CommonsCollections1的问题来分析CommonsCollections6的过程，本来cc6应该作为cc2来称呼的，</description>
+    </item>
+    
     <item>
       <title>利用dompdf漏洞从XSS到RCE</title>
       <link>https://xxe.icu/using_dompdf_vulnerability_from_xss_to_rce.html</link>
@@ -23,6 +32,15 @@
       
       <guid>https://xxe.icu/commonscollections1_chain_analysis.html</guid>
       <description>0x00 前言 本文所讲述的CommonsCollections1链也被称为CC1链，它是属于Apache Commons Collections是Java中应用广泛</description>
+    </item>
+    
+    <item>
+      <title>Java代码审计-CommonsCollections2链分析</title>
+      <link>https://xxe.icu/commonscollections2_chain_analysis.html</link>
+      <pubDate>Tue, 22 Nov 2022 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonscollections2_chain_analysis.html</guid>
+      <description>0x00 前言 上一次是讲CommonsCollections1链分析,这次CommonsCollections2链的分析，这条链又和第一条有所不同，</description>
     </item>
     
     <item>
@@ -167,24 +185,6 @@
       
       <guid>https://xxe.icu/phpok4.9-background-getshell.html</guid>
       <description>0x01 前言 昨天看到phpok可以申请cve就去审计了一下，存在漏洞的地方还是挺多的，时间不多找了个简单的任意文件上传漏洞。 0x02 环境 程序下载：htt</description>
-    </item>
-    
-    <item>
-      <title>phpok 4.9代码审计(每周一洞)</title>
-      <link>https://xxe.icu/phpok-4.9-code-audit.html</link>
-      <pubDate>Sun, 05 Aug 2018 14:54:07 +0000</pubDate>
-      
-      <guid>https://xxe.icu/phpok-4.9-code-audit.html</guid>
-      <description>0x01 前言 一放暑假就特别多事情，很多事情都耽误了，看吐司文章看到一篇不错的审计文章，就学习下。 0x02 环境搭建 环境没什么要求PHPstudy就能搞定，</description>
-    </item>
-    
-    <item>
-      <title>DedeCMS V5.7后台过滤不当导致Getshell(每周一洞)</title>
-      <link>https://xxe.icu/dedecms-v5.7-background-filtering-improperly-leads-to-getshell.html</link>
-      <pubDate>Fri, 27 Jul 2018 14:14:56 +0000</pubDate>
-      
-      <guid>https://xxe.icu/dedecms-v5.7-background-filtering-improperly-leads-to-getshell.html</guid>
-      <description>0x01 前言 前两天看到七月火表哥再先知发的一篇审计文章，感觉不错，是dedecms的getshell。就分析了一下，顺便写一篇文章学习。 0x02 环境 环境</description>
     </item>
     
   </channel>

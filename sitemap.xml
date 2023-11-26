@@ -3,18 +3,24 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://xxe.icu/categories.html</loc>
-    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
+    <lastmod>2023-11-25T11:04:34+08:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/</loc>
-    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
+    <lastmod>2023-11-25T11:04:34+08:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/commonscollections6_chain_analysis.html</loc>
+    <lastmod>2023-11-25T11:04:34+08:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/posts.html</loc>
+    <lastmod>2023-11-25T11:04:34+08:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html</loc>
+    <lastmod>2023-11-25T11:04:34+08:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/tags/kali-linux.html</loc>
     <lastmod>2023-10-14T01:00:00+02:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/install-parallels-tools-on-kali-linux-2023.3.html</loc>
-    <lastmod>2023-10-14T01:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://xxe.icu/posts.html</loc>
     <lastmod>2023-10-14T01:00:00+02:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/tags.html</loc>
@@ -38,13 +44,13 @@
     <loc>https://xxe.icu/sqlmap_writes_shell_file_content_is_empty.html</loc>
     <lastmod>2023-09-20T11:04:34+08:00</lastmod>
   </url><url>
-    <loc>https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.html</loc>
-    <lastmod>2023-05-28T11:04:34+08:00</lastmod>
-  </url><url>
     <loc>https://xxe.icu/using_dompdf_vulnerability_from_xss_to_rce.html</loc>
     <lastmod>2023-05-28T11:04:34+08:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/commonscollections1_chain_analysis.html</loc>
+    <lastmod>2022-11-22T11:04:34+08:00</lastmod>
+  </url><url>
+    <loc>https://xxe.icu/commonscollections2_chain_analysis.html</loc>
     <lastmod>2022-11-22T11:04:34+08:00</lastmod>
   </url><url>
     <loc>https://xxe.icu/archives.html</loc>
