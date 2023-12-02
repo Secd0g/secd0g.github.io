@@ -6,7 +6,16 @@
     <description>Recent content in Posts on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Nov 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java代码审计-CommonsCollections3链分析</title>
+      <link>https://xxe.icu/commonscollections3_chain_analysis.html</link>
+      <pubDate>Fri, 01 Dec 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonscollections3_chain_analysis.html</guid>
+      <description>0x00 前言 本来是想写CC2先的，但看了P神的《Java安全漫谈》学了TemplatesImpl这个类，发现确实如P神所说，不用按照CC链从1-1</description>
+    </item>
+    
     <item>
       <title>Java代码审计-CommonsCollections6链分析</title>
       <link>https://xxe.icu/commonscollections6_chain_analysis.html</link>
@@ -176,15 +185,6 @@
       
       <guid>https://xxe.icu/ad_pass_key.html</guid>
       <description>0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的</description>
-    </item>
-    
-    <item>
-      <title>域渗透-用户名枚举</title>
-      <link>https://xxe.icu/kerberos_user_enumerate.html</link>
-      <pubDate>Mon, 21 Feb 2022 11:04:34 +0800</pubDate>
-      
-      <guid>https://xxe.icu/kerberos_user_enumerate.html</guid>
-      <description>0x00 简介 在之前的一编域渗透-Kerberos认证文章中已经写过kerberos的认证过程，这次写的是如何去枚举域中的用户名，得到用户名后我们才</description>
     </item>
     
   </channel>

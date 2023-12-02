@@ -6,7 +6,16 @@
     <description>Recent content in 代码审计 on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Nov 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java代码审计-CommonsCollections3链分析</title>
+      <link>https://xxe.icu/commonscollections3_chain_analysis.html</link>
+      <pubDate>Fri, 01 Dec 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonscollections3_chain_analysis.html</guid>
+      <description>0x00 前言 本来是想写CC2先的，但看了P神的《Java安全漫谈》学了TemplatesImpl这个类，发现确实如P神所说，不用按照CC链从1-1</description>
+    </item>
+    
     <item>
       <title>Java代码审计-CommonsCollections6链分析</title>
       <link>https://xxe.icu/commonscollections6_chain_analysis.html</link>
@@ -176,15 +185,6 @@
       
       <guid>https://xxe.icu/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html</guid>
       <description>0x01 前言 CMS Made Simple是一个简单易于使用的内容管理系统。它使用PHP，MySQL和Smarty模板引擎开发。 昨天看漏洞库的时候看到这一款CM</description>
-    </item>
-    
-    <item>
-      <title>phpok4.9后台getshell(每周一洞)</title>
-      <link>https://xxe.icu/phpok4.9-background-getshell.html</link>
-      <pubDate>Mon, 06 Aug 2018 08:19:40 +0000</pubDate>
-      
-      <guid>https://xxe.icu/phpok4.9-background-getshell.html</guid>
-      <description>0x01 前言 昨天看到phpok可以申请cve就去审计了一下，存在漏洞的地方还是挺多的，时间不多找了个简单的任意文件上传漏洞。 0x02 环境 程序下载：htt</description>
     </item>
     
   </channel>
