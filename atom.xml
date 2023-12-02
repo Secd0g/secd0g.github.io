@@ -30,7 +30,7 @@
 &lt;p&gt;Java版本：8u65，下载地址：https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html&lt;/p&gt;
 &lt;p&gt;8u65源码：下载地址：https://hg.openjdk.java.net/jdk8u/jdk8u/jdk/archive/af660750b2f4.zip&lt;/p&gt;
 &lt;p&gt;pom文件配置：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;nt&#34;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;nt&#34;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;   
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
@@ -56,7 +56,7 @@
 &lt;p&gt;我们可以用文本来打开一个class文件的内容：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231201132520257.png&#34; alt=&#34;image-20231201132520257&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;文件开头的4个字节(&amp;ldquo;cafe babe&amp;rdquo;)称之为 &lt;code&gt;魔数&lt;/code&gt;，唯有以&amp;quot;cafe babe&amp;quot;开头的class文件方可被虚拟机所接受，这4个字节就是字节码文件的身份识别。&lt;/li&gt;
+&lt;li&gt;文件开头的4个字节(&amp;ldquo;cafe babe&amp;rdquo;)称之为 &lt;code&gt;魔数&lt;/code&gt;，唯有以&amp;quot;cafe  babe&amp;quot;开头的class文件方可被虚拟机所接受，这4个字节就是字节码文件的身份识别。&lt;/li&gt;
 &lt;li&gt;0000是编译器jdk版本的次版本号0，0034转化为十进制是52,是主版本号，java的版本号从45开始，除1.0和1.1都是使用45.x外,以后每升一个大版本，版本号加一。也就是说，编译生成该class文件的jdk版本为1.8.0。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;我们可以思考Java是不是有相关的类可以直接加载字节码的呢，是有的，就是&lt;code&gt;ClassLoader&lt;/code&gt;。&lt;/p&gt;

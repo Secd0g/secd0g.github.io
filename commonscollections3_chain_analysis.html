@@ -162,7 +162,7 @@
 <p>Java版本：8u65，下载地址：https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html</p>
 <p>8u65源码：下载地址：https://hg.openjdk.java.net/jdk8u/jdk8u/jdk/archive/af660750b2f4.zip</p>
 <p>pom文件配置：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"> <span class="nt">&lt;dependencies&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"> <span class="nt">&lt;dependencies&gt;</span>   
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">        <span class="nt">&lt;dependency&gt;</span>
 </span></span><span class="line"><span class="cl">
@@ -188,7 +188,7 @@
 <p>我们可以用文本来打开一个class文件的内容：</p>
 <p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231201132520257.png" alt="image-20231201132520257"></p>
 <ul>
-<li>文件开头的4个字节(&ldquo;cafe babe&rdquo;)称之为 <code>魔数</code>，唯有以&quot;cafe babe&quot;开头的class文件方可被虚拟机所接受，这4个字节就是字节码文件的身份识别。</li>
+<li>文件开头的4个字节(&ldquo;cafe babe&rdquo;)称之为 <code>魔数</code>，唯有以&quot;cafe  babe&quot;开头的class文件方可被虚拟机所接受，这4个字节就是字节码文件的身份识别。</li>
 <li>0000是编译器jdk版本的次版本号0，0034转化为十进制是52,是主版本号，java的版本号从45开始，除1.0和1.1都是使用45.x外,以后每升一个大版本，版本号加一。也就是说，编译生成该class文件的jdk版本为1.8.0。</li>
 </ul>
 <p>我们可以思考Java是不是有相关的类可以直接加载字节码的呢，是有的，就是<code>ClassLoader</code>。</p>
