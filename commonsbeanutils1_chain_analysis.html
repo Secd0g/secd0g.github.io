@@ -106,7 +106,7 @@
         <span class="hidden xl:inline-block">
             |
             <i class="iconfont icon-book"></i>
-            2101 字
+            2307 字
         </span>
 
         <span class="hidden xl:inline-block">
@@ -129,6 +129,7 @@
         <li><a href="#0x00-前言">0x00 前言</a></li>
         <li><a href="#0x01-分析过程">0x01 分析过程</a>
           <ul>
+            <li><a href="#环境准备">环境准备</a></li>
             <li><a href="#前置知识">前置知识</a></li>
             <li><a href="#commonsbeanutils1分析">CommonsBeanUtils1分析</a></li>
           </ul>
@@ -158,7 +159,22 @@
 </span></span><span class="line"><span class="cl">    <span class="o">}</span>
 </span></span></code></pre></div><p>而且CommonsBeanUtils1这条链就很巧妙去利用JavaBean的Setter和Getter调用完成，只能说这个作者思路确实牛。</p>
 <h2 id="0x01-分析过程">0x01 分析过程</h2>
-<h3 id="前置知识">前置知识</h3>
+<h3 id="环境准备">环境准备</h3>
+<p>调试工具：IDEA</p>
+<p>Java版本：8u65，下载地址：<a href="http://link.zhihu.com/?target=https%3A//www.oracle.com/java/technologies/javase/javase8-archive-downloads.html">https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html</a></p>
+<p>8u65源码：下载地址：<a href="http://link.zhihu.com/?target=https%3A//hg.openjdk.java.net/jdk8u/jdk8u/jdk/archive/af660750b2f4.zip">https://hg.openjdk.java.net/jdk8u/jdk8u/jdk/archive/af660750b2f4.zip</a></p>
+<p>pom文件配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">commons</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">commons</span><span class="o">-</span><span class="n">collections4</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="n">4</span><span class="o">.</span><span class="na">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">javassist</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">javassist</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="n">3</span><span class="o">.</span><span class="na">25</span><span class="o">.</span><span class="na">0</span><span class="o">-</span><span class="n">GA</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</span></span></code></pre></div><h3 id="前置知识">前置知识</h3>
 <p>学习这条链之前我们需要有一些前置的知识，如果对<code>TemplatesImpl</code>和<code>PriorityQueue</code>的用法还没熟悉的话可以先去看CC2那篇文章，当然也可以去看网上的一些文章，只要能让你去快速理解的的文章都行，但是一定要弄懂中间的思路。</p>
 <p>我们来看下PropertyUtils.getProperty是怎么使用的，因为这个类是在beanutils里面的所以叫做CommonsBeanUtils1链。</p>
 <p>我们先新建一个User类：</p>
@@ -616,6 +632,7 @@
         <li><a href="#0x00-前言">0x00 前言</a></li>
         <li><a href="#0x01-分析过程">0x01 分析过程</a>
           <ul>
+            <li><a href="#环境准备">环境准备</a></li>
             <li><a href="#前置知识">前置知识</a></li>
             <li><a href="#commonsbeanutils1分析">CommonsBeanUtils1分析</a></li>
           </ul>
