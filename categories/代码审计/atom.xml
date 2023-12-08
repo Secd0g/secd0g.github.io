@@ -6,7 +6,16 @@
     <description>Recent content in 代码审计 on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java代码审计-CommonsBeanUtils1链分析</title>
+      <link>https://xxe.icu/commonsbeanutils1_chain_analysis.html</link>
+      <pubDate>Fri, 08 Dec 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonsbeanutils1_chain_analysis.html</guid>
+      <description>0x00 前言 CommonsBeanUtils1的链看了一下POC，确实思路很新奇，用了CommonsBeanUtils里面的PropertyUti</description>
+    </item>
+    
     <item>
       <title>Java代码审计-CommonsCollections2链分析</title>
       <link>https://xxe.icu/commonscollections2_chain_analysis.html</link>
@@ -176,15 +185,6 @@
       
       <guid>https://xxe.icu/zen-knowledge-pro-1.6-front-end-arbitrary-file-reading-analysis.html</guid>
       <description>0x01 前言 这两天看到禅知这个CMS有一个前台的任意文件读取漏洞，就在此写一片分析文章。 0x02 环境 下载安装安装程序，这个CMS是封装起来的，连着Apa</description>
-    </item>
-    
-    <item>
-      <title>CVE-2018-1000094-CMSMS 2.2.5代码执行漏洞(每周一洞)</title>
-      <link>https://xxe.icu/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html</link>
-      <pubDate>Sat, 11 Aug 2018 09:31:30 +0000</pubDate>
-      
-      <guid>https://xxe.icu/cve-2018-1000094-cmsms-2.2.5-code-execution-vulnerability.html</guid>
-      <description>0x01 前言 CMS Made Simple是一个简单易于使用的内容管理系统。它使用PHP，MySQL和Smarty模板引擎开发。 昨天看漏洞库的时候看到这一款CM</description>
     </item>
     
   </channel>

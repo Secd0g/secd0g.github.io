@@ -6,7 +6,16 @@
     <description>Recent content in Posts on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java代码审计-CommonsBeanUtils1链分析</title>
+      <link>https://xxe.icu/commonsbeanutils1_chain_analysis.html</link>
+      <pubDate>Fri, 08 Dec 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/commonsbeanutils1_chain_analysis.html</guid>
+      <description>0x00 前言 CommonsBeanUtils1的链看了一下POC，确实思路很新奇，用了CommonsBeanUtils里面的PropertyUti</description>
+    </item>
+    
     <item>
       <title>Java代码审计-CommonsCollections2链分析</title>
       <link>https://xxe.icu/commonscollections2_chain_analysis.html</link>
@@ -176,15 +185,6 @@
       
       <guid>https://xxe.icu/ad_as_reproasting.html</guid>
       <description>0x00 前言 这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第</description>
-    </item>
-    
-    <item>
-      <title>域渗透-哈希传递攻击(Pass The Hash/Key)</title>
-      <link>https://xxe.icu/ad_pass_key.html</link>
-      <pubDate>Tue, 22 Feb 2022 00:04:34 +0800</pubDate>
-      
-      <guid>https://xxe.icu/ad_pass_key.html</guid>
-      <description>0x00 前言 横向渗透中的哈希传递攻击，这一部分在内网渗透中是十分关键的。在域环境中，用户登录计算机时一般使用域账号，大量计算机在安装时会使用相同的</description>
     </item>
     
   </channel>
