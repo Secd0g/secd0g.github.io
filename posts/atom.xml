@@ -6,7 +6,16 @@
     <description>Recent content in Posts on F0rmat&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 08 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 15 Dec 2023 11:04:34 +0800</lastBuildDate><atom:link href="https://xxe.icu/posts/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Shiro反序列化漏洞原理分析（Shiro-550/Shiro-721）</title>
+      <link>https://xxe.icu/shiro_deserialization_vulnerability.html</link>
+      <pubDate>Fri, 15 Dec 2023 11:04:34 +0800</pubDate>
+      
+      <guid>https://xxe.icu/shiro_deserialization_vulnerability.html</guid>
+      <description>0x00 前言 Apache Shiro是一个强大且易用的Java安全框架,执行身份验证、授权、密码和会话管理。使用Shiro的易于理解的API,您可以快速、轻松</description>
+    </item>
+    
     <item>
       <title>Java代码审计-CommonsBeanUtils1链分析</title>
       <link>https://xxe.icu/commonsbeanutils1_chain_analysis.html</link>
@@ -176,15 +185,6 @@
       
       <guid>https://xxe.icu/ad_kerberoasting.html</guid>
       <description>0x00 前言 Kerberoasting 是域渗透中经常使用的一项技术，是Tim Medin 在 DerbyCon 2014 上发布的一种域口令攻击方法，Tim Medin 同时发布了配套的攻击工具 kerberoast。此后</description>
-    </item>
-    
-    <item>
-      <title>域渗透-AS_REPRoasting</title>
-      <link>https://xxe.icu/ad_as_reproasting.html</link>
-      <pubDate>Tue, 22 Feb 2022 00:04:34 +0800</pubDate>
-      
-      <guid>https://xxe.icu/ad_as_reproasting.html</guid>
-      <description>0x00 前言 这是一种针对kerberos协议的攻击技术，不需要认证就可以获取到用户的密码hash值。问题出现在身份预认证是kerberos认证的第</description>
     </item>
     
   </channel>
