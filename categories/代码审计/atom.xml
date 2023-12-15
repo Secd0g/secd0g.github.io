@@ -13,7 +13,7 @@
       <pubDate>Fri, 15 Dec 2023 11:04:34 +0800</pubDate>
       
       <guid>https://xxe.icu/shiro_deserialization_vulnerability.html</guid>
-      <description>0x00 前言 Apache Shiro是一个强大且易用的Java安全框架,执行身份验证、授权、密码和会话管理。使用Shiro的易于理解的API,您可以快速、轻松</description>
+      <description>0x00 前言 Apache Shiro是一个强大且易用的Java安全框架,执行身份验证、授权、密码和会话管理。 使用Shiro的易于理解的API,您可以快速、轻松</description>
     </item>
     
     <item>

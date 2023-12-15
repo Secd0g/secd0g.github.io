@@ -19,7 +19,8 @@
       <guid>https://xxe.icu/shiro_deserialization_vulnerability.html</guid>
       
         <description>&lt;h2 id=&#34;0x00-前言&#34;&gt;0x00 前言&lt;/h2&gt;
-&lt;p&gt;Apache Shiro是一个强大且易用的Java安全框架,执行身份验证、授权、密码和会话管理。使用Shiro的易于理解的API,您可以快速、轻松地获得任何应用程序,从最小的移动应用程序到最大的网络和企业应用程序。&lt;/p&gt;
+&lt;p&gt;Apache Shiro是一个强大且易用的Java安全框架,执行身份验证、授权、密码和会话管理。&lt;/p&gt;
+&lt;p&gt;使用Shiro的易于理解的API,您可以快速、轻松地获得任何应用程序,从最小的移动应用程序到最大的网络和企业应用程序。&lt;/p&gt;
 &lt;p&gt;我们都知道Shiro反序列化的漏洞有两个，550和721，这两个不是版本，是apache官方issue的编号。&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://issues.apache.org/jira/projects/SHIRO/issues/SHIRO-550&#34;&gt;https://issues.apache.org/jira/projects/SHIRO/issues/SHIRO-550&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://issues.apache.org/jira/projects/SHIRO/issues/SHIRO-721&#34;&gt;https://issues.apache.org/jira/projects/SHIRO/issues/SHIRO-721&lt;/a&gt;&lt;/p&gt;
