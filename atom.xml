@@ -577,7 +577,7 @@
 &lt;p&gt;密钥我们是不知道的，但是服务器会帮我把密文进行解密，那么我们能控制的只有IV值。&lt;/p&gt;
 &lt;p&gt;从上面的XOR原理我们可以知道：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;这里密文（未通过key加密）就表示中间值&lt;/p&gt;
+&lt;p&gt;密文通过DES解密后的值就表示中间值&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;明文 XOR IV = 中间值
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;那么如果我们只知道密文和IV：&lt;/p&gt;
